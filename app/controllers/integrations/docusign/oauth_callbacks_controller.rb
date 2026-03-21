@@ -16,7 +16,7 @@ module Integrations
 
         state_payload = ::Docusign::OauthState.verify!(params.require(:state))
         tenant = TenantAuth::Tenant.find_by!(uid: state_payload.fetch("tenant_uid"))
-        tenant_user = resolve_tenant_user(tenant:, tenant_user_id: state_payload["tenant_user_id"])
+        tenant_user = resolve_tenant_user(tenant: tenant, tenant_user_id: state_payload["tenant_user_id"])
 
         oauth_client = ::Docusign::OauthClient.new
         token_info = oauth_client.exchange_code!(code: params.require(:code))
@@ -57,16 +57,11 @@ module Integrations
 
         session[:tenant_user_id] = tenant_user.id if tenant_user
 
-        AuditLog.create!(
+        audit!(
           tenant: tenant,
-          actor_type: tenant_user&.class&.name,
-          actor_id: tenant_user&.id,
+          actor: tenant_user,
           action: "docusign_oauth_connected",
-          target_type: connection.class.name,
-          target_id: connection.id,
-          request_id: request.request_id,
-          ip: request.remote_ip,
-          user_agent: request.user_agent,
+          target: connection,
           data: {
             docusign_account_id: connection.docusign_account_id,
             return_to: state_payload["return_to"]

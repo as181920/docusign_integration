@@ -13,7 +13,7 @@ module TenantScoped
     def create
       template = ContractTemplate.new(contract_template_params)
       template.tenant = current_tenant
-      template.version = next_version_for(template.name) if template.version.blank?
+      template.version = next_version_for(template.name) if params.dig(:contract_template, :version).blank?
 
       if template.save
         audit!(action: "contract_template_created", target: template)

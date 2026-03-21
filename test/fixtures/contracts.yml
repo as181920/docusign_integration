@@ -1,0 +1,35 @@
+acme_contract:
+  tenant: acme
+  creator_tenant_user: alice
+  title: ACME Cross-Border Service Contract
+  contract_no: C-ACME-001
+  status: draft
+  source: manual
+  language: en
+  currency: USD
+  docusign_template_id: tpl_acme_v1
+  metadata: {}
+
+acme_contract_without_template:
+  tenant: acme
+  creator_tenant_user: alice
+  title: ACME Purchase Contract
+  contract_no: C-ACME-002
+  status: draft
+  source: manual
+  language: en
+  currency: USD
+  docusign_template_id:
+  metadata: {}
+
+beta_contract:
+  tenant: beta
+  creator_tenant_user: bob
+  title: Beta Contract
+  contract_no: C-BETA-001
+  status: draft
+  source: manual
+  language: en
+  currency: USD
+  docusign_template_id: tpl_beta_v1
+  metadata: {}

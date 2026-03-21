@@ -1,0 +1,9 @@
+platform_alice:
+  uid: usr_alice
+  name: platform_alice
+  password_digest: "$2a$12$19xQ.DvY1x7dZ4S3F4s7fO8ed4V8dQfHfJ4Jr2cK0R6M9hY5W6S8u"
+
+platform_bob:
+  uid: usr_bob
+  name: platform_bob
+  password_digest: "$2a$12$19xQ.DvY1x7dZ4S3F4s7fO8ed4V8dQfHfJ4Jr2cK0R6M9hY5W6S8u"

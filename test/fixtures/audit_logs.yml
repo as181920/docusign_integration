@@ -1,0 +1,11 @@
+acme_audit:
+  tenant: acme
+  actor_type: TenantAuth::User
+  actor_id: <%= ActiveRecord::FixtureSet.identify(:alice) %>
+  action: contract_created
+  target_type: Contract
+  target_id: <%= ActiveRecord::FixtureSet.identify(:acme_contract) %>
+  request_id: test-request-id
+  ip: 127.0.0.1
+  user_agent: RailsTest
+  data: {}

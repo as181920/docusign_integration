@@ -1,0 +1,13 @@
+acme:
+  organization: default_org
+  uid: acme
+  name: ACME Tenant
+  state: 0
+  custom_settings: {}
+
+beta:
+  organization: default_org
+  uid: beta
+  name: Beta Tenant
+  state: 0
+  custom_settings: {}

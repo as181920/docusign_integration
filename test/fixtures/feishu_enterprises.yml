@@ -1,0 +1,7 @@
+acme_enterprise:
+  tenant: acme
+  tenant_key: fs_acme_key
+  app_id: cli_test_app
+  name: ACME Feishu Enterprise
+  status: active
+  raw_payload: {}

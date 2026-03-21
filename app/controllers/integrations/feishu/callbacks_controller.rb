@@ -19,19 +19,14 @@ module Integrations
         enterprise.raw_payload = params.to_unsafe_h
         enterprise.save!
 
-        identity = provision_identity_if_possible(tenant:)
+        identity = provision_identity_if_possible(tenant: tenant)
         bind_session(identity)
 
-        AuditLog.create!(
+        audit!(
           tenant: tenant,
-          actor_type: identity&.tenant_user&.class&.name,
-          actor_id: identity&.tenant_user_id,
+          actor: identity&.tenant_user,
           action: "feishu_callback_received",
-          target_type: enterprise.class.name,
-          target_id: enterprise.id,
-          request_id: request.request_id,
-          ip: request.remote_ip,
-          user_agent: request.user_agent,
+          target: enterprise,
           data: {
             tenant_key: enterprise.tenant_key,
             identity_id: identity&.id,
@@ -57,7 +52,7 @@ module Integrations
           auth_info = params.to_unsafe_h.slice("union_id", "open_id", "name", "avatar_url")
           return nil if auth_info["union_id"].blank? && auth_info["open_id"].blank?
 
-          ::Feishu::UserProvisioningService.call(tenant:, auth_info:)
+          ::Feishu::UserProvisioningService.call(tenant: tenant, auth_info: auth_info)
         end
 
         def bind_session(identity)

@@ -4,3 +4,13 @@
 require_relative "config/application"
 
 Rails.application.load_tasks
+
+unless Rails.env.production?
+  require "rubocop/rake_task"
+  RuboCop::RakeTask.new
+
+  require "bundler/audit/task"
+  Bundler::Audit::Task.new
+
+  task default: %i[rubocop test bundle:audit:check]
+end

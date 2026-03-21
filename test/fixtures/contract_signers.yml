@@ -1,0 +1,29 @@
+acme_primary_signer:
+  contract: acme_contract
+  name: Alice Signer
+  email: alice.signer@example.com
+  role_name: signer
+  routing_order: 1
+  signing_type: signer
+  status: pending
+  metadata: {}
+
+acme_cc:
+  contract: acme_contract
+  name: Legal CC
+  email: legal.cc@example.com
+  role_name: cc
+  routing_order: 2
+  signing_type: carbon_copy
+  status: pending
+  metadata: {}
+
+beta_primary_signer:
+  contract: beta_contract
+  name: Bob Signer
+  email: bob.signer@example.com
+  role_name: signer
+  routing_order: 1
+  signing_type: signer
+  status: pending
+  metadata: {}

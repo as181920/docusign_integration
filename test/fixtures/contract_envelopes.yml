@@ -1,0 +1,7 @@
+acme_envelope:
+  contract: acme_contract
+  tenant_docusign_connection: acme_connection
+  envelope_id: env_acme_001
+  status: sent
+  sent_at: <%= 2.hours.ago %>
+  metadata: {}

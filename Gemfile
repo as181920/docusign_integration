@@ -48,12 +48,19 @@ gem "organization_auth", git: "git@gitlab.dd-life.com:shared/organization_auth.g
 gem "short_url", git: "git@gitlab.dd-life.com:common_utility/short_url.git", branch: "master"
 
 group :development, :test do
+  gem "mocha", require: false
+  gem "factory_bot_rails"
   gem "brakeman", require: false
   gem "debug", platforms: %i[mri windows], require: "debug/prelude"
   gem "rubocop-rails-omakase", require: false
 end
 
 group :development do
+  gem "guard"
+  gem "guard-bundler"
+  gem "guard-minitest"
+  gem "guard-rake"
+  gem "guard-rubocop"
   gem "bundler-audit", require: false
   gem "capistrano", require: false
   gem "capistrano3-puma", github: "seuros/capistrano-puma", require: false

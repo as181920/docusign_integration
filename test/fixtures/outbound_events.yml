@@ -1,0 +1,8 @@
+pending_contract_event:
+  tenant: acme
+  source_type: Contract
+  source_id: <%= ActiveRecord::FixtureSet.identify(:acme_contract) %>
+  event_name: contract.signed
+  payload: {}
+  status: pending
+  attempts: 0

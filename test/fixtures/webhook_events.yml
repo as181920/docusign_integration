@@ -1,0 +1,26 @@
+received_event:
+  tenant: acme
+  provider: docusign
+  delivery_id: delivery-received-001
+  event_type: envelope-completed
+  external_account_id: acct_acme
+  external_event_id: env_acme_001
+  status: received
+  processing_attempts: 0
+  received_at: <%= 5.minutes.ago %>
+  headers: {}
+  payload: {}
+
+processed_event:
+  tenant: acme
+  provider: docusign
+  delivery_id: delivery-processed-001
+  event_type: envelope-sent
+  external_account_id: acct_acme
+  external_event_id: env_acme_002
+  status: processed
+  processing_attempts: 1
+  received_at: <%= 1.hour.ago %>
+  processed_at: <%= 55.minutes.ago %>
+  headers: {}
+  payload: {}

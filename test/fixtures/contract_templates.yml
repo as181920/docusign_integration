@@ -1,0 +1,17 @@
+acme_template_v1:
+  tenant: acme
+  name: Master Service Agreement
+  version: 1
+  status: active
+  docusign_template_id: tpl_acme_v1
+  description: Standard MSA template
+  metadata: {}
+
+acme_template_v2:
+  tenant: acme
+  name: Master Service Agreement
+  version: 2
+  status: active
+  docusign_template_id: tpl_acme_v2
+  description: Standard MSA template v2
+  metadata: {}

@@ -1,0 +1,4 @@
+default_org:
+  uid: org_default
+  name: Default Organization
+  custom_settings: {}

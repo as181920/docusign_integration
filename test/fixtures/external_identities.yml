@@ -1,0 +1,23 @@
+acme_feishu_identity:
+  user: platform_alice
+  tenant: acme
+  tenant_user: alice
+  provider: feishu
+  provider_uid: union_acme_alice
+  union_id: union_acme_alice
+  open_id: open_acme_alice
+  name: Alice From Feishu
+  avatar_url: https://example.com/alice.png
+  metadata: {}
+
+beta_feishu_identity:
+  user: platform_bob
+  tenant: beta
+  tenant_user: bob
+  provider: feishu
+  provider_uid: union_beta_bob
+  union_id: union_beta_bob
+  open_id: open_beta_bob
+  name: Bob From Feishu
+  avatar_url: https://example.com/bob.png
+  metadata: {}

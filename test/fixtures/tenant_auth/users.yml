@@ -1,0 +1,11 @@
+alice:
+  tenant: acme
+  name: alice
+  password_digest: "$2a$12$19xQ.DvY1x7dZ4S3F4s7fO8ed4V8dQfHfJ4Jr2cK0R6M9hY5W6S8u"
+  root: false
+
+bob:
+  tenant: beta
+  name: bob
+  password_digest: "$2a$12$19xQ.DvY1x7dZ4S3F4s7fO8ed4V8dQfHfJ4Jr2cK0R6M9hY5W6S8u"
+  root: false

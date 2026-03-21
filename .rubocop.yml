@@ -48,3 +48,6 @@ Metrics/BlockLength:
     - "*.gemspec"
     - "config/routes.rb"
     - "Gemfile"
+
+Minitest/MultipleAssertions:
+  Max: 8

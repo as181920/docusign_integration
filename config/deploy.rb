@@ -2,7 +2,7 @@
 lock "~> 3.20.0"
 
 set :application, "docusign_integration"
-set :repo_url, "git@example.com:your-group/docusign-integration.git" # TODO: replace with real git repo
+set :repo_url, "git@gitlab.dd-life.com:customized_projects/docusign_integration.git"
 
 # Default branch is :main
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp

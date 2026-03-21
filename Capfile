@@ -13,11 +13,9 @@ require "capistrano/rvm"
 require "capistrano/bundler"
 require "capistrano/rails"
 
-# Puma + Nginx + Systemd
+# Puma + Systemd
 require "capistrano/puma"
-require "capistrano/puma/nginx"
 install_plugin Capistrano::Puma
-install_plugin Capistrano::Puma::Nginx
 install_plugin Capistrano::Puma::Systemd
 
 # Solid Queue systemd service

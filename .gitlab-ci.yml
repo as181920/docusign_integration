@@ -37,25 +37,25 @@ audit:
   script:
     - bin/rails bundle:audit:check
 
-deploy_local:
-  stage: deploy
-  environment:
-    name: local
-    url: https://docusign.code-li.com
-  only:
-    - main
-  script:
-    - bundle exec cap local deploy
-
-deploy_staging:
-  stage: deploy
-  environment:
-    name: staging
-    url: https://staging.docusign.code-li.com
-  only:
-    - main
-  script:
-    - bundle exec cap staging deploy
+# deploy_local:
+#   stage: deploy
+#   environment:
+#     name: local
+#     url: https://docusign.code-li.com
+#   only:
+#     - main
+#   script:
+#     - bundle exec cap local deploy
+#
+# deploy_staging:
+#   stage: deploy
+#   environment:
+#     name: staging
+#     url: https://staging.docusign.code-li.com
+#   only:
+#     - main
+#   script:
+#     - bundle exec cap staging deploy
 
 deploy_production:
   stage: deploy

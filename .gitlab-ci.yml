@@ -64,7 +64,7 @@ deploy_production:
     url: https://docusign.code-li.com
   only:
     - main
-  when: manual
+  # when: manual
   script:
     - bundle exec cap production deploy
 

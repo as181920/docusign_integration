@@ -1,0 +1,80 @@
+before_script:
+  - pwd
+  - rvm use || rvm install $(<.ruby-version)
+  - ruby -v
+  - bundle install -j $(nproc)
+  # - echo -e "machine gitlab.dd-life.com\nlogin ${CI_USER}\npassword ${CI_PAT}" > ~/.netrc
+  - git lfs install
+  - git lfs version
+
+stages:
+  - rubocop
+  - test
+  - audit
+  - deploy
+
+rubocop:
+  stage: rubocop
+  when: always
+  script:
+    - bin/rails rubocop
+
+test:
+  stage: test
+  only:
+    - main
+  script:
+    - bundle install -j $(nproc)
+    - ln -s /home/gitlab-runner/shared/configs/huawan/docusign-integration/database.yml ./config/database.yml
+    - ln -s /home/gitlab-runner/shared/configs/huawan/docusign-integration/local_env.yml ./config/local_env.yml
+    - bin/rails db:drop RAILS_ENV=test
+    - bin/rails db:create RAILS_ENV=test
+    - bin/rails db:migrate RAILS_ENV=test
+    - bin/rails test
+
+audit:
+  stage: audit
+  script:
+    - bin/rails bundle:audit:check
+
+deploy_local:
+  stage: deploy
+  environment:
+    name: local
+    url: https://docusign.code-li.com
+  only:
+    - main
+  script:
+    - bundle exec cap local deploy
+
+deploy_staging:
+  stage: deploy
+  environment:
+    name: staging
+    url: https://staging.docusign.code-li.com
+  only:
+    - main
+  script:
+    - bundle exec cap staging deploy
+
+deploy_production:
+  stage: deploy
+  environment:
+    name: production
+    url: https://docusign.code-li.com
+  only:
+    - main
+  when: manual
+  script:
+    - bundle exec cap production deploy
+
+restart_production:
+  stage: deploy
+  environment:
+    name: production
+    url: https://docusign.code-li.com
+  only:
+    - main
+  when: manual
+  script:
+    - bundle exec cap production puma:smart_restart

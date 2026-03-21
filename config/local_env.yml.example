@@ -1,0 +1,55 @@
+default: &default
+  remote_ip_whitelist: "127.0.0.1"
+  active_storage_service: "local" # local | amazon
+  app_allow_hosts: ""
+  app_frontend_base_url: "http://localhost:3026"
+  app_backend_base_url: "http://localhost:3026"
+
+  basic_auth_username: "basic_auth_username"
+  basic_auth_password: "basic_auth_password"
+
+  default_mail_sender: "noreply@example.com"
+  action_mailer_smtp_address: "smtp.example.com"
+  action_mailer_smtp_port: 25
+  action_mailer_smtp_domain: "example.com"
+  action_mailer_smtp_user_name: "user@example.com"
+  action_mailer_smtp_password: "password"
+
+  app_default_organization_name: "DocuSignIntegration"
+
+  # Feishu (ISV)
+  feishu_app_id: ""
+  feishu_app_secret: ""
+  feishu_app_verification_token: ""
+  feishu_app_encrypt_key: ""
+
+  # DocuSign OAuth (tenant self-connected)
+  docusign_integration_key: ""
+  docusign_client_secret: ""
+  docusign_account_id: ""
+  docusign_base_uri: "https://demo.docusign.net/restapi"
+  docusign_oauth_base_uri: "https://account-d.docusign.com"
+  docusign_oauth_redirect_uri: "http://localhost:3026/integrations/docusign/oauth/callback"
+  docusign_connect_hmac_secret: ""
+
+  # Optional JWT mode (reserved)
+  docusign_user_id: ""
+  docusign_private_key: ""
+
+  # Existing engines reserved keys
+  wechat_oauth_third_party_platform_uid: ""
+  wechat_oauth_official_account_app_id: ""
+  wechat_oauth_official_account_original_id: ""
+  wechat_open_platform_default_message_handler: "user_auth/wechat_user_message_service"
+  wechat_work_platform_suite_uid: ""
+  wechat_work_platform_additional_event_handler: "tenant_biz/wechat_work_platform_additional_event_handler"
+  user_account_withdraw_wxpay_mch_id: ""
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default

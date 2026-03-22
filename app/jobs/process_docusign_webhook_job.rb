@@ -19,6 +19,16 @@ class ProcessDocusignWebhookJob < ApplicationJob
 
     Rails.logger.info("[DocusignWebhook] payload=#{webhook_event.payload.to_json}")
 
+    envelope = Docusign::WebhookStatusMapper.call(webhook_event: webhook_event)
+    if envelope.present?
+      Rails.logger.info(
+        "[DocusignWebhook] state_updated webhook_event_id=#{webhook_event.id} envelope_id=#{envelope.envelope_id} " \
+        "envelope_status=#{envelope.status} contract_id=#{envelope.contract_id} contract_status=#{envelope.contract.status}"
+      )
+    else
+      Rails.logger.info("[DocusignWebhook] state_skipped webhook_event_id=#{webhook_event.id} reason=no_matching_envelope_or_status")
+    end
+
     webhook_event.update!(status: :processed, processed_at: Time.current)
   rescue StandardError => e
     webhook_event&.update_columns(status: "failed", last_error: "#{e.class}: #{e.message}")

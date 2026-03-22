@@ -116,10 +116,12 @@ en:
       notices:
         created: "Contract template created"
         updated: "Contract template updated"
+        synced: "Templates synced: total %{total_count}, created %{created_count}, updated %{updated_count}, skipped %{skipped_count}"
       index:
         page_title: "Contract Templates"
         title: "Template List"
         new_button: "New Template"
+        sync_button: "Sync Templates"
         keyword_placeholder: "Template name / DocuSign Template ID"
         empty: "No templates yet."
         columns:

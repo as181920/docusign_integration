@@ -1,43 +1,44 @@
-<% content_for :title, t('tenant.contract_templates.index.page_title') %>
-<%= render 'tenant/shared/layout_slots' %>
+<% content_for :title, t("tenant.contract_templates.index.page_title") %>
+<%= render "tenant/shared/layout_slots" %>
 
 <div class="w-100 px-4 py-3">
   <div class="card w-100">
     <div class="card-body w-100">
       <div class="d-flex align-items-center mb-3">
-        <h1 class="h5 my-0"><%= t('tenant.contract_templates.index.title') %></h1>
+        <h1 class="h5 my-0"><%= t("tenant.contract_templates.index.title") %></h1>
       </div>
 
-      <%= search_form_for @q, url: tenant_contract_templates_path(tenant_uid: current_tenant.uid), class: 'form d-flex flex-wrap align-items-end gap-2 mb-3' do |form| %>
+      <%= search_form_for @q, url: tenant_contract_templates_path(tenant_uid: current_tenant.uid), class: "form d-flex flex-wrap align-items-end gap-2 mb-3" do |form| %>
         <div>
-          <%= form.label :name_or_docusign_template_id_cont, t('tenant.common.keyword'), class: 'form-label' %>
-          <%= form.search_field :name_or_docusign_template_id_cont, class: 'form-control', placeholder: t('tenant.contract_templates.index.keyword_placeholder') %>
+          <%= form.label :name_or_docusign_template_id_cont, t("tenant.common.keyword"), class: "form-label" %>
+          <%= form.search_field :name_or_docusign_template_id_cont, class: "form-control", placeholder: t("tenant.contract_templates.index.keyword_placeholder") %>
         </div>
 
         <div>
-          <%= form.label :status_eq, t('tenant.common.status'), class: 'form-label' %>
+          <%= form.label :status_eq, t("tenant.common.status"), class: "form-label" %>
           <%= form.select :status_eq,
-            options_for_select([[t('tenant.common.all'), '']] + ContractTemplate.statuses.keys.map { |value| [t("tenant.contract_templates.statuses.#{value}", default: value), value] }, params.dig(:q, :status_eq)),
+            options_for_select([[t("tenant.common.all"), ""]] + ContractTemplate.statuses.keys.map { |value| [t("tenant.contract_templates.statuses.#{value}", default: value), value] }, params.dig(:q, :status_eq)),
             {},
-            class: 'form-control' %>
+            class: "form-control" %>
         </div>
 
         <div>
-          <%= label_tag :per, t('tenant.common.per_page'), class: 'form-label' %>
+          <%= label_tag :per, t("tenant.common.per_page"), class: "form-label" %>
           <%= select_tag :per,
             options_for_select([[10, 10], [20, 20], [50, 50]], params[:per].presence || 10),
-            class: 'form-control' %>
+            class: "form-control" %>
         </div>
 
-        <%= form.button class: 'btn btn-primary' do %>
-          <%= tag.span class: 'loading-spinner' %>
-          <%= tag.span t('tenant.common.filter') %>
+        <%= form.button class: "btn btn-primary" do %>
+          <%= tag.span class: "loading-spinner" %>
+          <%= tag.span t("tenant.common.filter") %>
         <% end %>
 
-        <%= link_to t('tenant.common.reset'), tenant_contract_templates_path(tenant_uid: current_tenant.uid), class: 'btn btn-secondary' %>
+        <%= link_to t("tenant.common.reset"), tenant_contract_templates_path(tenant_uid: current_tenant.uid), class: "btn btn-secondary" %>
 
-        <div class="ms-auto">
-          <%= link_to t('tenant.contract_templates.index.new_button'), new_tenant_contract_template_path(tenant_uid: current_tenant.uid), class: 'btn btn-primary' %>
+        <div class="ms-auto d-inline-flex gap-2">
+          <%= link_to t("tenant.contract_templates.index.sync_button"), tenant_docusign_template_sync_path(tenant_uid: current_tenant.uid), data: { turbo_method: :post }, class: "btn btn-secondary" %>
+          <%= link_to t("tenant.contract_templates.index.new_button"), new_tenant_contract_template_path(tenant_uid: current_tenant.uid), class: "btn btn-primary" %>
         </div>
       <% end %>
 
@@ -46,11 +47,11 @@
           <table class="table w-100 table-hover align-middle">
             <thead>
               <tr>
-                <th class="text-align-center align-middle"><%= t('tenant.contract_templates.index.columns.name') %></th>
-                <th class="text-align-center align-middle"><%= t('tenant.contract_templates.index.columns.version') %></th>
-                <th class="text-align-center align-middle"><%= t('tenant.contract_templates.index.columns.status') %></th>
-                <th class="text-align-center align-middle"><%= t('tenant.contract_templates.index.columns.docusign_template_id') %></th>
-                <th class="text-align-center align-middle"><%= t('tenant.contract_templates.index.columns.actions') %></th>
+                <th class="text-align-center align-middle"><%= t("tenant.contract_templates.index.columns.name") %></th>
+                <th class="text-align-center align-middle"><%= t("tenant.contract_templates.index.columns.version") %></th>
+                <th class="text-align-center align-middle"><%= t("tenant.contract_templates.index.columns.status") %></th>
+                <th class="text-align-center align-middle"><%= t("tenant.contract_templates.index.columns.docusign_template_id") %></th>
+                <th class="text-align-center align-middle"><%= t("tenant.contract_templates.index.columns.actions") %></th>
               </tr>
             </thead>
             <tbody>
@@ -59,11 +60,11 @@
                   <td class="align-middle"><%= template.name %></td>
                   <td class="align-middle">v<%= template.version %></td>
                   <td class="align-middle"><%= t("tenant.contract_templates.statuses.#{template.status}", default: template.status) %></td>
-                  <td class="align-middle"><%= template.docusign_template_id.presence || t('tenant.common.empty') %></td>
+                  <td class="align-middle"><%= template.docusign_template_id.presence || t("tenant.common.empty") %></td>
                   <td class="align-middle">
                     <div class="d-inline-flex gap-2">
-                      <%= link_to t('tenant.common.view'), tenant_contract_template_path(tenant_uid: current_tenant.uid, id: template.id), class: 'btn btn-sm btn-outline-secondary mb-0' %>
-                      <%= link_to t('tenant.common.edit'), edit_tenant_contract_template_path(tenant_uid: current_tenant.uid, id: template.id), class: 'btn btn-sm btn-outline-secondary mb-0' %>
+                      <%= link_to t("tenant.common.view"), tenant_contract_template_path(tenant_uid: current_tenant.uid, id: template.id), class: "btn btn-sm btn-outline-secondary mb-0" %>
+                      <%= link_to t("tenant.common.edit"), edit_tenant_contract_template_path(tenant_uid: current_tenant.uid, id: template.id), class: "btn btn-sm btn-outline-secondary mb-0" %>
                     </div>
                   </td>
                 </tr>
@@ -78,7 +79,7 @@
           </div>
         <% end %>
       <% else %>
-        <div class="text-secondary"><%= t('tenant.contract_templates.index.empty') %></div>
+        <div class="text-secondary"><%= t("tenant.contract_templates.index.empty") %></div>
       <% end %>
     </div>
   </div>

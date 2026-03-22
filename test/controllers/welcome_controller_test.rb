@@ -7,7 +7,12 @@ class WelcomeControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "h1", text: "合同管理中台"
     assert_select "a", text: "企业登录"
+  end
 
+  test "root includes tenant-aware sign in url params" do
+    get root_path
+
+    assert_response :success
     assert_includes response.body, "/tenant_auth/iam/sign_in"
     assert_includes response.body, "tenant_uid=demo"
     assert_includes response.body, "redirect_url=%2Ft%2Fdemo%2Fdashboard"

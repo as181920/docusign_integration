@@ -116,10 +116,12 @@ zh-CN:
       notices:
         created: "合同模板已创建"
         updated: "合同模板已更新"
+        synced: "模板同步完成：共 %{total_count} 条，新建 %{created_count} 条，更新 %{updated_count} 条，跳过 %{skipped_count} 条"
       index:
         page_title: "合同模板"
         title: "模板列表"
         new_button: "新建模板"
+        sync_button: "同步模板"
         keyword_placeholder: "模板名称 / DocuSign Template ID"
         empty: "暂无模板，请先创建模板。"
         columns:

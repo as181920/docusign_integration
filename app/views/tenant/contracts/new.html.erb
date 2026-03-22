@@ -1,21 +1,21 @@
-<% content_for :title, t('tenant.contracts.new.page_title') %>
-<%= render 'tenant/shared/layout_slots' %>
+<% content_for :title, t("tenant.contracts.new.page_title") %>
+<%= render "tenant/shared/layout_slots" %>
 
 <div class="container-fluid px-4 py-3">
   <div class="card">
     <div class="card-body">
       <div class="d-flex justify-content-space-between align-items-center mb-3">
-        <h1 class="h5 my-0"><%= t('tenant.contracts.new.title') %></h1>
-        <%= link_to t('tenant.contracts.new.back'), tenant_contracts_path(tenant_uid: current_tenant.uid), class: 'btn btn-sm btn-secondary mb-0' %>
+        <h1 class="h5 my-0"><%= t("tenant.contracts.new.title") %></h1>
+        <%= link_to t("tenant.contracts.new.back"), tenant_contracts_path(tenant_uid: current_tenant.uid), class: "btn btn-sm btn-secondary mb-0" %>
       </div>
 
-      <%= render 'form',
+      <%= render "form",
         contract: @contract,
         contract_templates: @contract_templates,
         selected_template_id: params.dig(:contract, :contract_template_id),
         url: tenant_contracts_path(tenant_uid: current_tenant.uid),
         method: :post,
-        submit_text: t('tenant.contracts.new.submit') %>
+        submit_text: t("tenant.contracts.new.submit") %>
     </div>
   </div>
 </div>

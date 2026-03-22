@@ -75,6 +75,24 @@ class TenantDocusignConnectionsControllerTest < ActionDispatch::IntegrationTest
     assert_no_match("已生成 DocuSign 授权地址", response.body)
     assert_match(/<input[^>]*type="checkbox"[^>]*name="scopes\[\]"[^>]*value="signature"[^>]*checked="checked"/, response.body)
     assert_match(/<input[^>]*type="checkbox"[^>]*name="scopes\[\]"[^>]*value="impersonation"[^>]*checked="checked"/, response.body)
+  end
+
+  test "authorize_url html does not render merged scope checkbox value" do
+    sign_in_tenant_user(tenant_uid: @acme_tenant.uid, name: @acme_user.name)
+
+    fake_client = Class.new do
+      def authorization_url(state:, scope:)
+        "https://account.example.com/oauth/auth?state=#{state}&scope=#{scope}"
+      end
+    end.new
+
+    Docusign::OauthClient.stubs(:new).returns(fake_client)
+
+    post "/t/acme/docusign_connection/oauth_authorization", params: {
+      scopes: ["signature", "impersonation"]
+    }
+
+    assert_response :success
     assert_no_match(/<input[^>]*type="checkbox"[^>]*value="signature impersonation"/, response.body)
   end
 

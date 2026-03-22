@@ -25,6 +25,16 @@ class TenantDashboardsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a", text: "DocuSign 连接"
     assert_select "a", text: "合同模板"
     assert_select "a", text: "合同列表"
+  end
+
+  test "show renders dashboard integration navigation" do
+    tenant = create(:tenant, :acme)
+    user = create(:tenant_user, :alice, tenant: tenant)
+    sign_in_tenant_user(tenant_uid: tenant.uid, name: user.name)
+
+    get "/t/acme/dashboard"
+
+    assert_response :success
     assert_select "a", text: "Webhook 事件"
     assert_select "a", text: "平台集成"
     assert_select "a", text: "飞书配置说明"

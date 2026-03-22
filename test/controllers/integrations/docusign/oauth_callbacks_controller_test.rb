@@ -43,7 +43,18 @@ class IntegrationsDocusignOauthCallbacksControllerTest < ActionDispatch::Integra
     assert_includes response.body, "DocuSign"
     assert_includes response.body, @tenant.uid
     assert_includes response.body, "/after-connect"
+  end
 
+  test "persists connection tokens on oauth success" do
+    state = Docusign::OauthState.generate(tenant_uid: @tenant.uid, return_to: "/after-connect")
+
+    Docusign::OauthClient.stubs(:new).returns(fake_oauth_client)
+    get "/integrations/docusign/oauth/callback", params: {
+      state: state,
+      code: "oauth-code"
+    }
+
+    assert_response :success
     @connection.reload
 
     assert_equal "access_new", @connection.access_token

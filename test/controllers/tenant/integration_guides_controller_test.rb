@@ -15,6 +15,12 @@ class TenantIntegrationGuidesControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "/integrations/feishu/callback"
     assert_includes response.body, "/integrations/feishu/events"
     assert_includes response.body, "tenant_uid"
+  end
+
+  test "feishu guide hides internal config keys and shows system entry" do
+    get "/t/acme/integration_guides/feishu"
+
+    assert_response :success
     refute_includes response.body, "feishu_app_id"
     assert_includes response.body, "/t/acme/dashboard"
   end

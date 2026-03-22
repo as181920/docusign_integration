@@ -50,4 +50,4 @@ Metrics/BlockLength:
     - "Gemfile"
 
 Minitest/MultipleAssertions:
-  Max: 8
+  Max: 5

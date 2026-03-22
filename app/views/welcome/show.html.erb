@@ -1,11 +1,11 @@
-<% content_for :title, t('welcome.show.page_title') %>
+<% content_for :title, t("welcome.show.page_title") %>
 
 <style>
   .welcome-page {
     min-height: 100vh;
     display: flex;
     align-items: center;
-    background: url(<%= image_path('easy_style/gray_bg.png') %>) 0 0 repeat;
+    background: url(<%= image_path("easy_style/gray_bg.png") %>) 0 0 repeat;
     padding: 1rem;
   }
 
@@ -160,23 +160,23 @@
   <div class="welcome-shell">
     <section class="card welcome-hero">
       <div class="hero-body">
-        <div class="welcome-kicker text-white"><%= t('welcome.show.kicker') %></div>
-        <h1><%= t('welcome.show.title') %></h1>
-        <p><%= t('welcome.show.description') %></p>
+        <div class="welcome-kicker text-white"><%= t("welcome.show.kicker") %></div>
+        <h1><%= t("welcome.show.title") %></h1>
+        <p><%= t("welcome.show.description") %></p>
 
         <div class="welcome-actions">
           <% if @signed_in_tenant_user.present? %>
-            <%= link_to t('welcome.show.enter_console'), tenant_dashboard_path(tenant_uid: @dashboard_tenant_uid), class: 'btn btn-primary' %>
+            <%= link_to t("welcome.show.enter_console"), tenant_dashboard_path(tenant_uid: @dashboard_tenant_uid), class: "btn btn-primary" %>
           <% else %>
-            <%= link_to t('welcome.show.sign_in'), tenant_auth.iam_sign_in_path(tenant_uid: @demo_tenant_uid, redirect_url: tenant_dashboard_path(tenant_uid: @demo_tenant_uid)), class: 'btn btn-primary' %>
+            <%= link_to t("welcome.show.sign_in"), tenant_auth.iam_sign_in_path(tenant_uid: @demo_tenant_uid, redirect_url: tenant_dashboard_path(tenant_uid: @demo_tenant_uid)), class: "btn btn-primary" %>
           <% end %>
         </div>
       </div>
     </section>
 
     <section class="welcome-demo">
-      <div><strong><%= t('welcome.show.demo_account_label') %></strong><code><%= @demo_tenant_uid %></code></div>
-      <div><strong><%= t('welcome.show.demo_credential_label') %></strong><code>demo</code> / <code>password</code></div>
+      <div><strong><%= t("welcome.show.demo_account_label") %></strong><code><%= @demo_tenant_uid %></code></div>
+      <div><strong><%= t("welcome.show.demo_credential_label") %></strong><code>demo</code> / <code>password</code></div>
     </section>
   </div>
 </main>

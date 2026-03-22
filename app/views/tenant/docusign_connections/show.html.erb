@@ -1,0 +1,174 @@
+<% content_for :title, t("tenant.docusign_connections.show.page_title") %>
+<%= render "tenant/shared/layout_slots" %>
+
+<% connection_path = tenant_docusign_connection_path(tenant_uid: current_tenant.uid) %>
+<% form_method = @connection_form.persisted? ? :patch : :post %>
+<% base_uri_label = t("tenant.docusign_connections.base_uri", default: "DocuSign Base URI") %>
+<% oauth_scope_label = t("tenant.docusign_connections.oauth_scope_label", default: "OAuth Scope") %>
+<% connection_status = @connection&.status.presence || "unconnected" %>
+<% status_label = t("tenant.docusign_connections.statuses.#{connection_status}", default: connection_status) %>
+<% status_display = @connection.present? ? "#{status_label} (#{connection_status})" : status_label %>
+
+<div class="container-fluid px-4 py-3">
+  <div class="card mb-3">
+    <div class="card-body">
+      <h1 class="h5 mb-1"><%= t("tenant.docusign_connections.show.title") %></h1>
+      <p class="text-secondary mb-0"><%= t("tenant.docusign_connections.show.description") %></p>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-12 col-xxl-8">
+      <div class="card h-100">
+        <div class="card-body">
+          <% if @connection_readonly %>
+            <div class="d-flex justify-content-space-between align-items-center mb-3">
+              <h2 class="h6 my-0"><%= t("tenant.docusign_connections.show.summary_title") %></h2>
+              <%= link_to(@connection.present? ? t("tenant.docusign_connections.show.edit_button") : t("tenant.docusign_connections.show.new_button"), tenant_docusign_connection_path(tenant_uid: current_tenant.uid, editing: true), class: "btn btn-primary btn-sm my-0") %>
+            </div>
+
+            <dl class="row mb-0">
+              <dt class="col-4 text-secondary"><%= t("tenant.docusign_connections.show.fields.account_id") %></dt>
+              <dd class="col-8 text-break"><%= @connection&.docusign_account_id.presence || t("tenant.common.empty") %></dd>
+
+              <dt class="col-4 text-secondary"><%= base_uri_label %></dt>
+              <dd class="col-8 text-break"><%= @connection&.docusign_base_uri.presence || t("tenant.common.empty") %></dd>
+
+              <dt class="col-4 text-secondary"><%= oauth_scope_label %></dt>
+              <dd class="col-8 text-break">
+                <% (@connection&.oauth_scope.presence || "signature").to_s.split(/[\s,]+/).reject(&:blank?).each do |scope_value| %>
+                  <span class="badge bg-info me-1 mb-1"><%= t("tenant.docusign_connections.oauth_scope_options.#{scope_value}", default: scope_value) %></span>
+                <% end %>
+              </dd>
+
+              <dt class="col-4 text-secondary"><%= t("tenant.docusign_connections.show.fields.status") %></dt>
+              <dd class="col-8"><%= status_display %></dd>
+
+              <dt class="col-4 text-secondary"><%= t("tenant.docusign_connections.show.fields.updated_at") %></dt>
+              <dd class="col-8"><%= @connection&.updated_at ? l(@connection.updated_at, format: :long) : t("tenant.common.empty") %></dd>
+            </dl>
+          <% else %>
+            <div class="d-flex justify-content-space-between align-items-center mb-3">
+              <h2 class="h6 my-0"><%= @connection_form.persisted? ? t("tenant.docusign_connections.show.edit_form_title") : t("tenant.docusign_connections.show.new_form_title") %></h2>
+              <% if @connection_form.persisted? %>
+                <%= link_to t("tenant.common.cancel"), tenant_docusign_connection_path(tenant_uid: current_tenant.uid), class: "btn btn-outline-secondary btn-sm my-0" %>
+              <% end %>
+            </div>
+
+            <%= form_with scope: :tenant_docusign_connection, url: connection_path, method: form_method, class: "form" do |f| %>
+              <div class="form-field">
+                <div class="d-inline-block min-w-12">
+                  <%= f.label :docusign_account_id, t("tenant.docusign_connections.show.fields.account_id"), class: "form-label" %>
+                </div>
+                <div class="flex-1 min-w-16">
+                  <%= f.text_field :docusign_account_id,
+                    value: @connection_form.docusign_account_id,
+                    class: "form-control w-100",
+                    required: true,
+                    placeholder: t("tenant.docusign_connections.show.account_id_placeholder") %>
+                </div>
+              </div>
+
+              <div class="form-field">
+                <div class="d-inline-block min-w-12">
+                  <%= f.label :docusign_base_uri, base_uri_label, class: "form-label" %>
+                </div>
+                <div class="flex-1 min-w-16">
+                  <%= f.text_field :docusign_base_uri,
+                    value: @connection_form.docusign_base_uri,
+                    class: "form-control w-100",
+                    placeholder: "https://demo.docusign.net/restapi" %>
+                </div>
+              </div>
+
+              <div class="form-field align-items-start">
+                <div class="d-inline-block min-w-12">
+                  <%= label_tag nil, oauth_scope_label, class: "form-label" %>
+                </div>
+                <div class="flex-1 min-w-16">
+                  <%= hidden_field_tag "tenant_docusign_connection[oauth_scopes][]", "" %>
+                  <% @oauth_scope_options.each do |scope_option| %>
+                    <label class="d-flex align-items-center mb-2">
+                      <%= check_box_tag "tenant_docusign_connection[oauth_scopes][]",
+                        scope_option,
+                        @selected_oauth_scopes.include?(scope_option),
+                        class: "me-2" %>
+                      <span><%= t("tenant.docusign_connections.oauth_scope_options.#{scope_option}", default: scope_option) %></span>
+                    </label>
+                  <% end %>
+                  <p class="text-secondary small mb-0"><%= t("tenant.docusign_connections.oauth_scope_hint") %></p>
+                </div>
+              </div>
+
+              <div class="form-field">
+                <div class="d-inline-block min-w-12">
+                  <%= f.label :status, t("tenant.docusign_connections.show.fields.status"), class: "form-label" %>
+                </div>
+                <div class="flex-1 min-w-16">
+                  <%= f.select :status,
+                    options_for_select(TenantDocusignConnection.statuses.keys.map { |value| [t("tenant.docusign_connections.statuses.#{value}", default: value), value] }, @connection_form.status || "active"),
+                    {},
+                    class: "form-control w-100" %>
+                </div>
+              </div>
+
+              <div class="form-field align-items-center mb-0">
+                <div class="d-inline-block min-w-12"></div>
+                <%= f.submit(@connection_form.persisted? ? t("tenant.docusign_connections.show.save_button") : t("tenant.docusign_connections.show.create_button"), class: "btn btn-primary") %>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <%= turbo_frame_tag "docusign_oauth_panel", class: "col-12 col-xxl-4" do %>
+      <div class="card">
+        <div class="card-body">
+          <h2 class="h6 mb-2"><%= t("tenant.docusign_connections.show.oauth_title") %></h2>
+          <p class="text-secondary small mb-3"><%= t("tenant.docusign_connections.show.oauth_description") %></p>
+
+          <%= form_with url: tenant_docusign_connection_oauth_authorization_path(tenant_uid: current_tenant.uid), method: :post do %>
+            <%= hidden_field_tag "scopes[]", "" %>
+
+            <div class="mb-3">
+              <label class="form-label"><%= oauth_scope_label %></label>
+              <% @oauth_scope_options.each do |scope_option| %>
+                <label class="d-flex align-items-center mb-2">
+                  <%= check_box_tag "scopes[]",
+                    scope_option,
+                    @selected_oauth_scopes.include?(scope_option),
+                    class: "me-2" %>
+                  <span><%= t("tenant.docusign_connections.oauth_scope_options.#{scope_option}", default: scope_option) %></span>
+                </label>
+              <% end %>
+            </div>
+
+            <%= button_tag type: :submit, class: "btn btn-primary w-100" do %>
+              <%= tag.span class: "loading-spinner" %>
+              <%= tag.span t("tenant.docusign_connections.show.generate_authorize_url") %>
+            <% end %>
+          <% end %>
+
+          <% if @authorize_url.present? %>
+            <hr>
+            <div data-controller="clipboard">
+              <label class="form-label"><%= t("tenant.docusign_connections.show.authorize_url") %></label>
+              <div class="d-inline-flex align-items-start flex-wrap">
+                <span class="text-muted text-wrap text-break" data-clipboard-target="source"><%= @authorize_url %></span>
+                <%= inline_svg_tag "easy_style/icon_copy.svg",
+                  data: { clipboard_target: "copy", action: "click->clipboard#copy" },
+                  class: "ms-2 text-secondary" %>
+                <%= inline_svg_tag "easy_style/icon_check.svg",
+                  data: { clipboard_target: "copied" },
+                  class: "ms-2 text-secondary d-none" %>
+              </div>
+            </div>
+
+            <%= link_to t("tenant.docusign_connections.show.open_authorize_page"), @authorize_url, target: "_blank", rel: "noopener", class: "btn btn-primary btn-sm mt-2" %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

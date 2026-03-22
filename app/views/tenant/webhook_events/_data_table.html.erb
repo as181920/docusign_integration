@@ -1,0 +1,47 @@
+<div data-controller="table-responsive" class="table-responsive w-100">
+  <table data-table-responsive-target="table" class="table table-hover align-middle w-100" style="min-width: 100%;">
+    <thead>
+      <tr>
+        <th class="text-align-center"><%= t("tenant.webhook_events.index.columns.received_at") %></th>
+        <th class="text-align-center"><%= t("tenant.webhook_events.index.columns.event_type") %></th>
+        <th class="text-align-center"><%= t("tenant.webhook_events.index.columns.delivery_id") %></th>
+        <th class="text-align-center"><%= t("tenant.webhook_events.index.columns.envelope_id") %></th>
+        <th class="text-align-center"><%= t("tenant.webhook_events.index.columns.status") %></th>
+        <th class="text-align-center"><%= t("tenant.webhook_events.index.columns.processing_attempts") %></th>
+        <th class="text-align-center"><%= t("tenant.webhook_events.index.columns.processed_at") %></th>
+        <th class="text-align-center"></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% webhook_events.each do |webhook_event| %>
+        <% status_badge_class = case webhook_event.status
+        when "processed" then "bg-info"
+        when "processing" then "bg-warning text-dark"
+        when "failed" then "bg-danger"
+        else "bg-secondary"
+        end %>
+        <% status_label = t("tenant.webhook_events.statuses.#{webhook_event.status}", default: webhook_event.status) %>
+
+        <tr class="text-align-center">
+          <td><%= l(webhook_event.received_at || webhook_event.created_at, format: :long) %></td>
+          <td><%= webhook_event.event_type.presence || t("tenant.common.empty") %></td>
+          <td class="text-break"><%= webhook_event.delivery_id %></td>
+          <td class="text-break"><%= webhook_event.external_event_id.presence || t("tenant.common.empty") %></td>
+          <td><span class="badge <%= status_badge_class %>"><%= status_label %></span></td>
+          <td><%= webhook_event.processing_attempts %></td>
+          <td><%= webhook_event.processed_at ? l(webhook_event.processed_at, format: :long) : t("tenant.common.empty") %></td>
+          <td>
+            <%= link_to t("tenant.common.detail"), tenant_webhook_event_path(tenant_uid: current_tenant.uid, id: webhook_event.id), class: "btn btn-sm btn-outline-secondary mb-0" %>
+          </td>
+        </tr>
+      <% end %>
+
+      <% if webhook_events.blank? %>
+        <tr class="text-align-center">
+          <td colspan="8" class="py-3 text-secondary"><%= t("tenant.webhook_events.index.empty") %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

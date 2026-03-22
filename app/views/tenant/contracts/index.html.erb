@@ -1,0 +1,88 @@
+<% content_for :title, t('tenant.contracts.index.page_title') %>
+<%= render 'tenant/shared/layout_slots' %>
+
+<div class="w-100 px-4 py-3">
+  <div class="card w-100">
+    <div class="card-body w-100">
+      <div class="d-flex align-items-center mb-3">
+        <h1 class="h5 my-0"><%= t('tenant.contracts.index.title') %></h1>
+      </div>
+
+      <%= search_form_for @q, url: tenant_contracts_path(tenant_uid: current_tenant.uid), class: 'form d-flex flex-wrap align-items-end gap-2 mb-3' do |form| %>
+        <div>
+          <%= form.label :title_or_contract_no_cont, t('tenant.common.keyword'), class: 'form-label' %>
+          <%= form.search_field :title_or_contract_no_cont, class: 'form-control', placeholder: t('tenant.contracts.index.keyword_placeholder') %>
+        </div>
+
+        <div>
+          <%= form.label :status_eq, t('tenant.common.status'), class: 'form-label' %>
+          <%= form.select :status_eq,
+            options_for_select([[t('tenant.common.all'), '']] + Contract.statuses.keys.map { |value| [t("tenant.contracts.statuses.#{value}", default: value), value] }, params.dig(:q, :status_eq)),
+            {},
+            class: 'form-control' %>
+        </div>
+
+        <div>
+          <%= form.label :source_cont, t('tenant.contracts.index.source'), class: 'form-label' %>
+          <%= form.search_field :source_cont, class: 'form-control', placeholder: 'manual' %>
+        </div>
+
+        <div>
+          <%= label_tag :per, t('tenant.common.per_page'), class: 'form-label' %>
+          <%= select_tag :per,
+            options_for_select([[10, 10], [20, 20], [50, 50]], params[:per].presence || 10),
+            class: 'form-control' %>
+        </div>
+
+        <%= form.button class: 'btn btn-primary' do %>
+          <%= tag.span class: 'loading-spinner' %>
+          <%= tag.span t('tenant.common.filter') %>
+        <% end %>
+
+        <%= link_to t('tenant.common.reset'), tenant_contracts_path(tenant_uid: current_tenant.uid), class: 'btn btn-secondary' %>
+
+        <div class="ms-auto">
+          <%= link_to t('tenant.contracts.index.new_button'), new_tenant_contract_path(tenant_uid: current_tenant.uid), class: 'btn btn-primary' %>
+        </div>
+      <% end %>
+
+      <% if @contracts.any? %>
+        <div class="table-responsive w-100">
+          <table class="table w-100 table-hover align-middle">
+            <thead>
+              <tr>
+                <th class="text-align-center align-middle"><%= t('tenant.contracts.index.columns.title') %></th>
+                <th class="text-align-center align-middle"><%= t('tenant.contracts.index.columns.contract_no') %></th>
+                <th class="text-align-center align-middle"><%= t('tenant.contracts.index.columns.status') %></th>
+                <th class="text-align-center align-middle"><%= t('tenant.contracts.index.columns.envelope') %></th>
+                <th class="text-align-center align-middle"><%= t('tenant.contracts.index.columns.actions') %></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @contracts.each do |contract| %>
+                <% envelope_status_key = contract.contract_envelope&.status.to_s %>
+                <tr class="text-align-center">
+                  <td class="align-middle"><%= contract.title %></td>
+                  <td class="align-middle"><%= contract.contract_no %></td>
+                  <td class="align-middle"><%= t("tenant.contracts.statuses.#{contract.status}", default: contract.status) %></td>
+                  <td class="align-middle"><%= envelope_status_key.present? ? t("tenant.contracts.envelope_statuses.#{envelope_status_key}", default: envelope_status_key) : t('tenant.common.empty') %></td>
+                  <td class="align-middle">
+                    <%= link_to t('tenant.contracts.index.view_button'), tenant_contract_path(tenant_uid: current_tenant.uid, id: contract.id), class: 'btn btn-sm btn-outline-secondary mb-0' %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+
+        <% if @contracts.total_pages > 1 %>
+          <div class="d-flex justify-content-end mt-3">
+            <%= paginate @contracts %>
+          </div>
+        <% end %>
+      <% else %>
+        <p class="text-secondary mb-0"><%= t('tenant.contracts.index.empty') %></p>
+      <% end %>
+    </div>
+  </div>
+</div>

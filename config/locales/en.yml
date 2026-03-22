@@ -1,31 +1,365 @@
-# Files in the config/locales directory are used for internationalization and
-# are automatically loaded by Rails. If you want to use locales other than
-# English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t "hello"
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t("hello") %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# To learn more about the API, please read the Rails Internationalization guide
-# at https://guides.rubyonrails.org/i18n.html.
-#
-# Be aware that YAML interprets the following case-insensitive strings as
-# booleans: `true`, `false`, `on`, `off`, `yes`, `no`. Therefore, these strings
-# must be quoted to be interpreted as strings. For example:
-#
-#     en:
-#       "yes": yup
-#       enabled: "ON"
-
 en:
   hello: "Hello world"
+  errors:
+    forbidden: "forbidden"
+    unauthorized: "unauthorized"
+
+  shared:
+    header:
+      fallback_tenant_name: "Enterprise Console"
+      dashboard: "Enterprise Console"
+      anonymous_user: "Guest"
+      personal_settings: "Personal Settings"
+      profile: "Profile"
+      sign_out: "Sign out"
+    sidebar:
+      fallback_tenant_name: "Enterprise Console"
+      dashboard: "Dashboard"
+      main_menu: "Main Menu"
+      docusign_group: "DocuSign Workspace"
+      docusign_connection: "DocuSign Connection"
+      contract_templates: "Contract Templates"
+      contracts: "Contracts"
+      webhook_events: "Webhook Events"
+      integrations_group: "Platform Integrations"
+      feishu_guide: "Feishu Guide"
+      sap_guide: "SAP Guide"
+      fanwei_guide: "Fanwei Guide"
+
+  welcome:
+    show:
+      page_title: "DocuSign Integration"
+      kicker: "Cross-border Contract Flow"
+      title: "Contract Management Hub"
+      description: "Manage DocuSign authorization, templates, signers, sending, and webhook callbacks in one place. Supports both embedded and email signing."
+      enter_console: "Enter Console"
+      sign_in: "Enterprise Sign In"
+      demo_account_label: "Demo Account:"
+      demo_credential_label: "Demo Credentials:"
+
+  tenant:
+    common:
+      all: "All"
+      filter: "Filter"
+      reset: "Reset"
+      per_page: "Per page"
+      status: "Status"
+      keyword: "Keyword"
+      view: "View"
+      edit: "Edit"
+      detail: "Details"
+      cancel: "Cancel"
+      empty: "-"
+
+    dashboards:
+      page_title: "Enterprise Console"
+      welcome_title: "Welcome to the DocuSign Enterprise Console"
+      enterprise_label: "Enterprise"
+      actions:
+        enter: "Open"
+      cards:
+        docusign_connection:
+          title: "DocuSign Connection"
+          description: "View and maintain the DocuSign authorization for the current enterprise."
+        contract_templates:
+          title: "Contract Templates"
+          description: "Manage template versions, identifiers, and metadata."
+        contracts:
+          title: "Contracts"
+          description: "Track contracts, signers, and DocuSign workflow status."
+        webhook_events:
+          title: "Webhook Events"
+          description: "Review received webhook notifications and processing status."
+
+    docusign_connections:
+      base_uri: "DocuSign Base URI"
+      oauth_scope_label: "Authorization Scope"
+      oauth_scope_hint: "You can select multiple scopes; the system will combine them automatically."
+      oauth_scope_options:
+        signature: "Signature permissions (signature)"
+        impersonation: "Act on behalf of user (impersonation)"
+        extended: "Extended authorization (extended)"
+      statuses:
+        active: "Connected"
+        expired: "Expired"
+        revoked: "Revoked"
+        unconnected: "Not connected"
+      notices:
+        created: "DocuSign connection created"
+        updated: "DocuSign connection updated"
+      show:
+        page_title: "DocuSign Connection"
+        title: "DocuSign Account Connection"
+        description: "Maintain the current enterprise DocuSign configuration and generate OAuth authorization URLs."
+        summary_title: "Connection Summary"
+        edit_button: "Edit Configuration"
+        new_button: "Create Configuration"
+        edit_form_title: "Edit Connection Configuration"
+        new_form_title: "Create Connection Configuration"
+        save_button: "Save Configuration"
+        create_button: "Create Configuration"
+        oauth_title: "OAuth Authorization"
+        oauth_description: "Select scopes and generate a one-time authorization URL for enterprise account authorization."
+        generate_authorize_url: "Generate Authorization URL"
+        authorize_url: "Authorization URL"
+        open_authorize_page: "Open Authorization Page"
+        account_id_placeholder: "e.g. 12345678-abcd-efgh-ijkl-1234567890ab"
+        fields:
+          account_id: "DocuSign Account ID"
+          status: "Connection Status"
+          updated_at: "Last Updated"
+
+    contract_templates:
+      statuses:
+        active: "Active"
+        deprecated: "Deprecated"
+      notices:
+        created: "Contract template created"
+        updated: "Contract template updated"
+      index:
+        page_title: "Contract Templates"
+        title: "Template List"
+        new_button: "New Template"
+        keyword_placeholder: "Template name / DocuSign Template ID"
+        empty: "No templates yet."
+        columns:
+          name: "Name"
+          version: "Version"
+          status: "Status"
+          docusign_template_id: "DocuSign Template ID"
+          actions: "Actions"
+      form:
+        name: "Template Name"
+        version: "Version (auto-increment when blank)"
+        docusign_template_id: "DocuSign Template ID"
+        description: "Description"
+      new:
+        page_title: "New Template"
+        title: "New Contract Template"
+        back: "Back to Templates"
+        submit: "Create Template"
+      edit:
+        page_title: "Edit Template"
+        title: "Edit Template: %{name} (v%{version})"
+        back: "Back to Template"
+        submit: "Save Changes"
+      show:
+        page_title: "Template Details"
+        title: "Template Details: %{name} (v%{version})"
+        edit_button: "Edit Template"
+        back_button: "Back to Templates"
+        fields:
+          name: "Template Name"
+          version: "Version"
+          status: "Status"
+          docusign_template_id: "DocuSign Template ID"
+          description: "Description"
+
+    contracts:
+      statuses:
+        draft: "Draft"
+        prepared: "Prepared"
+        sent: "Sent"
+        delivered: "Delivered"
+        signed: "Signed"
+        declined: "Declined"
+        voided: "Voided"
+        archived: "Archived"
+      envelope_statuses:
+        created: "Created"
+        sent: "Sent"
+        delivered: "Delivered"
+        completed: "Completed"
+        declined: "Declined"
+        voided: "Voided"
+      notices:
+        created: "Contract created"
+        sent_to_docusign: "Sent to DocuSign (Envelope ID: %{envelope_id})"
+        embedded_signing_link_generated: "Embedded signing URL generated"
+      messages:
+        sent_to_docusign: "contract sent to docusign"
+      index:
+        page_title: "Contracts"
+        title: "Contract List"
+        new_button: "New Contract"
+        source: "Source"
+        keyword_placeholder: "Title / Contract No"
+        view_button: "View"
+        empty: "No contracts yet."
+        columns:
+          title: "Title"
+          contract_no: "Contract No"
+          status: "Status"
+          envelope: "Envelope"
+          actions: "Actions"
+      form:
+        title: "Contract Title"
+        contract_no: "Contract No"
+        template: "Template (optional)"
+        template_blank: "No template"
+        source: "Source"
+        language: "Language"
+        currency: "Currency"
+        docusign_template_id: "DocuSign Template ID (optional)"
+      new:
+        page_title: "New Contract"
+        title: "New Contract"
+        back: "Back to Contracts"
+        submit: "Create Contract"
+      show:
+        page_title: "Contract Details"
+        title: "Contract Details: %{title}"
+        back_button: "Back to Contracts"
+        summary:
+          contract_no: "Contract No: "
+          status: "Status: "
+          source: "Source: "
+          locale_currency: "Language/Currency: "
+      signers:
+        title: "Signers"
+        empty: "No signers yet."
+        new_title: "Add Signer"
+        notices:
+          created: "Signer added"
+        columns:
+          routing_order: "Order"
+          name: "Name"
+          email: "Email"
+          role_name: "Role"
+          signing_type: "Type"
+          status: "Status"
+        signing_types:
+          signer: "Signer"
+          carbon_copy: "Carbon Copy"
+        statuses:
+          pending: "Pending"
+          delivered: "Delivered"
+          completed: "Completed"
+          declined: "Declined"
+        form:
+          name: "Name"
+          email: "Email"
+          role_name: "Role Name"
+          routing_order: "Routing Order"
+          signing_type: "Signing Type"
+          submit: "Add Signer"
+      docusign_actions:
+        title: "DocuSign Actions"
+        send: "Send to DocuSign"
+        signer_email: "Embedded signing email"
+        return_url: "Return URL after signing (optional)"
+        generate_embedded_url: "Generate Embedded Signing URL"
+        generated_title: "Embedded Signing URL Generated"
+        generated_signer: "Signer: %{email}"
+        open_signing_page: "Open Signing Page"
+      envelope:
+        title: "Envelope Status"
+        empty: "Not sent to DocuSign yet."
+        fields:
+          id: "Envelope ID"
+          status: "Status"
+          updated_at: "Last Updated"
+
+    webhook_events:
+      statuses:
+        received: "Received"
+        processing: "Processing"
+        processed: "Processed"
+        failed: "Failed"
+      index:
+        page_title: "Webhook Events"
+        title: "Webhook Events"
+        description: "Shows received DocuSign webhook events and processing statuses for troubleshooting."
+        recent_summary: "Last %{days} days %{count} events"
+        recent_days: "Recent days"
+        keyword_placeholder: "Event type / Delivery ID / Envelope ID"
+        empty: "No webhook events yet."
+        columns:
+          received_at: "Received At"
+          event_type: "Event Type"
+          delivery_id: "Delivery ID"
+          envelope_id: "Envelope ID"
+          status: "Status"
+          processing_attempts: "Retries"
+          processed_at: "Processed At"
+      show:
+        page_title: "Webhook Event Details"
+        title: "Webhook Event Details"
+        event_id: "Event ID: %{id}"
+        back: "Back to Events"
+        base_info: "Base Info"
+        headers: "Headers"
+        payload: "Payload"
+        last_error: "Latest Error: "
+        fields:
+          provider: "Provider"
+          delivery_id: "Delivery ID"
+          event_type: "Event Type"
+          account_id: "Account ID"
+          envelope_id: "Envelope ID"
+          status: "Status"
+          processing_attempts: "Retries"
+          received_at: "Received At"
+          processed_at: "Processed At"
+
+    integration_guides:
+      feishu:
+        page_title: "Feishu Web Integration"
+        title: "Feishu Web Integration Guide"
+        description: "For Feishu ISV web apps. The current flow is: create enterprise manually, then bind Feishu enterprise."
+        sections:
+          preparation:
+            title: "1. Enterprise Preparation"
+            item_1: "Create enterprise first and confirm tenant_uid."
+            item_2: "Feishu callback will bind enterprise by tenant_uid."
+          platform:
+            title: "2. Feishu Open Platform (ISV)"
+            item_1: "Create/select ISV app and choose Web integration."
+            item_2: "Set OAuth callback URL: %{callback_url}?tenant_uid=%{tenant_uid}"
+            item_3: "Set events subscription URL: %{events_url}"
+            item_4: "Complete installation and authorization on Feishu side."
+          callback_params:
+            title: "3. Callback Parameters"
+            item_1: "tenant_uid: required, used to bind enterprise."
+            item_2: "tenant_key / tenantKey: optional, used for enterprise consistency check."
+            item_3: "union_id / open_id: optional, used to auto-create local identity mapping."
+          access_entry:
+            title: "4. Access Entry"
+            label: "System access entry:"
+      sap:
+        page_title: "SAP Integration Guide"
+        title: "SAP Integration Guide"
+        coming_soon: "Coming soon. Full integration steps and field mappings will be provided in later versions."
+      fanwei:
+        page_title: "Fanwei Integration Guide"
+        title: "Fanwei Integration Guide"
+        coming_soon: "Coming soon. Full integration steps and field mappings will be provided in later versions."
+
+  integrations:
+    feishu:
+      callbacks:
+        messages:
+          received: "feishu callback received"
+        errors:
+          tenant_key_mismatch: "tenant_key does not match bound enterprise"
+    docusign:
+      oauth_callbacks:
+        messages:
+          connected: "docusign oauth connected"
+        result:
+          page_title: "DocuSign Authorization Result"
+          success_badge: "Success"
+          failure_badge: "Failed"
+          success_title: "DocuSign authorization completed"
+          success_message: "Authorization data has been saved. You can continue the contract signing workflow."
+          failure_title: "DocuSign authorization failed"
+          invalid_state_title: "Invalid authorization state"
+          bad_request_title: "Invalid request"
+          not_found_title: "Resource not found"
+          tenant_uid: "Organization UID"
+          account_id: "DocuSign Account ID"
+          base_uri: "DocuSign Base URI"
+          scope: "Authorization scope"
+          return_to_app: "Return to app"
+          return_to_connection: "Return to connection settings"
+          back_home: "Back to home"

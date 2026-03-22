@@ -2,7 +2,7 @@ require "digest"
 
 module Webhooks
   class DocusignController < ActionController::API
-    before_action :validate_signature!
+    before_action :validate_signature
 
     def create
       payload_text = request.raw_post
@@ -67,7 +67,7 @@ module Webhooks
         end
       end
 
-      def validate_signature!
+      def validate_signature
         payload_text = request.raw_post
         signature = request.headers["X-DocuSign-Signature-1"]
         secret = ENV.fetch("docusign_connect_hmac_secret", nil)

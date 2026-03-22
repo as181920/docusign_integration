@@ -7,7 +7,7 @@ module Tenant
           render json: {
             tenant_uid: current_tenant.uid,
             tenant_name: current_tenant.name,
-            current_user: current_tenant_user&.name,
+            current_user: current_user&.name,
             message: "docusign integration service ready"
           }
         end

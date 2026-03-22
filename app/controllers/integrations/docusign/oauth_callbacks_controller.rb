@@ -1,28 +1,31 @@
 module Integrations
   module Docusign
     class OauthCallbacksController < ApplicationController
+      layout :callback_layout
+
       rescue_from ::Docusign::OauthStateError, with: :render_invalid_state
       rescue_from ::Docusign::ConfigurationError, ::Docusign::ApiError, with: :render_docusign_error
       rescue_from ActionController::ParameterMissing, with: :render_bad_request
       rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
 
       def show
+        skip_authorization
         if params[:error].present?
-          return render json: {
-            error: "docusign_authorization_failed",
+          return render_authorization_failure(
             details: params[:error_description].presence || params[:error]
-          }, status: :unprocessable_entity
+          )
         end
 
-        state_payload = ::Docusign::OauthState.verify!(params.require(:state))
+        state_payload = ::Docusign::OauthState.verify(params.require(:state))
         tenant = TenantAuth::Tenant.find_by!(uid: state_payload.fetch("tenant_uid"))
-        tenant_user = resolve_tenant_user(tenant: tenant, tenant_user_id: state_payload["tenant_user_id"])
+        tenant_user = resolve_tenant_user(tenant:, tenant_user_id: state_payload["tenant_user_id"])
+        @current_tenant = tenant
 
         oauth_client = ::Docusign::OauthClient.new
-        token_info = oauth_client.exchange_code!(code: params.require(:code))
-        user_info = oauth_client.user_info!(access_token: token_info.fetch("access_token"))
+        token_info = oauth_client.exchange_code(code: params.require(:code))
+        user_info = oauth_client.user_info(access_token: token_info.fetch("access_token"))
 
-        account = select_account!(
+        account = select_account(
           user_info: user_info,
           preferred_account_id: params[:account_id].presence || ENV.fetch("docusign_account_id", nil)
         )
@@ -55,30 +58,114 @@ module Integrations
         )
         connection.save!
 
-        session[:tenant_user_id] = tenant_user.id if tenant_user
+        return_to = normalized_return_to(
+          value: state_payload["return_to"],
+          tenant_uid: tenant.uid
+        )
 
-        audit!(
+        audit(
           tenant: tenant,
           actor: tenant_user,
           action: "docusign_oauth_connected",
           target: connection,
           data: {
             docusign_account_id: connection.docusign_account_id,
-            return_to: state_payload["return_to"]
+            return_to: return_to
           }
         )
 
-        render json: {
-          message: "docusign oauth connected",
-          tenant_uid: tenant.uid,
-          return_to: state_payload["return_to"],
-          connection: serialized_connection(connection)
-        }
+        respond_to do |format|
+          format.html do
+            assign_callback_view_state(
+              status: :success,
+              title: I18n.t("integrations.docusign.oauth_callbacks.result.success_title"),
+              message: I18n.t("integrations.docusign.oauth_callbacks.result.success_message"),
+              tenant: tenant,
+              connection: connection,
+              return_to: return_to
+            )
+            render :show
+          end
+          format.json do
+            render json: {
+              message: I18n.t("integrations.docusign.oauth_callbacks.messages.connected"),
+              tenant_uid: tenant.uid,
+              return_to: return_to,
+              connection: serialized_connection(connection)
+            }
+          end
+        end
       rescue ActiveRecord::RecordInvalid => e
-        render json: { error: e.record.errors.full_messages.to_sentence }, status: :unprocessable_entity
+        respond_to do |format|
+          format.html do
+            assign_callback_view_state(
+              status: :error,
+              title: I18n.t("integrations.docusign.oauth_callbacks.result.failure_title"),
+              message: e.record.errors.full_messages.to_sentence
+            )
+            render :show, status: :unprocessable_entity
+          end
+          format.json { render json: { error: e.record.errors.full_messages.to_sentence }, status: :unprocessable_entity }
+        end
       end
 
       private
+
+        def assign_callback_view_state(status:, title:, message:, tenant: nil, connection: nil, return_to: nil)
+          @callback_status = status
+          @callback_title = title
+          @callback_message = message
+          @tenant = tenant
+          @connection = connection
+          @return_to = return_to
+          @current_tenant = tenant if tenant.present?
+        end
+
+        def render_authorization_failure(details:)
+          respond_to do |format|
+            format.html do
+              assign_callback_view_state(
+                status: :error,
+                title: I18n.t("integrations.docusign.oauth_callbacks.result.failure_title"),
+                message: details
+              )
+              render :show, status: :unprocessable_entity
+            end
+            format.json do
+              render json: {
+                error: "docusign_authorization_failed",
+                details: details
+              }, status: :unprocessable_entity
+            end
+          end
+        end
+
+        def normalized_return_to(value:, tenant_uid:)
+          fallback_path = tenant_docusign_connection_path(tenant_uid: tenant_uid)
+          candidate = value.to_s.strip
+          return fallback_path if candidate.blank?
+          return fallback_path unless candidate.start_with?("/")
+
+          candidate
+        end
+
+        def current_user
+  return nil if current_tenant.blank?
+
+  tenant_user_id = session[:tnt_user_id] || session[:tenant_user_id]
+  return nil if tenant_user_id.blank?
+
+  if defined?(@current_user) && @current_user.present? &&
+     @current_user.id == tenant_user_id && @current_user.tenant_id == current_tenant.id
+    return @current_user
+  end
+
+  @current_user = TenantAuth::User.find_by(id: tenant_user_id, tenant_id: current_tenant.id)
+        end
+
+        def callback_layout
+          current_user.present? ? "tenant/admin" : "easy_style/common"
+        end
 
         def resolve_tenant_user(tenant:, tenant_user_id:)
           return nil if tenant_user_id.blank?
@@ -93,7 +180,7 @@ module Integrations
           Time.current + expires_in.seconds
         end
 
-        def select_account!(user_info:, preferred_account_id:)
+        def select_account(user_info:, preferred_account_id:)
           accounts = Array(user_info["accounts"]).map { |account| normalize_account(account) }
           raise ::Docusign::ApiError, "no docusign accounts available in userinfo" if accounts.blank?
 
@@ -139,19 +226,59 @@ module Integrations
         end
 
         def render_invalid_state(exception)
-          render json: { error: exception.message }, status: :unauthorized
+          respond_to do |format|
+            format.html do
+              assign_callback_view_state(
+                status: :error,
+                title: I18n.t("integrations.docusign.oauth_callbacks.result.invalid_state_title"),
+                message: exception.message
+              )
+              render :show, status: :unauthorized
+            end
+            format.json { render json: { error: exception.message }, status: :unauthorized }
+          end
         end
 
         def render_docusign_error(exception)
-          render json: { error: exception.message }, status: :unprocessable_entity
+          respond_to do |format|
+            format.html do
+              assign_callback_view_state(
+                status: :error,
+                title: I18n.t("integrations.docusign.oauth_callbacks.result.failure_title"),
+                message: exception.message
+              )
+              render :show, status: :unprocessable_entity
+            end
+            format.json { render json: { error: exception.message }, status: :unprocessable_entity }
+          end
         end
 
         def render_bad_request(exception)
-          render json: { error: exception.message }, status: :bad_request
+          respond_to do |format|
+            format.html do
+              assign_callback_view_state(
+                status: :error,
+                title: I18n.t("integrations.docusign.oauth_callbacks.result.bad_request_title"),
+                message: exception.message
+              )
+              render :show, status: :bad_request
+            end
+            format.json { render json: { error: exception.message }, status: :bad_request }
+          end
         end
 
         def render_not_found(exception)
-          render json: { error: exception.message }, status: :not_found
+          respond_to do |format|
+            format.html do
+              assign_callback_view_state(
+                status: :error,
+                title: I18n.t("integrations.docusign.oauth_callbacks.result.not_found_title"),
+                message: exception.message
+              )
+              render :show, status: :not_found
+            end
+            format.json { render json: { error: exception.message }, status: :not_found }
+          end
         end
     end
   end

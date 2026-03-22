@@ -22,7 +22,7 @@ module DocusignIntegration
     config.time_zone = "Beijing"
     config.i18n.default_locale = :"zh-CN"
     config.i18n.available_locales = %i[zh-CN en]
-    config.i18n.fallbacks = { "zh-CN": :en }
+    config.i18n.fallbacks = { "zh-CN" => [:"zh-CN", :en], en: [:en, :"zh-CN"] }
 
     config.active_job.queue_adapter = :solid_queue
     config.solid_queue.connects_to = { database: { writing: :queue } }

@@ -6,27 +6,47 @@ module Tenant
         signer_email = params.require(:signer_email)
         return_url = resolve_return_url(contract)
 
-        signing_url = Docusign::RecipientViewService.call!(
+        signing_url = Docusign::RecipientViewService.call(
           contract: contract,
           signer_email: signer_email,
           return_url: return_url
         )
 
-        audit!(
+        audit(
           action: "contract_embedded_signing_url_generated",
           target: contract,
           data: { signer_email: signer_email, return_url: return_url }
         )
 
-        render json: {
-          signer_email: signer_email,
-          return_url: return_url,
-          signing_url: signing_url
-        }
+        respond_to do |format|
+          format.html do
+            flash[:embedded_signing_url] = signing_url
+            flash[:embedded_signing_email] = signer_email
+            redirect_to tenant_contract_path(tenant_uid: current_tenant.uid, id: contract.id),
+              notice: t("tenant.contracts.notices.embedded_signing_link_generated")
+          end
+          format.json do
+            render json: {
+              signer_email: signer_email,
+              return_url: return_url,
+              signing_url: signing_url
+            }
+          end
+        end
       rescue ActionController::ParameterMissing => e
-        render json: { error: e.message }, status: :bad_request
+        respond_to do |format|
+          format.html do
+            redirect_to tenant_contract_path(tenant_uid: current_tenant.uid, id: params[:contract_id]), alert: e.message
+          end
+          format.json { render json: { error: e.message }, status: :bad_request }
+        end
       rescue Docusign::Error, ActiveRecord::RecordNotFound => e
-        render json: { error: e.message }, status: :unprocessable_entity
+        respond_to do |format|
+          format.html do
+            redirect_to tenant_contract_path(tenant_uid: current_tenant.uid, id: params[:contract_id]), alert: e.message
+          end
+          format.json { render json: { error: e.message }, status: :unprocessable_entity }
+        end
       end
 
       private

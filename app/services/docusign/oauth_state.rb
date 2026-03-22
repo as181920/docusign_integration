@@ -14,7 +14,7 @@ module Docusign
         verifier.generate(payload, expires_in: 15.minutes, purpose: PURPOSE)
       end
 
-      def verify!(state)
+      def verify(state)
         verifier.verify(state, purpose: PURPOSE).with_indifferent_access
       rescue StandardError => e
         raise Docusign::OauthStateError, "invalid oauth state: #{e.message}"

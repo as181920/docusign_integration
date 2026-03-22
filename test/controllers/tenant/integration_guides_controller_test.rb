@@ -4,7 +4,7 @@ class TenantIntegrationGuidesControllerTest < ActionDispatch::IntegrationTest
   setup do
     @tenant = create(:tenant, :acme)
     @user = create(:tenant_user, :alice, tenant: @tenant)
-    sign_in_tenant_user!(tenant_uid: @tenant.uid, name: @user.name)
+    sign_in_tenant_user(tenant_uid: @tenant.uid, name: @user.name)
   end
 
   test "feishu guide renders setup steps and callback endpoints" do

@@ -1,0 +1,172 @@
+<% content_for :title, t("tenant.contracts.show.page_title") %>
+<%= render "tenant/shared/layout_slots" %>
+<% contract_status_key = @contract.status.to_s %>
+<% envelope = @contract.contract_envelope %>
+<% envelope_status_key = envelope&.status.to_s %>
+
+<div class="container-fluid px-4 py-3">
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="d-flex justify-content-space-between align-items-center mb-3">
+        <h1 class="h5 my-0"><%= t("tenant.contracts.show.title", title: @contract.title) %></h1>
+        <%= link_to t("tenant.contracts.show.back_button"), tenant_contracts_path(tenant_uid: current_tenant.uid), class: "btn btn-sm btn-secondary mb-0" %>
+      </div>
+
+      <div class="form-field">
+        <div class="d-inline-block min-w-12 text-secondary"><%= t("tenant.contracts.show.summary.contract_no") %></div>
+        <div class="flex-1 min-w-16"><strong class="text-dark"><%= @contract.contract_no %></strong></div>
+      </div>
+
+      <div class="form-field">
+        <div class="d-inline-block min-w-12 text-secondary"><%= t("tenant.contracts.show.summary.status") %></div>
+        <div class="flex-1 min-w-16"><strong class="text-dark"><%= t("tenant.contracts.statuses.#{contract_status_key}", default: contract_status_key) %></strong></div>
+      </div>
+
+      <div class="form-field">
+        <div class="d-inline-block min-w-12 text-secondary"><%= t("tenant.contracts.show.summary.source") %></div>
+        <div class="flex-1 min-w-16"><strong class="text-dark"><%= @contract.source.presence || t("tenant.common.empty") %></strong></div>
+      </div>
+
+      <div class="form-field mb-0">
+        <div class="d-inline-block min-w-12 text-secondary"><%= t("tenant.contracts.show.summary.locale_currency") %></div>
+        <div class="flex-1 min-w-16"><strong class="text-dark"><%= [@contract.language.presence || t("tenant.common.empty"), @contract.currency.presence || t("tenant.common.empty")].join(" / ") %></strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-12 col-xl-7">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h2 class="h6 mb-3"><%= t("tenant.contracts.signers.title") %></h2>
+          <% if @signers.any? %>
+            <div class="table-responsive">
+              <table class="table table-sm table-hover align-middle">
+                <thead>
+                  <tr>
+                    <th class="text-align-center"><%= t("tenant.contracts.signers.columns.routing_order") %></th>
+                    <th class="text-align-center"><%= t("tenant.contracts.signers.columns.name") %></th>
+                    <th class="text-align-center"><%= t("tenant.contracts.signers.columns.email") %></th>
+                    <th class="text-align-center"><%= t("tenant.contracts.signers.columns.role_name") %></th>
+                    <th class="text-align-center"><%= t("tenant.contracts.signers.columns.signing_type") %></th>
+                    <th class="text-align-center"><%= t("tenant.contracts.signers.columns.status") %></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% @signers.each do |signer| %>
+                    <tr class="text-align-center">
+                      <td><%= signer.routing_order %></td>
+                      <td><%= signer.name %></td>
+                      <td><%= signer.email %></td>
+                      <td><%= signer.role_name %></td>
+                      <td><%= t("tenant.contracts.signers.signing_types.#{signer.signing_type}", default: signer.signing_type) %></td>
+                      <td><%= t("tenant.contracts.signers.statuses.#{signer.status}", default: signer.status) %></td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% else %>
+            <p class="text-secondary mb-0"><%= t("tenant.contracts.signers.empty") %></p>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h2 class="h6 mb-3"><%= t("tenant.contracts.signers.new_title") %></h2>
+          <%= form_with model: @new_signer,
+            scope: :contract_signer,
+            url: tenant_contract_signers_path(tenant_uid: current_tenant.uid, contract_id: @contract.id),
+            method: :post do |f| %>
+            <div class="row g-3">
+              <div class="col-md-4">
+                <%= f.label :name, t("tenant.contracts.signers.form.name"), class: "form-label" %>
+                <%= f.text_field :name, class: "form-control", required: true %>
+              </div>
+              <div class="col-md-4">
+                <%= f.label :email, t("tenant.contracts.signers.form.email"), class: "form-label" %>
+                <%= f.email_field :email, class: "form-control", required: true %>
+              </div>
+              <div class="col-md-4">
+                <%= f.label :role_name, t("tenant.contracts.signers.form.role_name"), class: "form-label" %>
+                <%= f.text_field :role_name, class: "form-control", placeholder: "signer", required: true %>
+              </div>
+              <div class="col-md-4">
+                <%= f.label :routing_order, t("tenant.contracts.signers.form.routing_order"), class: "form-label" %>
+                <%= f.number_field :routing_order, class: "form-control", min: 1, value: (@signers.maximum(:routing_order).to_i + 1) %>
+              </div>
+              <div class="col-md-4">
+                <%= f.label :signing_type, t("tenant.contracts.signers.form.signing_type"), class: "form-label" %>
+                <%= f.select :signing_type,
+                  options_for_select(ContractSigner.signing_types.keys.map { |value| [t("tenant.contracts.signers.signing_types.#{value}", default: value), value] }, "signer"),
+                  {},
+                  class: "form-control" %>
+              </div>
+              <div class="col-12">
+                <%= f.submit t("tenant.contracts.signers.form.submit"), class: "btn btn-primary" %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-xl-5">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h2 class="h6 mb-2"><%= t("tenant.contracts.docusign_actions.title") %></h2>
+
+          <div class="mb-3">
+            <%= button_to t("tenant.contracts.docusign_actions.send"),
+              tenant_contract_docusign_envelope_submission_path(tenant_uid: current_tenant.uid, contract_id: @contract.id),
+              method: :post,
+              class: "btn btn-primary" %>
+          </div>
+
+          <%= form_with url: tenant_contract_embedded_signing_session_path(tenant_uid: current_tenant.uid, contract_id: @contract.id), method: :post do %>
+            <div class="mb-2">
+              <%= label_tag :signer_email, t("tenant.contracts.docusign_actions.signer_email"), class: "form-label" %>
+              <%= email_field_tag :signer_email, @signers.first&.email, class: "form-control", required: true %>
+            </div>
+            <div class="mb-3">
+              <%= label_tag :return_url, t("tenant.contracts.docusign_actions.return_url"), class: "form-label" %>
+              <%= text_field_tag :return_url, tenant_contract_url(tenant_uid: current_tenant.uid, id: @contract.id), class: "form-control" %>
+            </div>
+            <%= submit_tag t("tenant.contracts.docusign_actions.generate_embedded_url"), class: "btn btn-outline-primary" %>
+          <% end %>
+
+          <% if @embedded_signing_url.present? %>
+            <hr>
+            <p class="mb-1"><strong><%= t("tenant.contracts.docusign_actions.generated_title") %></strong></p>
+            <p class="mb-1 text-secondary"><%= t("tenant.contracts.docusign_actions.generated_signer", email: @embedded_signing_email) %></p>
+            <p class="mb-2 text-break"><code><%= @embedded_signing_url %></code></p>
+            <%= link_to t("tenant.contracts.docusign_actions.open_signing_page"), @embedded_signing_url, target: "_blank", rel: "noopener", class: "btn btn-primary btn-sm" %>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h2 class="h6 mb-3"><%= t("tenant.contracts.envelope.title") %></h2>
+          <% if envelope.present? %>
+            <div class="form-field">
+              <div class="d-inline-block min-w-12 text-secondary"><%= t("tenant.contracts.envelope.fields.id") %></div>
+              <div class="flex-1 min-w-16 text-break"><%= envelope.envelope_id %></div>
+            </div>
+            <div class="form-field">
+              <div class="d-inline-block min-w-12 text-secondary"><%= t("tenant.contracts.envelope.fields.status") %></div>
+              <div class="flex-1 min-w-16"><%= t("tenant.contracts.envelope_statuses.#{envelope_status_key}", default: envelope_status_key) %></div>
+            </div>
+            <div class="form-field mb-0">
+              <div class="d-inline-block min-w-12 text-secondary"><%= t("tenant.contracts.envelope.fields.updated_at") %></div>
+              <div class="flex-1 min-w-16"><%= l(envelope.updated_at, format: :long) %></div>
+            </div>
+          <% else %>
+            <p class="text-secondary mb-0"><%= t("tenant.contracts.envelope.empty") %></p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

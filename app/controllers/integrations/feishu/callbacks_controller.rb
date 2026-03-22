@@ -4,13 +4,14 @@ module Integrations
       rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
 
       def show
+        skip_authorization
         tenant = TenantAuth::Tenant.find_by!(uid: params[:tenant_uid])
         incoming_tenant_key = params[:tenant_key].presence || params[:tenantKey].presence
 
         enterprise = FeishuEnterprise.find_or_initialize_by(tenant: tenant)
 
         if enterprise.persisted? && enterprise.tenant_key.present? && incoming_tenant_key.present? && enterprise.tenant_key != incoming_tenant_key
-          return render json: { error: "tenant_key does not match bound enterprise" }, status: :unprocessable_entity
+          return render json: { error: t("integrations.feishu.callbacks.errors.tenant_key_mismatch") }, status: :unprocessable_entity
         end
 
         enterprise.tenant_key = incoming_tenant_key if incoming_tenant_key.present?
@@ -22,7 +23,7 @@ module Integrations
         identity = provision_identity_if_possible(tenant: tenant)
         bind_session(identity)
 
-        audit!(
+        audit(
           tenant: tenant,
           actor: identity&.tenant_user,
           action: "feishu_callback_received",
@@ -36,7 +37,7 @@ module Integrations
         )
 
         render json: {
-          message: "feishu callback received",
+          message: t("integrations.feishu.callbacks.messages.received"),
           tenant_uid: tenant.uid,
           tenant_key: enterprise.tenant_key,
           user_id: identity&.user_id,

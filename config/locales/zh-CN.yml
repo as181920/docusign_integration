@@ -1,2 +1,365 @@
 zh-CN:
   hello: "你好，世界"
+  errors:
+    forbidden: "forbidden"
+    unauthorized: "unauthorized"
+
+  shared:
+    header:
+      fallback_tenant_name: "企业后台"
+      dashboard: "企业工作台"
+      anonymous_user: "未登录用户"
+      personal_settings: "个人设置"
+      profile: "个人信息"
+      sign_out: "退出登录"
+    sidebar:
+      fallback_tenant_name: "企业后台"
+      dashboard: "工作台"
+      main_menu: "主菜单"
+      docusign_group: "DocuSign 业务"
+      docusign_connection: "DocuSign 连接"
+      contract_templates: "合同模板"
+      contracts: "合同列表"
+      webhook_events: "Webhook 事件"
+      integrations_group: "平台集成"
+      feishu_guide: "飞书配置说明"
+      sap_guide: "SAP 配置说明"
+      fanwei_guide: "泛微配置说明"
+
+  welcome:
+    show:
+      page_title: "DocuSign Integration"
+      kicker: "Cross-border Contract Flow"
+      title: "合同管理中台"
+      description: "统一管理 DocuSign 授权、合同模板、签署人、发起签署和回调接收，支持嵌入式签署与邮件签署两种模式。"
+      enter_console: "进入控制台"
+      sign_in: "企业登录"
+      demo_account_label: "体验账户："
+      demo_credential_label: "体验账号："
+
+  tenant:
+    common:
+      all: "全部"
+      filter: "筛选"
+      reset: "重置"
+      per_page: "每页"
+      status: "状态"
+      keyword: "关键词"
+      view: "查看"
+      edit: "编辑"
+      detail: "详情"
+      cancel: "取消"
+      empty: "-"
+
+    dashboards:
+      page_title: "企业工作台"
+      welcome_title: "欢迎使用 DocuSign 企业后台"
+      enterprise_label: "企业"
+      actions:
+        enter: "进入"
+      cards:
+        docusign_connection:
+          title: "DocuSign 连接"
+          description: "查看或维护当前企业的 DocuSign 授权连接。"
+        contract_templates:
+          title: "合同模板"
+          description: "管理模板版本、模板编号以及元数据。"
+        contracts:
+          title: "合同列表"
+          description: "查看合同、签署人和 DocuSign 流程状态。"
+        webhook_events:
+          title: "Webhook 事件"
+          description: "查看接收的 webhook 通知及处理状态。"
+
+    docusign_connections:
+      base_uri: "DocuSign Base URI"
+      oauth_scope_label: "授权范围 (Scope)"
+      oauth_scope_hint: "可多选，系统会自动组合为授权 scope。"
+      oauth_scope_options:
+        signature: "签署能力 (signature)"
+        impersonation: "代用户操作 (impersonation)"
+        extended: "延长授权 (extended)"
+      statuses:
+        active: "已连接"
+        expired: "已过期"
+        revoked: "已撤销"
+        unconnected: "未连接"
+      notices:
+        created: "DocuSign 连接已创建"
+        updated: "DocuSign 连接已更新"
+      show:
+        page_title: "DocuSign 连接"
+        title: "DocuSign 账户连接"
+        description: "维护当前企业的 DocuSign 账户配置，并生成 OAuth 授权入口。"
+        summary_title: "连接摘要"
+        edit_button: "编辑配置"
+        new_button: "新建配置"
+        edit_form_title: "编辑连接配置"
+        new_form_title: "创建连接配置"
+        save_button: "保存连接配置"
+        create_button: "创建连接配置"
+        oauth_title: "OAuth 授权"
+        oauth_description: "选择授权范围后生成一次性授权地址，用于完成企业账号授权。"
+        generate_authorize_url: "生成授权地址"
+        authorize_url: "授权地址"
+        open_authorize_page: "打开授权页面"
+        account_id_placeholder: "例如：12345678-abcd-efgh-ijkl-1234567890ab"
+        fields:
+          account_id: "DocuSign Account ID"
+          status: "连接状态"
+          updated_at: "最近更新"
+
+    contract_templates:
+      statuses:
+        active: "启用"
+        deprecated: "弃用"
+      notices:
+        created: "合同模板已创建"
+        updated: "合同模板已更新"
+      index:
+        page_title: "合同模板"
+        title: "模板列表"
+        new_button: "新建模板"
+        keyword_placeholder: "模板名称 / DocuSign Template ID"
+        empty: "暂无模板，请先创建模板。"
+        columns:
+          name: "名称"
+          version: "版本"
+          status: "状态"
+          docusign_template_id: "DocuSign Template ID"
+          actions: "操作"
+      form:
+        name: "模板名称"
+        version: "版本（留空自动递增）"
+        docusign_template_id: "DocuSign Template ID"
+        description: "说明"
+      new:
+        page_title: "新建模板"
+        title: "新建合同模板"
+        back: "返回模板列表"
+        submit: "创建模板"
+      edit:
+        page_title: "编辑模板"
+        title: "编辑模板：%{name}（v%{version}）"
+        back: "返回模板详情"
+        submit: "保存更新"
+      show:
+        page_title: "模板详情"
+        title: "模板详情：%{name}（v%{version}）"
+        edit_button: "编辑模板"
+        back_button: "返回模板列表"
+        fields:
+          name: "模板名称"
+          version: "版本"
+          status: "状态"
+          docusign_template_id: "DocuSign Template ID"
+          description: "说明"
+
+    contracts:
+      statuses:
+        draft: "草稿"
+        prepared: "已准备"
+        sent: "已发送"
+        delivered: "已送达"
+        signed: "已签署"
+        declined: "已拒签"
+        voided: "已作废"
+        archived: "已归档"
+      envelope_statuses:
+        created: "已创建"
+        sent: "已发送"
+        delivered: "已送达"
+        completed: "已完成"
+        declined: "已拒签"
+        voided: "已作废"
+      notices:
+        created: "合同已创建"
+        sent_to_docusign: "已发送到 DocuSign（Envelope ID: %{envelope_id}）"
+        embedded_signing_link_generated: "已生成嵌入签署链接"
+      messages:
+        sent_to_docusign: "已发送到 DocuSign"
+      index:
+        page_title: "合同列表"
+        title: "合同列表"
+        new_button: "新建合同"
+        source: "来源"
+        keyword_placeholder: "标题 / 编号"
+        view_button: "查看详情"
+        empty: "暂无合同，请先创建合同。"
+        columns:
+          title: "标题"
+          contract_no: "编号"
+          status: "状态"
+          envelope: "Envelope"
+          actions: "操作"
+      form:
+        title: "合同标题"
+        contract_no: "合同编号"
+        template: "模板（可选）"
+        template_blank: "不使用模板"
+        source: "来源"
+        language: "语言"
+        currency: "币种"
+        docusign_template_id: "DocuSign Template ID（可选）"
+      new:
+        page_title: "新建合同"
+        title: "新建合同"
+        back: "返回合同列表"
+        submit: "创建合同"
+      show:
+        page_title: "合同详情"
+        title: "合同详情：%{title}"
+        back_button: "返回合同列表"
+        summary:
+          contract_no: "合同编号："
+          status: "状态："
+          source: "来源："
+          locale_currency: "语言/币种："
+      signers:
+        title: "签署人列表"
+        empty: "暂无签署人，请先添加签署人。"
+        new_title: "添加签署人"
+        notices:
+          created: "签署人已添加"
+        columns:
+          routing_order: "顺序"
+          name: "姓名"
+          email: "邮箱"
+          role_name: "角色"
+          signing_type: "类型"
+          status: "状态"
+        signing_types:
+          signer: "签署人"
+          carbon_copy: "抄送"
+        statuses:
+          pending: "待处理"
+          delivered: "已送达"
+          completed: "已完成"
+          declined: "已拒签"
+        form:
+          name: "姓名"
+          email: "邮箱"
+          role_name: "角色名"
+          routing_order: "签署顺序"
+          signing_type: "签署类型"
+          submit: "添加签署人"
+      docusign_actions:
+        title: "DocuSign 流程操作"
+        send: "发送到 DocuSign"
+        signer_email: "嵌入签署邮箱"
+        return_url: "签署完成返回地址（可选）"
+        generate_embedded_url: "生成嵌入签署链接"
+        generated_title: "已生成签署链接"
+        generated_signer: "签署人：%{email}"
+        open_signing_page: "打开签署页面"
+      envelope:
+        title: "Envelope 状态"
+        empty: "尚未发送到 DocuSign。"
+        fields:
+          id: "Envelope ID"
+          status: "状态"
+          updated_at: "最近更新"
+
+    webhook_events:
+      statuses:
+        received: "已接收"
+        processing: "处理中"
+        processed: "已处理"
+        failed: "失败"
+      index:
+        page_title: "Webhook 事件"
+        title: "Webhook 事件"
+        description: "展示当前企业接收的 DocuSign webhook 事件及处理状态，用于联调和问题排查。"
+        recent_summary: "最近 %{days} 天 %{count} 条"
+        recent_days: "最近天数"
+        keyword_placeholder: "事件类型 / Delivery ID / Envelope ID"
+        empty: "暂无 webhook 事件。"
+        columns:
+          received_at: "接收时间"
+          event_type: "事件类型"
+          delivery_id: "Delivery ID"
+          envelope_id: "Envelope ID"
+          status: "状态"
+          processing_attempts: "重试次数"
+          processed_at: "处理时间"
+      show:
+        page_title: "Webhook 事件详情"
+        title: "Webhook 事件详情"
+        event_id: "事件 ID：%{id}"
+        back: "返回事件列表"
+        base_info: "基础信息"
+        headers: "请求头"
+        payload: "Payload"
+        last_error: "最近错误："
+        fields:
+          provider: "Provider"
+          delivery_id: "Delivery ID"
+          event_type: "事件类型"
+          account_id: "Account ID"
+          envelope_id: "Envelope ID"
+          status: "状态"
+          processing_attempts: "重试次数"
+          received_at: "接收时间"
+          processed_at: "处理时间"
+
+    integration_guides:
+      feishu:
+        page_title: "飞书 Web 集成配置"
+        title: "飞书 Web 集成配置说明"
+        description: "适用于飞书 ISV 应用（Web 形态），当前系统采用“手动创建企业，再绑定飞书企业”的接入方式。"
+        sections:
+          preparation:
+            title: "一、企业接入前准备"
+            item_1: "先创建企业，确认企业唯一标识 tenant_uid。"
+            item_2: "后续飞书回调会按 tenant_uid 识别并绑定到对应企业。"
+          platform:
+            title: "二、飞书开放平台（ISV）配置"
+            item_1: "创建/选择 ISV 应用，接入形态选择 Web。"
+            item_2: "配置 OAuth 回调地址：%{callback_url}?tenant_uid=%{tenant_uid}"
+            item_3: "配置事件订阅请求地址：%{events_url}"
+            item_4: "在飞书侧完成企业安装与授权。"
+          callback_params:
+            title: "三、回调参数约定"
+            item_1: "tenant_uid：必填，用于绑定到对应企业。"
+            item_2: "tenant_key / tenantKey：可选，用于企业一致性校验。"
+            item_3: "union_id / open_id：可选，用于自动建立本地用户关联身份。"
+          access_entry:
+            title: "四、访问入口"
+            label: "系统访问入口："
+      sap:
+        page_title: "SAP 集成配置说明"
+        title: "SAP 集成配置说明"
+        coming_soon: "敬请期待，后续版本提供完整接入步骤与字段映射说明。"
+      fanwei:
+        page_title: "泛微集成配置说明"
+        title: "泛微集成配置说明"
+        coming_soon: "敬请期待，后续版本提供完整接入步骤与字段映射说明。"
+
+  integrations:
+    feishu:
+      callbacks:
+        messages:
+          received: "飞书回调已接收"
+        errors:
+          tenant_key_mismatch: "tenant_key 与已绑定企业不匹配"
+    docusign:
+      oauth_callbacks:
+        messages:
+          connected: "DocuSign OAuth 已连接"
+        result:
+          page_title: "DocuSign 授权结果"
+          success_badge: "成功"
+          failure_badge: "失败"
+          success_title: "DocuSign 授权已完成"
+          success_message: "授权信息已写入系统，企业现在可以继续进行合同签署流程。"
+          failure_title: "DocuSign 授权失败"
+          invalid_state_title: "授权状态无效"
+          bad_request_title: "请求参数错误"
+          not_found_title: "资源不存在"
+          tenant_uid: "企业标识"
+          account_id: "DocuSign Account ID"
+          base_uri: "DocuSign Base URI"
+          scope: "授权范围"
+          return_to_app: "返回业务页面"
+          return_to_connection: "返回连接配置"
+          back_home: "返回首页"

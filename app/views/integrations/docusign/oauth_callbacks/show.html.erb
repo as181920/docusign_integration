@@ -1,0 +1,54 @@
+<% content_for :title, t("integrations.docusign.oauth_callbacks.result.page_title") %>
+
+<div class="container-fluid px-4 py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-9 col-xl-7">
+      <div class="card">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center mb-3">
+            <h1 class="h5 my-0 me-2"><%= @callback_title.presence || t("integrations.docusign.oauth_callbacks.result.page_title") %></h1>
+            <% if @callback_status == :success %>
+              <span class="badge bg-info me-2"><%= t("integrations.docusign.oauth_callbacks.result.success_badge") %></span>
+            <% else %>
+              <span class="badge bg-danger me-2"><%= t("integrations.docusign.oauth_callbacks.result.failure_badge") %></span>
+            <% end %>
+          </div>
+
+          <p class="text-secondary mb-3"><%= @callback_message %></p>
+
+          <% if @tenant.present? %>
+            <dl class="row mb-3">
+              <dt class="col-4 text-secondary"><%= t("integrations.docusign.oauth_callbacks.result.tenant_uid") %></dt>
+              <dd class="col-8"><%= @tenant.uid %></dd>
+
+              <% if @connection.present? %>
+                <dt class="col-4 text-secondary"><%= t("integrations.docusign.oauth_callbacks.result.account_id") %></dt>
+                <dd class="col-8 text-break"><%= @connection.docusign_account_id %></dd>
+
+                <dt class="col-4 text-secondary"><%= t("integrations.docusign.oauth_callbacks.result.base_uri") %></dt>
+                <dd class="col-8 text-break"><%= @connection.docusign_base_uri %></dd>
+
+                <dt class="col-4 text-secondary"><%= t("integrations.docusign.oauth_callbacks.result.scope") %></dt>
+                <dd class="col-8">
+                  <% @connection.oauth_scope.to_s.split(/\s+/).reject(&:blank?).each do |scope| %>
+                    <span class="badge bg-info me-1 mb-1"><%= scope %></span>
+                  <% end %>
+                </dd>
+              <% end %>
+            </dl>
+          <% end %>
+
+          <div class="d-flex flex-wrap gap-2">
+            <% if @return_to.present? %>
+              <%= link_to t("integrations.docusign.oauth_callbacks.result.return_to_app"), @return_to, class: "btn btn-primary" %>
+            <% elsif @tenant.present? %>
+              <%= link_to t("integrations.docusign.oauth_callbacks.result.return_to_connection"), tenant_docusign_connection_path(tenant_uid: @tenant.uid), class: "btn btn-primary" %>
+            <% end %>
+
+            <%= link_to t("integrations.docusign.oauth_callbacks.result.back_home"), root_path, class: "btn btn-outline-secondary" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

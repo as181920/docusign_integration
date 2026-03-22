@@ -1,0 +1,58 @@
+<%= form_with model: template,
+  scope: :contract_template,
+  url: url,
+  method: method,
+  class: 'form' do |f| %>
+  <div class="form-field">
+    <div class="d-inline-block min-w-12">
+      <%= f.label :name, t('tenant.contract_templates.form.name'), class: 'form-label' %>
+    </div>
+    <div class="flex-1 min-w-16">
+      <%= f.text_field :name, class: 'form-control w-100', required: true %>
+    </div>
+  </div>
+
+  <div class="form-field">
+    <div class="d-inline-block min-w-12">
+      <%= f.label :version, t('tenant.contract_templates.form.version'), class: 'form-label' %>
+    </div>
+    <div class="flex-1 min-w-16">
+      <%= f.number_field :version, class: 'form-control w-100', min: 1 %>
+    </div>
+  </div>
+
+  <div class="form-field">
+    <div class="d-inline-block min-w-12">
+      <%= f.label :status, t('tenant.common.status'), class: 'form-label' %>
+    </div>
+    <div class="flex-1 min-w-16">
+      <%= f.select :status,
+        options_for_select(ContractTemplate.statuses.keys.map { |value| [t("tenant.contract_templates.statuses.#{value}", default: value), value] }, template.status || 'active'),
+        {},
+        class: 'form-control w-100' %>
+    </div>
+  </div>
+
+  <div class="form-field">
+    <div class="d-inline-block min-w-12">
+      <%= f.label :docusign_template_id, t('tenant.contract_templates.form.docusign_template_id'), class: 'form-label' %>
+    </div>
+    <div class="flex-1 min-w-16">
+      <%= f.text_field :docusign_template_id, class: 'form-control w-100' %>
+    </div>
+  </div>
+
+  <div class="form-field align-items-start">
+    <div class="d-inline-block min-w-12">
+      <%= f.label :description, t('tenant.contract_templates.form.description'), class: 'form-label' %>
+    </div>
+    <div class="flex-1 min-w-16">
+      <%= f.text_area :description, class: 'form-control w-100', rows: 4 %>
+    </div>
+  </div>
+
+  <div class="form-field align-items-center mb-0">
+    <div class="d-inline-block min-w-12"></div>
+    <%= f.submit submit_text, class: 'btn btn-primary' %>
+  </div>
+<% end %>

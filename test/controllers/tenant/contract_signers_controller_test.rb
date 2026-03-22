@@ -8,14 +8,28 @@ class TenantContractSignersControllerTest < ActionDispatch::IntegrationTest
     create(:contract_signer, contract: @contract, name: "Alice Signer", email: "alice.signer@example.com", role_name: "signer", routing_order: 1)
     create(:contract_signer, :carbon_copy, contract: @contract, name: "Legal CC", email: "legal.cc@example.com", role_name: "cc", routing_order: 2)
 
-    sign_in_tenant_user!(tenant_uid: @tenant.uid, name: @tenant_user.name)
+    sign_in_tenant_user(tenant_uid: @tenant.uid, name: @tenant_user.name)
   end
 
   test "index returns contract signers" do
-    get "/t/acme/contracts/#{@contract.id}/signers"
+    get "/t/acme/contracts/#{@contract.id}/signers", as: :json
 
     assert_response :success
     assert_equal 2, json_body.size
+  end
+
+  test "index supports pagination and filtering" do
+    create_list(:contract_signer, 8, contract: @contract, role_name: "approver")
+    create(:contract_signer, contract: @contract, email: "finance.special@example.com", role_name: "finance")
+
+    get "/t/acme/contracts/#{@contract.id}/signers", params: {
+      per: 3,
+      q: { email_cont: "finance.special" }
+    }, as: :json
+
+    assert_response :success
+    assert_equal 1, json_body.size
+    assert_equal "finance.special@example.com", json_body.first["email"]
   end
 
   test "create signer success" do
@@ -28,7 +42,7 @@ class TenantContractSignersControllerTest < ActionDispatch::IntegrationTest
           routing_order: 3,
           signing_type: "signer"
         }
-      }
+      }, as: :json
     end
 
     assert_response :created
@@ -36,7 +50,7 @@ class TenantContractSignersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create signer validation error" do
-    post "/t/acme/contracts/#{@contract.id}/signers", params: { contract_signer: { name: "Only Name" } }
+    post "/t/acme/contracts/#{@contract.id}/signers", params: { contract_signer: { name: "Only Name" } }, as: :json
 
     assert_response :unprocessable_entity
     assert_predicate json_body["errors"], :any?

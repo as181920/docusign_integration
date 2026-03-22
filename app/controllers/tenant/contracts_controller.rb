@@ -3,42 +3,87 @@ module Tenant
     before_action :set_contract, only: :show
 
     def index
-      contracts = Contract.where(tenant: current_tenant).order(created_at: :desc)
-      render json: contracts.as_json(include: :contract_envelope)
+      @q = policy_scope_records(contract_scope).ransack(params[:q])
+      @contracts = @q.result.page(params[:page]).per(pagination_per(default: 10))
+
+      respond_to do |format|
+        format.html
+        format.json { render json: @contracts.as_json(include: :contract_envelope) }
+      end
+    end
+
+    def new
+      @contract = Contract.new(status: :draft)
+      @contract_templates = template_scope
     end
 
     def show
-      render json: serialize_contract(@contract)
+      @signers = @contract.contract_signers.order(:routing_order, :id)
+      @new_signer = @contract.contract_signers.new(signing_type: :signer)
+      @embedded_signing_url = flash[:embedded_signing_url]
+      @embedded_signing_email = flash[:embedded_signing_email]
+
+      respond_to do |format|
+        format.html
+        format.json { render json: serialize_contract(@contract) }
+      end
     end
 
     def create
-      contract = Contract.new(contract_params)
-      contract.tenant = current_tenant
-      contract.creator_tenant_user = current_tenant_user
+      @contract = Contract.new(contract_params)
+      @contract.tenant = current_tenant
+      @contract.creator_tenant_user = current_user
 
-      apply_template!(contract)
+      apply_template(@contract)
 
-      if contract.save
-        audit!(action: "contract_created", target: contract, data: { contract_no: contract.contract_no })
-        render json: serialize_contract(contract), status: :created
+      if @contract.save
+        audit(action: "contract_created", target: @contract, data: { contract_no: @contract.contract_no })
+        respond_to do |format|
+          format.html do
+            redirect_to tenant_contract_path(tenant_uid: current_tenant.uid, id: @contract.id), notice: t("tenant.contracts.notices.created")
+          end
+          format.json { render json: serialize_contract(@contract), status: :created }
+        end
       else
-        render json: { errors: contract.errors.full_messages }, status: :unprocessable_entity
+        respond_to do |format|
+          format.html do
+            @contract_templates = template_scope
+            flash.now[:alert] = @contract.errors.full_messages.to_sentence
+            render :new, status: :unprocessable_entity
+          end
+          format.json { render json: { errors: @contract.errors.full_messages }, status: :unprocessable_entity }
+        end
       end
     rescue ActiveRecord::RecordNotFound => e
-      render json: { error: e.message }, status: :not_found
+      respond_to do |format|
+        format.html do
+          @contract_templates = template_scope
+          flash.now[:alert] = e.message
+          render :new, status: :not_found
+        end
+        format.json { render json: { error: e.message }, status: :not_found }
+      end
     end
 
     private
 
+      def contract_scope
+        Contract.includes(:contract_envelope).where(tenant: current_tenant).order(created_at: :desc)
+      end
+
+      def template_scope
+        ContractTemplate.where(tenant: current_tenant, status: :active).order(name: :asc, version: :desc)
+      end
+
       def set_contract
-        @contract = Contract.find_by!(id: params[:id], tenant: current_tenant)
+        @contract = Contract.includes(:contract_envelope, :contract_signers).find_by!(id: params[:id], tenant: current_tenant)
       end
 
       def contract_params
         params.require(:contract).permit(:title, :contract_no, :source, :language, :currency, :docusign_template_id, metadata: {})
       end
 
-      def apply_template!(contract)
+      def apply_template(contract)
         template_id = params.dig(:contract, :contract_template_id)
         return if template_id.blank?
 

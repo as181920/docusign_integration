@@ -1,10 +1,10 @@
 <% tenant_uid = current_tenant&.uid %>
 <% dashboard_path = tenant_uid.present? ? main_app.tenant_dashboard_path(tenant_uid: tenant_uid) : "#" %>
-<% tenant_name = current_tenant&.name.presence || "商家后台" %>
-<% tenant_user = respond_to?(:current_tenant_user, true) ? current_tenant_user : nil %>
+<% tenant_name = current_tenant&.name.presence || t("shared.header.fallback_tenant_name") %>
+<% tenant_user = respond_to?(:current_user, true) ? current_user : nil %>
 <% display_user_name = tenant_user&.name.presence %>
 <% display_user_name ||= respond_to?(:current_user) ? current_user&.to_s : nil %>
-<% display_user_name ||= "未登录用户" %>
+<% display_user_name ||= t("shared.header.anonymous_user") %>
 <% profile_path = tenant_auth.profile_path %>
 <% sign_out_path = (respond_to?(:current_user) && current_user.respond_to?(:root?) && current_user.root?) ? tenant_auth.sign_out_path : tenant_auth.iam_sign_out_path %>
 
@@ -21,7 +21,7 @@
 
   <nav aria-label="breadcrumb" class="sm:col-12">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="<%= dashboard_path %>">商家工作台</a></li>
+      <li class="breadcrumb-item"><a href="<%= dashboard_path %>"><%= t("shared.header.dashboard") %></a></li>
       <li class="breadcrumb-item"><%= tenant_name %></li>
     </ol>
   </nav>
@@ -43,14 +43,14 @@
     <%= tag.div data: { popover_target: "popup" },
       class: "profile-menu dropdown-menu d-none" do %>
       <h3 class="dropdown-title">
-        <%= tag.span "个人设置" %>
+        <%= tag.span t("shared.header.personal_settings") %>
       </h3>
       <div>
         <%= link_to profile_path, class: "dropdown-item" do %>
-          <%= tag.span "个人信息" %>
+          <%= tag.span t("shared.header.profile") %>
         <% end %>
         <%= link_to sign_out_path, data: { turbo: false }, class: "dropdown-item" do %>
-          <%= tag.span "退出登录" %>
+          <%= tag.span t("shared.header.sign_out") %>
         <% end %>
       </div>
     <% end %>

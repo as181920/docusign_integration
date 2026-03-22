@@ -14,10 +14,10 @@ module Docusign
       captured = {}
       req = Struct.new(:headers, :body).new({}, nil)
 
-      TokenManager.stubs(:current_access_token!).returns("access-123")
+      TokenManager.stubs(:current_access_token).returns("access-123")
       Faraday.expects(:post).with { |url| captured[:url] = url; true }.yields(req).returns(response)
 
-      body = ApiClient.post!(connection: connection, path: "/envelopes", body: { status: "sent" })
+      body = ApiClient.post(connection: connection, path: "/envelopes", body: { status: "sent" })
 
       assert_equal "env-1", body["envelopeId"]
 
@@ -35,17 +35,17 @@ module Docusign
       response = Struct.new(:status, :body).new(200, '{"ok":true}')
       req = Struct.new(:headers, :body).new({}, nil)
 
-      TokenManager.stubs(:current_access_token!).returns("access")
+      TokenManager.stubs(:current_access_token).returns("access")
       Faraday.expects(:get).yields(req).returns(response)
 
-      assert ApiClient.get!(connection: connection, path: "/ping")["ok"]
+      assert ApiClient.get(connection: connection, path: "/ping")["ok"]
     end
 
     test "raises configuration error when base uri missing" do
       connection = create_connection
       connection.update!(docusign_base_uri: nil)
 
-      assert_raises(Docusign::ConfigurationError) { ApiClient.get!(connection: connection, path: "/ping") }
+      assert_raises(Docusign::ConfigurationError) { ApiClient.get(connection: connection, path: "/ping") }
     end
 
     test "raises api error for non success responses" do
@@ -53,10 +53,10 @@ module Docusign
       response = Struct.new(:status, :body).new(400, '{"error":"invalid"}')
       req = Struct.new(:headers, :body).new({}, nil)
 
-      TokenManager.stubs(:current_access_token!).returns("access")
+      TokenManager.stubs(:current_access_token).returns("access")
       Faraday.expects(:get).yields(req).returns(response)
 
-      assert_raises(Docusign::ApiError) { ApiClient.get!(connection: connection, path: "/ping") }
+      assert_raises(Docusign::ApiError) { ApiClient.get(connection: connection, path: "/ping") }
     end
 
     test "raises api error for invalid json responses" do
@@ -64,10 +64,10 @@ module Docusign
       response = Struct.new(:status, :body).new(200, "not-json")
       req = Struct.new(:headers, :body).new({}, nil)
 
-      TokenManager.stubs(:current_access_token!).returns("access")
+      TokenManager.stubs(:current_access_token).returns("access")
       Faraday.expects(:get).yields(req).returns(response)
 
-      assert_raises(Docusign::ApiError) { ApiClient.get!(connection: connection, path: "/ping") }
+      assert_raises(Docusign::ApiError) { ApiClient.get(connection: connection, path: "/ping") }
     end
   end
 end

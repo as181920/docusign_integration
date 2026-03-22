@@ -11,7 +11,7 @@ module Docusign
       create(:contract_envelope, :acme_envelope, contract: contract, tenant_docusign_connection: connection)
 
       expected_connection_id = connection.id
-      ApiClient.expects(:post!).with do |*args, **kwargs|
+      ApiClient.expects(:post).with do |*args, **kwargs|
         params = kwargs.presence || args.first || {}
 
         assert_equal expected_connection_id, params[:connection].id
@@ -20,7 +20,7 @@ module Docusign
         true
       end.returns({ "url" => "https://docusign.example.com/embedded" })
 
-      url = RecipientViewService.call!(
+      url = RecipientViewService.call(
         contract: contract,
         signer_email: signer.email,
         return_url: "https://app.example.com/return"
@@ -39,7 +39,7 @@ module Docusign
       )
 
       assert_raises(Docusign::Error) do
-        RecipientViewService.call!(contract: contract, signer_email: "a@example.com", return_url: "https://app.example.com")
+        RecipientViewService.call(contract: contract, signer_email: "a@example.com", return_url: "https://app.example.com")
       end
     end
   end

@@ -4,7 +4,7 @@ module Feishu
 
     class << self
       # Resolve tenant by URL tenant_uid and verify Feishu tenant_key consistency.
-      def resolve!(tenant_uid:, tenant_key:)
+      def resolve(tenant_uid:, tenant_key:)
         tenant = TenantAuth::Tenant.find_by!(uid: tenant_uid)
         enterprise = FeishuEnterprise.find_by!(tenant: tenant)
 

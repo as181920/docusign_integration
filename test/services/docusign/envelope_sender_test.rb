@@ -15,9 +15,9 @@ module Docusign
       create(:contract_signer, contract: contract, name: "Alice Signer", email: "alice.signer@example.com", role_name: "signer", routing_order: 1)
       result = { "envelopeId" => "env-new-001", "status" => "sent" }
 
-      ApiClient.expects(:post!).returns(result)
+      ApiClient.expects(:post).returns(result)
 
-      envelope = EnvelopeSender.call!(contract: contract)
+      envelope = EnvelopeSender.call(contract: contract)
 
       assert_equal "env-new-001", envelope.envelope_id
       assert_equal "sent", envelope.status
@@ -33,7 +33,7 @@ module Docusign
       tenant, tenant_user, = create_acme_context
       contract = create(:contract, :acme_contract_without_template, tenant: tenant, creator_tenant_user: tenant_user)
 
-      assert_raises(Docusign::Error) { EnvelopeSender.call!(contract: contract) }
+      assert_raises(Docusign::Error) { EnvelopeSender.call(contract: contract) }
     end
 
     test "sends envelope with document payload when template missing" do
@@ -52,7 +52,7 @@ module Docusign
 
       captured_body = nil
       expected_connection_id = connection.id
-      ApiClient.expects(:post!).with do |*args, **kwargs|
+      ApiClient.expects(:post).with do |*args, **kwargs|
         params = kwargs.presence || args.first || {}
 
         assert_equal expected_connection_id, params[:connection].id
@@ -61,7 +61,7 @@ module Docusign
         true
       end.returns({ "envelopeId" => "env-doc-001", "status" => "sent" })
 
-      EnvelopeSender.call!(contract: contract)
+      EnvelopeSender.call(contract: contract)
 
       assert_predicate captured_body[:documents], :present?
       assert_equal "sent", captured_body[:status]

@@ -1,0 +1,58 @@
+<% content_for :title, t("tenant.webhook_events.index.page_title") %>
+<%= render "tenant/shared/layout_slots" %>
+
+<div class="w-100 px-4 py-3">
+  <div class="card w-100">
+    <div class="card-body w-100">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+        <h1 class="h5 mb-0"><%= t("tenant.webhook_events.index.title") %></h1>
+        <span class="badge bg-info"><%= t("tenant.webhook_events.index.recent_summary", days: @recent_days, count: @recent_count) %></span>
+      </div>
+      <p class="text-secondary mb-3"><%= t("tenant.webhook_events.index.description") %></p>
+
+      <%= search_form_for @q, url: tenant_webhook_events_path(tenant_uid: current_tenant.uid), class: "form d-flex flex-wrap align-items-end gap-2 mb-3" do |form| %>
+        <div>
+          <%= form.label :event_type_or_delivery_id_or_external_event_id_cont, t("tenant.common.keyword"), class: "form-label" %>
+          <%= form.search_field :event_type_or_delivery_id_or_external_event_id_cont, class: "form-control", placeholder: t("tenant.webhook_events.index.keyword_placeholder") %>
+        </div>
+
+        <div>
+          <%= form.label :status_eq, t("tenant.common.status"), class: "form-label" %>
+          <%= form.select :status_eq,
+            options_for_select([[t("tenant.common.all"), ""]] + WebhookEvent.statuses.keys.map { |value| [t("tenant.webhook_events.statuses.#{value}", default: value), value] }, params.dig(:q, :status_eq)),
+            {},
+            class: "form-control" %>
+        </div>
+
+        <div>
+          <%= label_tag :recent_days, t("tenant.webhook_events.index.recent_days"), class: "form-label" %>
+          <%= select_tag :recent_days,
+            options_for_select([[1, 1], [7, 7], [30, 30], [90, 90]], @recent_days),
+            class: "form-control" %>
+        </div>
+
+        <div>
+          <%= label_tag :per, t("tenant.common.per_page"), class: "form-label" %>
+          <%= select_tag :per,
+            options_for_select([[10, 10], [20, 20], [50, 50]], params[:per].presence || 20),
+            class: "form-control" %>
+        </div>
+
+        <%= form.button class: "btn btn-primary" do %>
+          <%= tag.span class: "loading-spinner" %>
+          <%= tag.span t("tenant.common.filter") %>
+        <% end %>
+
+        <%= link_to t("tenant.common.reset"), tenant_webhook_events_path(tenant_uid: current_tenant.uid), class: "btn btn-secondary" %>
+      <% end %>
+
+      <%= render "data_table", webhook_events: @webhook_events %>
+
+      <% if @webhook_events.total_pages > 1 %>
+        <div class="d-flex justify-content-end mt-3">
+          <%= paginate @webhook_events %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

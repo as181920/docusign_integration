@@ -33,7 +33,7 @@ class ActiveSupport::TestCase
 end
 
 class ActionDispatch::IntegrationTest
-  def sign_in_tenant_user!(tenant_uid:, name:, password: "password")
+  def sign_in_tenant_user(tenant_uid:, name:, password: "password")
     post "/tenant_auth/iam/sessions", params: {
       session: {
         tenant_uid: tenant_uid,

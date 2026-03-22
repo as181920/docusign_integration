@@ -42,7 +42,7 @@ class IntegrationsFeishuCallbacksControllerTest < ActionDispatch::IntegrationTes
     }
 
     assert_response :unprocessable_entity
-    assert_match "tenant_key does not match", json_body["error"]
+    assert_equal I18n.t("integrations.feishu.callbacks.errors.tenant_key_mismatch"), json_body["error"]
   end
 
   test "callback returns not found for unknown tenant" do

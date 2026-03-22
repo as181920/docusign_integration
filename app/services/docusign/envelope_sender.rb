@@ -3,12 +3,12 @@ require "base64"
 module Docusign
   class EnvelopeSender
     class << self
-      def call!(contract:)
+      def call(contract:)
         connection = TenantDocusignConnection.find_by!(tenant: contract.tenant, status: :active)
-        validate_contract!(contract)
+        validate_contract(contract)
 
         payload = build_payload(contract)
-        result = Docusign::ApiClient.post!(connection: connection, path: "/envelopes", body: payload)
+        result = Docusign::ApiClient.post(connection: connection, path: "/envelopes", body: payload)
 
         envelope = ContractEnvelope.find_or_initialize_by(contract:)
         envelope_status = normalize_envelope_status(result["status"])
@@ -21,13 +21,13 @@ module Docusign
         envelope.metadata = envelope.metadata.to_h.merge(result)
         envelope.save!
 
-        update_contract_status!(contract, envelope_status)
+        update_contract_status(contract, envelope_status)
         envelope
       end
 
       private
 
-        def validate_contract!(contract)
+        def validate_contract(contract)
           raise Docusign::Error, "contract requires at least one signer" if contract.contract_signers.signer.none?
 
           if contract.docusign_template_id.blank? && contract.documents.none?
@@ -35,7 +35,7 @@ module Docusign
           end
         end
 
-        def update_contract_status!(contract, envelope_status)
+        def update_contract_status(contract, envelope_status)
           attrs = {}
           attrs[:status] = envelope_status if Contract.statuses.key?(envelope_status)
           attrs[:sent_at] = Time.current if envelope_status == "sent" && contract.sent_at.blank?

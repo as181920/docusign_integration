@@ -1,0 +1,19 @@
+<% content_for :title, t('tenant.contract_templates.edit.page_title') %>
+<%= render 'tenant/shared/layout_slots' %>
+
+<div class="container-fluid px-4 py-3">
+  <div class="card">
+    <div class="card-body">
+      <div class="d-flex justify-content-space-between align-items-center mb-3">
+        <h1 class="h5 my-0"><%= t('tenant.contract_templates.edit.title', name: @template.name, version: @template.version) %></h1>
+        <%= link_to t('tenant.contract_templates.edit.back'), tenant_contract_template_path(tenant_uid: current_tenant.uid, id: @template.id), class: 'btn btn-sm btn-secondary mb-0' %>
+      </div>
+
+      <%= render 'form',
+        template: @template,
+        url: tenant_contract_template_path(tenant_uid: current_tenant.uid, id: @template.id),
+        method: :patch,
+        submit_text: t('tenant.contract_templates.edit.submit') %>
+    </div>
+  </div>
+</div>

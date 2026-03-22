@@ -12,23 +12,23 @@ module Docusign
       connection = create_connection
       connection.update!(access_token: "existing", token_expires_at: 10.minutes.from_now)
 
-      assert_equal "existing", TokenManager.current_access_token!(connection)
+      assert_equal "existing", TokenManager.current_access_token(connection)
     end
 
     test "current_access_token refreshes when token near expiry" do
       connection = create_connection
       connection.update!(access_token: "old", token_expires_at: 30.seconds.from_now)
 
-      TokenManager.stubs(:refresh_access_token!).returns("new-token")
+      TokenManager.stubs(:refresh_access_token).returns("new-token")
 
-      assert_equal "new-token", TokenManager.current_access_token!(connection)
+      assert_equal "new-token", TokenManager.current_access_token(connection)
     end
 
     test "refresh_access_token requires refresh_token" do
       connection = create_connection
       connection.update!(refresh_token: nil)
 
-      assert_raises(Docusign::ConfigurationError) { TokenManager.refresh_access_token!(connection) }
+      assert_raises(Docusign::ConfigurationError) { TokenManager.refresh_access_token(connection) }
     end
 
     test "refresh_access_token updates connection from oauth response" do
@@ -36,7 +36,7 @@ module Docusign
       called_with = nil
 
       fake_client = Object.new
-      fake_client.define_singleton_method(:refresh_token!) do |refresh_token:|
+      fake_client.define_singleton_method(:refresh_token) do |refresh_token:|
         called_with = refresh_token
         {
           "access_token" => "new-access",
@@ -46,7 +46,7 @@ module Docusign
       end
 
       OauthClient.stubs(:new).returns(fake_client)
-      token = TokenManager.refresh_access_token!(connection)
+      token = TokenManager.refresh_access_token(connection)
 
       assert_equal "new-access", token
 
@@ -62,12 +62,12 @@ module Docusign
       connection = create_connection
 
       fake_client = Object.new
-      fake_client.define_singleton_method(:refresh_token!) do |refresh_token:|
+      fake_client.define_singleton_method(:refresh_token) do |refresh_token:|
         raise Docusign::ApiError, "boom"
       end
 
       OauthClient.stubs(:new).returns(fake_client)
-      assert_raises(Docusign::ApiError) { TokenManager.refresh_access_token!(connection) }
+      assert_raises(Docusign::ApiError) { TokenManager.refresh_access_token(connection) }
 
       assert_predicate connection.reload, :expired?
     end

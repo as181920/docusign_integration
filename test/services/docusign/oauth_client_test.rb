@@ -26,7 +26,7 @@ module Docusign
 
       Faraday.expects(:post).yields(req).returns(response)
 
-      token = build_client.exchange_code!(code: "oauth-code")
+      token = build_client.exchange_code(code: "oauth-code")
 
       assert_equal "a1", token["access_token"]
     end
@@ -37,7 +37,7 @@ module Docusign
 
       Faraday.expects(:get).yields(req).returns(response)
 
-      assert_raises(Docusign::ApiError) { build_client.user_info!(access_token: "bad") }
+      assert_raises(Docusign::ApiError) { build_client.user_info(access_token: "bad") }
     end
   end
 end

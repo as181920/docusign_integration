@@ -30,9 +30,10 @@ Rails.application.routes.draw do
   scope "/t/:tenant_uid", module: :tenant, as: :tenant do
     resource :dashboard, only: :show, controller: "dashboards"
 
-    resources :contract_templates, only: %i[index show create update]
+    resources :contract_templates, only: %i[index new show edit create update]
+    resources :webhook_events, only: %i[index show]
 
-    resources :contracts, only: %i[index show create] do
+    resources :contracts, only: %i[index new show create] do
       resources :signers, only: %i[index create], controller: "contract_signers"
 
       scope module: :contracts do

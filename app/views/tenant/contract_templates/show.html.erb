@@ -1,0 +1,44 @@
+<% content_for :title, t('tenant.contract_templates.show.page_title') %>
+<%= render 'tenant/shared/layout_slots' %>
+<% status_key = @template.status.to_s %>
+
+<div class="container-fluid px-4 py-3">
+  <div class="card">
+    <div class="card-body">
+      <div class="d-flex justify-content-space-between align-items-center mb-3">
+        <h1 class="h5 my-0"><%= t('tenant.contract_templates.show.title', name: @template.name, version: @template.version) %></h1>
+        <%= link_to t('tenant.contract_templates.show.back_button'), tenant_contract_templates_path(tenant_uid: current_tenant.uid), class: 'btn btn-sm btn-secondary mb-0' %>
+      </div>
+
+      <div class="form-field">
+        <div class="d-inline-block min-w-12 text-secondary"><%= t('tenant.contract_templates.show.fields.name') %></div>
+        <div class="flex-1 min-w-16"><%= @template.name %></div>
+      </div>
+
+      <div class="form-field">
+        <div class="d-inline-block min-w-12 text-secondary"><%= t('tenant.contract_templates.show.fields.version') %></div>
+        <div class="flex-1 min-w-16">v<%= @template.version %></div>
+      </div>
+
+      <div class="form-field">
+        <div class="d-inline-block min-w-12 text-secondary"><%= t('tenant.contract_templates.show.fields.status') %></div>
+        <div class="flex-1 min-w-16"><%= t("tenant.contract_templates.statuses.#{status_key}", default: status_key) %></div>
+      </div>
+
+      <div class="form-field">
+        <div class="d-inline-block min-w-12 text-secondary"><%= t('tenant.contract_templates.show.fields.docusign_template_id') %></div>
+        <div class="flex-1 min-w-16 text-break"><%= @template.docusign_template_id.presence || t('tenant.common.empty') %></div>
+      </div>
+
+      <div class="form-field align-items-start">
+        <div class="d-inline-block min-w-12 text-secondary"><%= t('tenant.contract_templates.show.fields.description') %></div>
+        <div class="flex-1 min-w-16"><%= @template.description.presence || t('tenant.common.empty') %></div>
+      </div>
+
+      <div class="form-field align-items-center mb-0 mt-3">
+        <div class="d-inline-block min-w-12"></div>
+        <%= link_to t('tenant.contract_templates.show.edit_button'), edit_tenant_contract_template_path(tenant_uid: current_tenant.uid, id: @template.id), class: 'btn btn-primary' %>
+      </div>
+    </div>
+  </div>
+</div>

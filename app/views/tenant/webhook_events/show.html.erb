@@ -1,0 +1,92 @@
+<% content_for :title, t("tenant.webhook_events.show.page_title") %>
+<%= render "tenant/shared/layout_slots" %>
+
+<div class="container-fluid px-4 py-3">
+  <div class="card mb-3">
+    <div class="card-body d-flex flex-wrap justify-content-space-between align-items-center gap-2">
+      <div>
+        <h1 class="h5 mb-1"><%= t("tenant.webhook_events.show.title") %></h1>
+        <p class="text-secondary mb-0"><%= t("tenant.webhook_events.show.event_id", id: @webhook_event.id) %></p>
+      </div>
+      <%= link_to t("tenant.webhook_events.show.back"), tenant_webhook_events_path(tenant_uid: current_tenant.uid), class: "btn btn-sm btn-secondary mb-0" %>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-12 col-xl-5">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="h6 mb-3"><%= t("tenant.webhook_events.show.base_info") %></h2>
+
+          <div class="form-field">
+            <div class="d-inline-block min-w-12 text-secondary"><%= t("tenant.webhook_events.show.fields.provider") %></div>
+            <div class="flex-1 min-w-16"><%= @webhook_event.provider %></div>
+          </div>
+
+          <div class="form-field">
+            <div class="d-inline-block min-w-12 text-secondary"><%= t("tenant.webhook_events.show.fields.delivery_id") %></div>
+            <div class="flex-1 min-w-16 text-break"><%= @webhook_event.delivery_id %></div>
+          </div>
+
+          <div class="form-field">
+            <div class="d-inline-block min-w-12 text-secondary"><%= t("tenant.webhook_events.show.fields.event_type") %></div>
+            <div class="flex-1 min-w-16"><%= @webhook_event.event_type.presence || t("tenant.common.empty") %></div>
+          </div>
+
+          <div class="form-field">
+            <div class="d-inline-block min-w-12 text-secondary"><%= t("tenant.webhook_events.show.fields.account_id") %></div>
+            <div class="flex-1 min-w-16 text-break"><%= @webhook_event.external_account_id.presence || t("tenant.common.empty") %></div>
+          </div>
+
+          <div class="form-field">
+            <div class="d-inline-block min-w-12 text-secondary"><%= t("tenant.webhook_events.show.fields.envelope_id") %></div>
+            <div class="flex-1 min-w-16 text-break"><%= @webhook_event.external_event_id.presence || t("tenant.common.empty") %></div>
+          </div>
+
+          <div class="form-field">
+            <div class="d-inline-block min-w-12 text-secondary"><%= t("tenant.webhook_events.show.fields.status") %></div>
+            <div class="flex-1 min-w-16"><%= t("tenant.webhook_events.statuses.#{@webhook_event.status}", default: @webhook_event.status) %></div>
+          </div>
+
+          <div class="form-field">
+            <div class="d-inline-block min-w-12 text-secondary"><%= t("tenant.webhook_events.show.fields.processing_attempts") %></div>
+            <div class="flex-1 min-w-16"><%= @webhook_event.processing_attempts %></div>
+          </div>
+
+          <div class="form-field">
+            <div class="d-inline-block min-w-12 text-secondary"><%= t("tenant.webhook_events.show.fields.received_at") %></div>
+            <div class="flex-1 min-w-16"><%= l(@webhook_event.received_at || @webhook_event.created_at, format: :long) %></div>
+          </div>
+
+          <div class="form-field mb-0">
+            <div class="d-inline-block min-w-12 text-secondary"><%= t("tenant.webhook_events.show.fields.processed_at") %></div>
+            <div class="flex-1 min-w-16"><%= @webhook_event.processed_at ? l(@webhook_event.processed_at, format: :long) : t("tenant.common.empty") %></div>
+          </div>
+
+          <% if @webhook_event.last_error.present? %>
+            <div class="alert alert-danger mt-3 mb-0">
+              <strong><%= t("tenant.webhook_events.show.last_error") %></strong>
+              <span class="ms-1"><%= @webhook_event.last_error %></span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-xl-7">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h2 class="h6 mb-2"><%= t("tenant.webhook_events.show.headers") %></h2>
+          <pre class="bg-light border rounded p-3 mb-0 text-break"><%= @headers_json %></pre>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h2 class="h6 mb-2"><%= t("tenant.webhook_events.show.payload") %></h2>
+          <pre class="bg-light border rounded p-3 mb-0 text-break"><%= @payload_json %></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

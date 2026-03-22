@@ -1,0 +1,76 @@
+<%= form_with model: contract,
+  scope: :contract,
+  url: url,
+  method: method,
+  class: "form" do |f| %>
+  <div class="form-field">
+    <div class="d-inline-block min-w-12">
+      <%= f.label :title, t("tenant.contracts.form.title"), class: "form-label" %>
+    </div>
+    <div class="flex-1 min-w-16">
+      <%= f.text_field :title, class: "form-control w-100", required: true %>
+    </div>
+  </div>
+
+  <div class="form-field">
+    <div class="d-inline-block min-w-12">
+      <%= f.label :contract_no, t("tenant.contracts.form.contract_no"), class: "form-label" %>
+    </div>
+    <div class="flex-1 min-w-16">
+      <%= f.text_field :contract_no, class: "form-control w-100", required: true %>
+    </div>
+  </div>
+
+  <div class="form-field">
+    <div class="d-inline-block min-w-12">
+      <%= label_tag "contract[contract_template_id]", t("tenant.contracts.form.template"), class: "form-label" %>
+    </div>
+    <div class="flex-1 min-w-16">
+      <%= select_tag "contract[contract_template_id]",
+        options_for_select(contract_templates.map { |template| ["#{template.name} v#{template.version}", template.id] }, selected_template_id),
+        include_blank: t("tenant.contracts.form.template_blank"),
+        class: "form-control w-100" %>
+    </div>
+  </div>
+
+  <div class="form-field">
+    <div class="d-inline-block min-w-12">
+      <%= f.label :source, t("tenant.contracts.form.source"), class: "form-label" %>
+    </div>
+    <div class="flex-1 min-w-16">
+      <%= f.text_field :source, class: "form-control w-100", placeholder: "manual" %>
+    </div>
+  </div>
+
+  <div class="form-field">
+    <div class="d-inline-block min-w-12">
+      <%= f.label :language, t("tenant.contracts.form.language"), class: "form-label" %>
+    </div>
+    <div class="flex-1 min-w-16">
+      <%= f.text_field :language, class: "form-control w-100", placeholder: "zh-CN" %>
+    </div>
+  </div>
+
+  <div class="form-field">
+    <div class="d-inline-block min-w-12">
+      <%= f.label :currency, t("tenant.contracts.form.currency"), class: "form-label" %>
+    </div>
+    <div class="flex-1 min-w-16">
+      <%= f.text_field :currency, class: "form-control w-100", placeholder: "CNY" %>
+    </div>
+  </div>
+
+  <div class="form-field">
+    <div class="d-inline-block min-w-12">
+      <%= f.label :docusign_template_id, t("tenant.contracts.form.docusign_template_id"), class: "form-label" %>
+    </div>
+    <div class="flex-1 min-w-16">
+      <%= f.text_field :docusign_template_id, class: "form-control w-100" %>
+    </div>
+  </div>
+
+  <div class="form-field align-items-center mb-0">
+    <div class="d-inline-block min-w-12"></div>
+    <%= f.submit submit_text, class: "btn btn-primary" %>
+  </div>
+<% end %>

@@ -1,7 +1,7 @@
 module Docusign
   class RecipientViewService
     class << self
-      def call!(contract:, signer_email:, return_url:)
+      def call(contract:, signer_email:, return_url:)
         envelope = contract.contract_envelope
         raise Docusign::Error, "contract envelope not found" if envelope.blank?
 
@@ -16,7 +16,7 @@ module Docusign
           clientUserId: Docusign::RecipientIdentity.client_user_id(signer)
         }
 
-        result = Docusign::ApiClient.post!(
+        result = Docusign::ApiClient.post(
           connection: connection,
           path: "/envelopes/#{envelope.envelope_id}/views/recipient",
           body: payload

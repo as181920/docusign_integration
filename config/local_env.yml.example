@@ -31,6 +31,7 @@ default: &default
   docusign_base_uri: "https://demo.docusign.net/restapi"
   docusign_oauth_base_uri: "https://account-d.docusign.com"
   docusign_oauth_redirect_uri: "http://localhost:3026/integrations/docusign/oauth/callback"
+  docusign_oauth_scope_options: "" # comma or space separated extra scopes, e.g. click.manage rooms.read
   docusign_connect_hmac_secret: ""
 
   # Optional JWT mode (reserved)

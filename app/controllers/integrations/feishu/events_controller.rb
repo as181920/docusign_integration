@@ -7,7 +7,7 @@ module Integrations
         challenge = params[:challenge]
         return render json: { challenge: challenge } if challenge.present?
 
-        audit!(action: "feishu_event_received", data: params.to_unsafe_h)
+        audit(action: "feishu_event_received", data: params.to_unsafe_h)
         head :ok
       end
     end

@@ -10,6 +10,8 @@ class ApplicationController < ActionController::Base
   helper_method :current_tenant
   helper_method :current_tenant_user
 
+  helper EasyStyle::Engine.helpers if defined?(EasyStyle::Engine)
+
   private
 
     def current_tenant

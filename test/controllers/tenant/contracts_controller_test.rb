@@ -1,6 +1,6 @@
 require "test_helper"
 
-class TenantScopedContractsControllerTest < ActionDispatch::IntegrationTest
+class TenantContractsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @acme_tenant = create(:tenant, :acme)
     @acme_user = create(:tenant_user, :alice, tenant: @acme_tenant)
@@ -16,6 +16,8 @@ class TenantScopedContractsControllerTest < ActionDispatch::IntegrationTest
     create(:contract, :beta_contract, tenant: @beta_tenant, creator_tenant_user: @beta_user)
 
     @template_v2 = create(:contract_template, :acme_v2, tenant: @acme_tenant)
+
+    sign_in_tenant_user!(tenant_uid: @acme_tenant.uid, name: @acme_user.name)
   end
 
   test "index returns current tenant contracts" do
@@ -53,7 +55,7 @@ class TenantScopedContractsControllerTest < ActionDispatch::IntegrationTest
     assert_equal @template_v2.id, json_body["metadata"]["contract_template_id"]
   end
 
-  test "send_to_docusign returns envelope payload" do
+  test "docusign_envelope_submission returns envelope payload" do
     stubbed_envelope = ContractEnvelope.new(
       contract: @acme_contract,
       tenant_docusign_connection: @acme_connection,
@@ -62,15 +64,15 @@ class TenantScopedContractsControllerTest < ActionDispatch::IntegrationTest
     )
 
     Docusign::EnvelopeSender.stubs(:call!).returns(stubbed_envelope)
-    post "/t/acme/contracts/#{@acme_contract.id}/send_to_docusign"
+    post "/t/acme/contracts/#{@acme_contract.id}/docusign_envelope_submission"
 
     assert_response :success
     assert_equal "env-stub-001", json_body["envelope"]["envelope_id"]
   end
 
-  test "embedded_signing_url returns url and resolves relative return_url" do
+  test "embedded_signing_session returns url and resolves relative return_url" do
     Docusign::RecipientViewService.stubs(:call!).returns("https://docusign.example.com/sign")
-    post "/t/acme/contracts/#{@acme_contract.id}/embedded_signing_url", params: {
+    post "/t/acme/contracts/#{@acme_contract.id}/embedded_signing_session", params: {
       signer_email: @acme_primary_signer.email,
       return_url: "/done"
     }
@@ -80,8 +82,8 @@ class TenantScopedContractsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "http://www.example.com/done", json_body["return_url"]
   end
 
-  test "embedded_signing_url returns bad request when signer_email missing" do
-    post "/t/acme/contracts/#{@acme_contract.id}/embedded_signing_url"
+  test "embedded_signing_session returns bad request when signer_email missing" do
+    post "/t/acme/contracts/#{@acme_contract.id}/embedded_signing_session"
 
     assert_response :bad_request
     assert_match "param is missing", json_body["error"]

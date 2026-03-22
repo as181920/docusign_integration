@@ -31,3 +31,17 @@ class ActiveSupport::TestCase
     end
   end
 end
+
+class ActionDispatch::IntegrationTest
+  def sign_in_tenant_user!(tenant_uid:, name:, password: "password")
+    post "/tenant_auth/iam/sessions", params: {
+      session: {
+        tenant_uid: tenant_uid,
+        name: name,
+        password: password
+      }
+    }
+
+    assert_response :redirect
+  end
+end

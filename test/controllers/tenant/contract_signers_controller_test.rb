@@ -1,12 +1,14 @@
 require "test_helper"
 
-class TenantScopedContractSignersControllerTest < ActionDispatch::IntegrationTest
+class TenantContractSignersControllerTest < ActionDispatch::IntegrationTest
   setup do
     @tenant = create(:tenant, :acme)
     @tenant_user = create(:tenant_user, :alice, tenant: @tenant)
     @contract = create(:contract, :acme_contract, tenant: @tenant, creator_tenant_user: @tenant_user)
     create(:contract_signer, contract: @contract, name: "Alice Signer", email: "alice.signer@example.com", role_name: "signer", routing_order: 1)
     create(:contract_signer, :carbon_copy, contract: @contract, name: "Legal CC", email: "legal.cc@example.com", role_name: "cc", routing_order: 2)
+
+    sign_in_tenant_user!(tenant_uid: @tenant.uid, name: @tenant_user.name)
   end
 
   test "index returns contract signers" do

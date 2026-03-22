@@ -1,0 +1,86 @@
+<% tenant_uid = current_tenant&.uid %>
+<% dashboard_path = tenant_uid.present? ? main_app.tenant_dashboard_path(tenant_uid: tenant_uid) : "#" %>
+<% docusign_connection_path = tenant_uid.present? ? main_app.tenant_docusign_connection_path(tenant_uid: tenant_uid) : "#" %>
+<% contract_templates_path = tenant_uid.present? ? main_app.tenant_contract_templates_path(tenant_uid: tenant_uid) : "#" %>
+<% contracts_path = tenant_uid.present? ? main_app.tenant_contracts_path(tenant_uid: tenant_uid) : "#" %>
+<% feishu_guide_path = tenant_uid.present? ? main_app.tenant_integration_guides_feishu_path(tenant_uid: tenant_uid) : "#" %>
+<% sap_guide_path = tenant_uid.present? ? main_app.tenant_integration_guides_sap_path(tenant_uid: tenant_uid) : "#" %>
+<% fanwei_guide_path = tenant_uid.present? ? main_app.tenant_integration_guides_fanwei_path(tenant_uid: tenant_uid) : "#" %>
+<% never_match = /a^/ %>
+<% dashboard_matcher = tenant_uid.present? ? /#{Regexp.escape(dashboard_path)}/ : never_match %>
+<% docusign_connection_matcher = tenant_uid.present? ? /#{Regexp.escape(docusign_connection_path)}/ : never_match %>
+<% contract_templates_matcher = tenant_uid.present? ? /#{Regexp.escape(contract_templates_path)}/ : never_match %>
+<% contracts_matcher = tenant_uid.present? ? /#{Regexp.escape(contracts_path)}/ : never_match %>
+<% feishu_guide_matcher = tenant_uid.present? ? /#{Regexp.escape(feishu_guide_path)}/ : never_match %>
+<% sap_guide_matcher = tenant_uid.present? ? /#{Regexp.escape(sap_guide_path)}/ : never_match %>
+<% fanwei_guide_matcher = tenant_uid.present? ? /#{Regexp.escape(fanwei_guide_path)}/ : never_match %>
+
+<div class="sidebar" data-controller="dropdown-menu">
+  <header>
+    <div class="logo"></div>
+    <h3 class="title"><%= current_tenant&.name.presence || "商家后台" %></h3>
+  </header>
+
+  <div class="menu-container">
+    <div class="menu-item <%= nav_link_state(dashboard_matcher) %>">
+      <%= link_to dashboard_path do %>
+        <span><%= inline_svg_tag("easy_style/icon_dashboard.svg") %></span>
+        <span>工作台</span>
+      <% end %>
+    </div>
+
+    <div class="menu-title d-none">主菜单</div>
+
+    <div class="menu-group <%= nav_dropdown_state([docusign_connection_matcher, contract_templates_matcher, contracts_matcher]) %>" data-action="click->dropdown-menu#toggle">
+      <div class="menu-group-title">
+        <a href="javascript:;">
+          <span><%= inline_svg_tag("easy_style/icon_setting.svg") %></span>
+          <span>DocuSign 业务</span>
+        </a>
+      </div>
+      <ul class="menu-group-items">
+        <li class="menu-item <%= nav_link_state(docusign_connection_matcher) %>">
+          <%= link_to docusign_connection_path do %>
+            <span>DocuSign 连接</span>
+          <% end %>
+        </li>
+        <li class="menu-item <%= nav_link_state(contract_templates_matcher) %>">
+          <%= link_to contract_templates_path do %>
+            <span>合同模板</span>
+          <% end %>
+        </li>
+        <li class="menu-item <%= nav_link_state(contracts_matcher) %>">
+          <%= link_to contracts_path do %>
+            <span>合同列表</span>
+          <% end %>
+        </li>
+      </ul>
+    </div>
+
+    <div class="menu-group <%= nav_dropdown_state([feishu_guide_matcher, sap_guide_matcher, fanwei_guide_matcher]) %>" data-action="click->dropdown-menu#toggle">
+      <div class="menu-group-title">
+        <a href="javascript:;">
+          <span><%= inline_svg_tag("easy_style/icon_gift.svg") %></span>
+          <span>外部集成</span>
+        </a>
+      </div>
+      <ul class="menu-group-items">
+        <li class="menu-item <%= nav_link_state(feishu_guide_matcher) %>">
+          <%= link_to feishu_guide_path do %>
+            <span>飞书配置说明</span>
+          <% end %>
+        </li>
+        <li class="menu-item <%= nav_link_state(sap_guide_matcher) %>">
+          <%= link_to sap_guide_path do %>
+            <span>SAP 配置说明</span>
+          <% end %>
+        </li>
+        <li class="menu-item <%= nav_link_state(fanwei_guide_matcher) %>">
+          <%= link_to fanwei_guide_path do %>
+            <span>泛微配置说明</span>
+          <% end %>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

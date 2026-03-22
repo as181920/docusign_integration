@@ -1,0 +1,58 @@
+<% tenant_uid = current_tenant&.uid %>
+<% dashboard_path = tenant_uid.present? ? main_app.tenant_dashboard_path(tenant_uid: tenant_uid) : "#" %>
+<% tenant_name = current_tenant&.name.presence || "商家后台" %>
+<% tenant_user = respond_to?(:current_tenant_user, true) ? current_tenant_user : nil %>
+<% display_user_name = tenant_user&.name.presence %>
+<% display_user_name ||= respond_to?(:current_user) ? current_user&.to_s : nil %>
+<% display_user_name ||= "未登录用户" %>
+<% profile_path = tenant_auth.profile_path %>
+<% sign_out_path = (respond_to?(:current_user) && current_user.respond_to?(:root?) && current_user.root?) ? tenant_auth.sign_out_path : tenant_auth.iam_sign_out_path %>
+
+<header>
+  <%= tag.div data: { controller: "sidebar-visibility" } do %>
+    <%= button_tag data: { action: "sidebar-visibility#toggleSidebar", sidebar_visibility_target: "trigger" },
+      type: "button",
+      class: "sidebar-trigger" do %>
+      <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="black" viewBox="0 0 17 14">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/>
+      </svg>
+    <% end %>
+  <% end %>
+
+  <nav aria-label="breadcrumb" class="sm:col-12">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="<%= dashboard_path %>">商家工作台</a></li>
+      <li class="breadcrumb-item"><%= tenant_name %></li>
+    </ol>
+  </nav>
+
+  <%= tag.div data: { controller: "popover" } do %>
+    <div class="d-none">【FILLER】</div>
+
+    <%= link_to "javascript:;",
+      data: { action: "popover#togglePopup click@window->popover#closePopup", popover_target: "trigger" },
+      class: "profile-settings" do %>
+      <div class="icon-text">
+        <%= tag.span(display_user_name) %>
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="var(--color-divider, currentColor)" viewBox="0 0 16 10" height="8">
+          <path d="M15.434 1.235A2 2 0 0 0 13.586 0H2.414A2 2 0 0 0 1 3.414L6.586 9a2 2 0 0 0 2.828 0L15 3.414a2 2 0 0 0 .434-2.179Z"/>
+        </svg>
+      </div>
+    <% end %>
+
+    <%= tag.div data: { popover_target: "popup" },
+      class: "profile-menu dropdown-menu d-none" do %>
+      <h3 class="dropdown-title">
+        <%= tag.span "个人设置" %>
+      </h3>
+      <div>
+        <%= link_to profile_path, class: "dropdown-item" do %>
+          <%= tag.span "个人信息" %>
+        <% end %>
+        <%= link_to sign_out_path, data: { turbo: false }, class: "dropdown-item" do %>
+          <%= tag.span "退出登录" %>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+</header>

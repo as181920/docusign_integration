@@ -1,4 +1,4 @@
-module TenantScoped
+module Tenant
   class ContractTemplatesController < BaseController
     def index
       templates = ContractTemplate.where(tenant: current_tenant).order(name: :asc, version: :desc)

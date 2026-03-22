@@ -1,0 +1,52 @@
+<% content_for :title, "飞书 Web 集成配置" %>
+<%= render "tenant/shared/layout_slots" %>
+
+<div class="container-fluid px-4 py-3">
+  <div class="card mb-3">
+    <div class="card-body">
+      <h1 class="h4 mb-2">飞书 Web 集成配置说明</h1>
+      <p class="text-secondary mb-0">适用于飞书 ISV 应用（Web 形态），当前系统采用“手动创建企业，再绑定飞书企业”的接入方式。</p>
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-body">
+      <h2 class="h6">一、企业接入前准备</h2>
+      <ol class="mb-0">
+        <li>先创建企业，确认企业唯一标识 <code>tenant_uid</code>。</li>
+        <li>后续飞书回调会按 <code>tenant_uid</code> 识别并绑定到对应企业。</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-body">
+      <h2 class="h6">二、飞书开放平台（ISV）配置</h2>
+      <ol class="mb-0">
+        <li>创建/选择 ISV 应用，接入形态选择 Web。</li>
+        <li>配置 OAuth 回调地址：<code><%= @feishu_callback_url %>?tenant_uid=<%= current_tenant.uid %></code></li>
+        <li>配置事件订阅请求地址：<code><%= @feishu_events_url %></code></li>
+        <li>在飞书侧完成企业安装与授权。</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-body">
+      <h2 class="h6">三、回调参数约定</h2>
+      <ul class="mb-0">
+        <li><code>tenant_uid</code>：必填，用于绑定到对应企业。</li>
+        <li><code>tenant_key</code> / <code>tenantKey</code>：可选，用于企业一致性校验。</li>
+        <li><code>union_id</code> / <code>open_id</code>：可选，用于自动建立本地用户关联身份。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <h2 class="h6">四、访问入口</h2>
+      <p class="text-secondary mb-2">系统访问入口：</p>
+      <p class="mb-0"><code><%= @access_entry_url %></code></p>
+    </div>
+  </div>
+</div>

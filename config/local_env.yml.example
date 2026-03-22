@@ -16,6 +16,7 @@ default: &default
   action_mailer_smtp_password: "password"
 
   app_default_organization_name: "DocuSignIntegration"
+  copyright_owner: "HUAWAN"
 
   # Feishu (ISV)
   feishu_app_id: ""

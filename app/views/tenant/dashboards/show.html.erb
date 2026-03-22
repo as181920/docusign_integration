@@ -1,0 +1,46 @@
+<% content_for :title, "商家工作台" %>
+<% content_for :custom_sidebar do %>
+  <%= render "shared/sidebar" %>
+<% end %>
+<% content_for :custom_header do %>
+  <%= render "shared/header" %>
+<% end %>
+
+<div class="container-fluid px-4 py-3">
+  <div class="card mb-3">
+    <div class="card-body">
+      <h1 class="h4 mb-2">欢迎使用 DocuSign 商家后台</h1>
+      <p class="text-secondary mb-0">企业：<strong><%= current_tenant.name %></strong>（<code><%= current_tenant.uid %></code>）</p>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-12 col-lg-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="h6">DocuSign 连接</h2>
+          <p class="text-secondary mb-3">查看或维护当前企业的 DocuSign 授权连接。</p>
+          <%= link_to "进入", tenant_docusign_connection_path(tenant_uid: current_tenant.uid), class: "btn btn-primary btn-sm" %>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-lg-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="h6">合同模板</h2>
+          <p class="text-secondary mb-3">管理模板版本、模板编号以及元数据。</p>
+          <%= link_to "进入", tenant_contract_templates_path(tenant_uid: current_tenant.uid), class: "btn btn-primary btn-sm" %>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-lg-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h2 class="h6">合同列表</h2>
+          <p class="text-secondary mb-3">查看合同、签署人和 DocuSign 流程状态。</p>
+          <%= link_to "进入", tenant_contracts_path(tenant_uid: current_tenant.uid), class: "btn btn-primary btn-sm" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

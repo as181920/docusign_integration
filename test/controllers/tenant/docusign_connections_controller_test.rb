@@ -1,6 +1,6 @@
 require "test_helper"
 
-class TenantScopedDocusignConnectionsControllerTest < ActionDispatch::IntegrationTest
+class TenantDocusignConnectionsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @acme_tenant = create(:tenant, :acme)
     @acme_user = create(:tenant_user, :alice, tenant: @acme_tenant)
@@ -11,6 +11,8 @@ class TenantScopedDocusignConnectionsControllerTest < ActionDispatch::Integratio
   end
 
   test "show returns connected state" do
+    sign_in_tenant_user!(tenant_uid: @acme_tenant.uid, name: @acme_user.name)
+
     get "/t/acme/docusign_connection"
 
     assert_response :success
@@ -19,6 +21,8 @@ class TenantScopedDocusignConnectionsControllerTest < ActionDispatch::Integratio
   end
 
   test "show returns disconnected when absent" do
+    sign_in_tenant_user!(tenant_uid: @beta_tenant.uid, name: @beta_user.name)
+
     get "/t/beta/docusign_connection"
 
     assert_response :success
@@ -26,6 +30,8 @@ class TenantScopedDocusignConnectionsControllerTest < ActionDispatch::Integratio
   end
 
   test "authorize_url returns signed state and oauth url" do
+    sign_in_tenant_user!(tenant_uid: @acme_tenant.uid, name: @acme_user.name)
+
     fake_client = Class.new do
       attr_reader :state, :scope
 
@@ -38,7 +44,7 @@ class TenantScopedDocusignConnectionsControllerTest < ActionDispatch::Integratio
 
     Docusign::OauthClient.stubs(:new).returns(fake_client)
     assert_difference "AuditLog.count", +1 do
-      get "/t/acme/docusign_connection/authorize_url"
+      post "/t/acme/docusign_connection/oauth_authorization"
     end
 
     assert_response :success
@@ -48,6 +54,8 @@ class TenantScopedDocusignConnectionsControllerTest < ActionDispatch::Integratio
   end
 
   test "create builds connection" do
+    sign_in_tenant_user!(tenant_uid: @beta_tenant.uid, name: @beta_user.name)
+
     assert_difference ["TenantDocusignConnection.count", "AuditLog.count"], +1 do
       post "/t/beta/docusign_connection", params: {
         tenant_docusign_connection: {
@@ -62,6 +70,8 @@ class TenantScopedDocusignConnectionsControllerTest < ActionDispatch::Integratio
   end
 
   test "update changes connection attrs" do
+    sign_in_tenant_user!(tenant_uid: @acme_tenant.uid, name: @acme_user.name)
+
     patch "/t/acme/docusign_connection", params: {
       tenant_docusign_connection: {
         oauth_scope: "signature impersonation"

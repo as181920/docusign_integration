@@ -18,37 +18,45 @@ Rails.application.routes.draw do
 
   namespace :integrations do
     namespace :feishu do
-      get "callback", to: "callbacks#show"
-      post "events", to: "events#create"
+      resource :callback, only: :show, controller: "callbacks"
+      resources :events, only: :create
     end
 
     namespace :docusign do
-      get "oauth/callback", to: "oauth_callbacks#show"
+      resource :oauth_callback, only: :show, path: "oauth/callback", controller: "oauth_callbacks"
     end
   end
 
-  scope "/t/:tenant_uid", module: :tenant_scoped, as: :tenant_scoped do
-    get "dashboard", to: "dashboards#show"
+  scope "/t/:tenant_uid", module: :tenant, as: :tenant do
+    resource :dashboard, only: :show, controller: "dashboards"
 
     resources :contract_templates, only: %i[index show create update]
 
     resources :contracts, only: %i[index show create] do
       resources :signers, only: %i[index create], controller: "contract_signers"
 
-      member do
-        post :send_to_docusign
-        post :embedded_signing_url
+      scope module: :contracts do
+        resource :docusign_envelope_submission, only: :create
+        resource :embedded_signing_session, only: :create
       end
     end
 
     resource :docusign_connection, only: %i[show create update], controller: "docusign_connections" do
-      get :authorize_url
+      scope module: :docusign_connections do
+        resource :oauth_authorization, only: :create
+      end
+    end
+
+    namespace :integration_guides do
+      resource :feishu, only: :show, controller: "feishus"
+      resource :sap, only: :show, controller: "saps"
+      resource :fanwei, only: :show, controller: "fanweis"
     end
   end
 
   namespace :webhooks do
-    post "docusign", to: "docusign#create"
+    resource :docusign, only: :create, controller: "docusign"
   end
 
-  root to: "rails/health#show"
+  root to: "welcome#show"
 end

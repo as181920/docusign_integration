@@ -1,11 +1,13 @@
 require "test_helper"
 
-class TenantScopedContractTemplatesControllerTest < ActionDispatch::IntegrationTest
+class TenantContractTemplatesControllerTest < ActionDispatch::IntegrationTest
   setup do
     @tenant = create(:tenant, :acme)
     @tenant_user = create(:tenant_user, :alice, tenant: @tenant)
     @template_v1 = create(:contract_template, :acme_v1, tenant: @tenant)
     @template_v2 = create(:contract_template, :acme_v2, tenant: @tenant)
+
+    sign_in_tenant_user!(tenant_uid: @tenant.uid, name: @tenant_user.name)
   end
 
   test "index returns current tenant templates" do

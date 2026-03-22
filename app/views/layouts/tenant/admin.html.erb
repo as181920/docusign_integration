@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title><%= content_for?(:title) ? yield(:title) : t("easy_style.engine") %></title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "easy_style/admin", media: "all" %>
+    <%= es_module_shims %>
+    <%= javascript_importmap_tags "easy_style/application" %>
+    <%= javascript_import_module_tag "easy_style/turbo" %>
+    <%= javascript_import_module_tag "easy_style/stimulus" %>
+    <%= javascript_import_module_tag "easy_style/actioncable" %>
+    <%= javascript_import_module_tag "easy_style/activestorage" %>
+    <%= javascript_import_module_tag "easy_style/request" %>
+    <%= javascript_import_module_tag "easy_style/utilities" %>
+
+    <%= yield(:head_additions) if content_for?(:head_additions) %>
+  </head>
+  <body>
+    <%= content_for?(:custom_sidebar) ? yield(:custom_sidebar) : render("shared/sidebar") %>
+
+    <main>
+      <%= content_for?(:custom_header) ? yield(:custom_header) : render("shared/header") %>
+
+      <%= content_for?(:custom_flash_messages) ? yield(:custom_flash_messages) : render("easy_style/shared/flash_messages") %>
+
+      <%= yield %>
+
+      <%= content_for?(:custom_footer) ? yield(:custom_footer) : render("easy_style/shared/footer") %>
+    </main>
+  </body>
+</html>

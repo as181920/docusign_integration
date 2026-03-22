@@ -1,4 +1,4 @@
-module TenantScoped
+module Tenant
   class ContractSignersController < BaseController
     def index
       contract = Contract.find_by!(id: params[:contract_id], tenant: current_tenant)

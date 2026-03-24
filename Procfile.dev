@@ -1,2 +1,2 @@
-web: bin/rails server -p 3026
+web: bin/rails server -p ${PORT:-3026}
 worker: bin/jobs start # --skip-recurring

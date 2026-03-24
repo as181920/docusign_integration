@@ -5,4 +5,20 @@ if ! gem list foreman -i --silent; then
   gem install foreman
 fi
 
+port=""
+while getopts "p:" opt; do
+  case "$opt" in
+    p)
+      port="$OPTARG"
+      ;;
+    *)
+      echo "Usage: $0 [-p PORT]"
+      exit 1
+      ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+[ -n "$port" ] && export PORT="$port"
+
 exec foreman start -f Procfile.dev "$@"

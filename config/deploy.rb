@@ -7,7 +7,7 @@ set :repo_url, "git@gitlab.dd-life.com:customized_projects/docusign_integration.
 # Default branch is :main
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
-append :linked_files, "config/database.yml", "config/local_env.yml", "config/master.key"
+append :linked_files, "config/database.yml", "config/local_env.yml"
 append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system", "vendor", "storage", ".bundle"
 
 set :keep_assets, 2

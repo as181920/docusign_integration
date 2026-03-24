@@ -7,6 +7,7 @@ class RansackAllowlistTest < ActiveSupport::TestCase
     ContractEnvelope,
     ContractSigner,
     ContractTemplate,
+    ContractTemplateRole,
     ExternalIdentity,
     FeishuEnterprise,
     OutboundEvent,

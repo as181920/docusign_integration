@@ -1,11 +1,15 @@
 FactoryBot.define do
   factory :contract_template do
     association :tenant
-    name { "Master Service Agreement" }
+    sequence(:name) { |n| "Contract Template #{n}" }
     sequence(:version) { |n| n }
     status { "active" }
     sequence(:docusign_template_id) { |n| "tpl_#{n}" }
     description { "Standard template" }
+    email_subject { "Please sign this document" }
+    email_message { "Please review and sign." }
+    publish_state { "published" }
+    published_at { Time.current }
     metadata { {} }
 
     trait :acme_v1 do

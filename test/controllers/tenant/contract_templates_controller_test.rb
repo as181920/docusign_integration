@@ -115,4 +115,14 @@ class TenantContractTemplatesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Updated description", json_body["description"]
     assert_equal "Updated description", @template_v1.reload.description
   end
+
+  test "publish request works without contract_template params" do
+    template = create(:contract_template, tenant: @tenant, docusign_template_id: nil, publish_state: :draft)
+    Docusign::TemplatePublisher.expects(:call).with(template: template).returns({ "templateId" => "tpl_remote_001" })
+
+    patch "/t/acme/contract_templates/#{template.id}", params: { publish_to_docusign: "1" }
+
+    assert_response :redirect
+    assert_redirected_to "/t/acme/contract_templates/#{template.id}"
+  end
 end

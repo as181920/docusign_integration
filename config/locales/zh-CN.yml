@@ -20,6 +20,7 @@ zh-CN:
       docusign_connection: "DocuSign 连接"
       contract_templates: "合同模板"
       contracts: "合同列表"
+      sent_documents: "已发送文档"
       webhook_events: "Webhook 事件"
       integrations_group: "平台集成"
       feishu_guide: "飞书配置说明"
@@ -49,6 +50,8 @@ zh-CN:
       edit: "编辑"
       detail: "详情"
       cancel: "取消"
+      optional: "可选"
+      required: "此项为必填。"
       empty: "-"
 
     dashboards:
@@ -120,9 +123,16 @@ zh-CN:
       statuses:
         active: "启用"
         deprecated: "弃用"
+      publish_states:
+        draft: "草稿"
+        published: "已发布"
+      signing_types:
+        signer: "签署人"
+        carbon_copy: "抄送"
       notices:
         created: "合同模板已创建"
         updated: "合同模板已更新"
+        published: "模板已发布到 DocuSign（Template ID: %{template_id}）"
         synced: "模板同步完成：共 %{total_count} 条，新建 %{created_count} 条，更新 %{updated_count} 条，跳过 %{skipped_count} 条"
       index:
         page_title: "合同模板"
@@ -136,6 +146,7 @@ zh-CN:
           name: "名称"
           version: "版本"
           status: "状态"
+          publish_state: "发布状态"
           docusign_template_id: "DocuSign Template ID"
           actions: "操作"
       form:
@@ -143,6 +154,17 @@ zh-CN:
         version: "版本（留空自动递增）"
         docusign_template_id: "DocuSign Template ID"
         description: "说明"
+        email_subject: "邮件主题"
+        email_message: "邮件内容"
+        documents: "模板文档"
+        documents_hint: "发布前请至少上传一个文档。"
+        roles: "收件角色"
+        role_type: "类型"
+        role_name: "角色名"
+        default_name: "默认姓名"
+        default_email: "默认邮箱"
+        routing_order: "顺序"
+        roles_hint: "角色名必填，姓名和邮箱可按需预填。"
       new:
         page_title: "新建模板"
         title: "新建合同模板"
@@ -156,14 +178,33 @@ zh-CN:
       show:
         page_title: "模板详情"
         title: "模板详情：%{name}（v%{version}）"
+        create_contract_button: "创建合同"
         edit_button: "编辑模板"
         back_button: "返回模板列表"
+        publish_button: "发布到 DocuSign"
         fields:
           name: "模板名称"
           version: "版本"
           status: "状态"
           docusign_template_id: "DocuSign Template ID"
           description: "说明"
+          publish_state: "发布状态"
+          documents: "模板文档"
+          roles: "收件角色"
+
+    sent_documents:
+      index:
+        page_title: "已发送文档"
+        title: "已发送文档"
+        keyword_placeholder: "标题 / 合同编号"
+        empty: "暂无已发送文档。"
+        columns:
+          contract_no: "合同编号"
+          title: "标题"
+          status: "状态"
+          envelope: "Envelope"
+          sent_at: "发送时间"
+          actions: "操作"
 
     contracts:
       statuses:
@@ -207,6 +248,9 @@ zh-CN:
         contract_no: "合同编号"
         template: "模板（可选）"
         template_blank: "不使用模板"
+        template_hint: "已发布模板将走 DocuSign 模板发送；草稿模板会把本地文档和默认收件人复制到合同。"
+        documents: "合同文档（可选）"
+        documents_hint: "如未选择已发布模板，请至少上传一个文档用于发送。"
         source: "来源"
         language: "语言"
         currency: "币种"
@@ -224,6 +268,7 @@ zh-CN:
           contract_no: "合同编号："
           status: "状态："
           source: "来源："
+          documents: "文档："
           locale_currency: "语言/币种："
       signers:
         title: "签署人列表"

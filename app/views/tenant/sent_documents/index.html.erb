@@ -1,0 +1,73 @@
+<% content_for :title, t("tenant.sent_documents.index.page_title") %>
+<%= render "tenant/shared/layout_slots" %>
+
+<div class="w-100 px-4 py-3">
+  <div class="card w-100">
+    <div class="card-body w-100">
+      <div class="d-flex align-items-center mb-3">
+        <h1 class="h5 my-0"><%= t("tenant.sent_documents.index.title") %></h1>
+      </div>
+
+      <%= search_form_for @q, url: tenant_sent_documents_path(tenant_uid: current_tenant.uid), class: "form d-flex flex-wrap align-items-end gap-2 mb-3" do |form| %>
+        <div>
+          <%= form.label :title_or_contract_no_cont, t("tenant.common.keyword"), class: "form-label" %>
+          <%= form.search_field :title_or_contract_no_cont, class: "form-control", placeholder: t("tenant.sent_documents.index.keyword_placeholder") %>
+        </div>
+
+        <div>
+          <%= form.label :status_eq, t("tenant.common.status"), class: "form-label" %>
+          <%= form.select :status_eq,
+            options_for_select([[t("tenant.common.all"), ""]] + Contract.statuses.keys.map { |value| [t("tenant.contracts.statuses.#{value}", default: value), value] }, params.dig(:q, :status_eq)),
+            {},
+            class: "form-control" %>
+        </div>
+
+        <%= form.button class: "btn btn-primary" do %>
+          <%= tag.span class: "loading-spinner" %>
+          <%= tag.span t("tenant.common.filter") %>
+        <% end %>
+
+        <%= link_to t("tenant.common.reset"), tenant_sent_documents_path(tenant_uid: current_tenant.uid), class: "btn btn-secondary" %>
+      <% end %>
+
+      <% if @sent_documents.any? %>
+        <div class="table-responsive w-100">
+          <table class="table w-100 table-hover align-middle">
+            <thead>
+              <tr>
+                <th class="text-align-center align-middle"><%= t("tenant.sent_documents.index.columns.contract_no") %></th>
+                <th class="text-align-center align-middle"><%= t("tenant.sent_documents.index.columns.title") %></th>
+                <th class="text-align-center align-middle"><%= t("tenant.sent_documents.index.columns.status") %></th>
+                <th class="text-align-center align-middle"><%= t("tenant.sent_documents.index.columns.envelope") %></th>
+                <th class="text-align-center align-middle"><%= t("tenant.sent_documents.index.columns.sent_at") %></th>
+                <th class="text-align-center align-middle"><%= t("tenant.sent_documents.index.columns.actions") %></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @sent_documents.each do |doc| %>
+                <tr class="text-align-center">
+                  <td class="align-middle"><%= doc.contract_no %></td>
+                  <td class="align-middle"><%= doc.title %></td>
+                  <td class="align-middle"><%= t("tenant.contracts.statuses.#{doc.status}", default: doc.status) %></td>
+                  <td class="align-middle"><%= doc.contract_envelope&.envelope_id.presence || t("tenant.common.empty") %></td>
+                  <td class="align-middle"><%= doc.sent_at ? l(doc.sent_at, format: :long) : t("tenant.common.empty") %></td>
+                  <td class="align-middle">
+                    <%= link_to t("tenant.common.view"), tenant_contract_path(tenant_uid: current_tenant.uid, id: doc.id), class: "btn btn-sm btn-outline-secondary mb-0" %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+
+        <% if @sent_documents.total_pages > 1 %>
+          <div class="d-flex justify-content-end mt-3">
+            <%= paginate @sent_documents %>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="text-secondary"><%= t("tenant.sent_documents.index.empty") %></div>
+      <% end %>
+    </div>
+  </div>
+</div>

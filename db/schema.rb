@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_21_233000) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_24_163000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -152,18 +152,37 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_21_233000) do
     t.index ["contract_id"], name: "index_contract_signers_on_contract_id"
   end
 
+  create_table "contract_template_roles", force: :cascade do |t|
+    t.bigint "contract_template_id", null: false
+    t.datetime "created_at", null: false
+    t.jsonb "metadata", default: {}, null: false
+    t.string "role_name", null: false
+    t.integer "routing_order", default: 1, null: false
+    t.string "signer_email"
+    t.string "signer_name"
+    t.string "signing_type", default: "signer", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contract_template_id", "role_name", "signing_type"], name: "idx_contract_template_roles_on_template_role_and_type", unique: true
+    t.index ["contract_template_id"], name: "index_contract_template_roles_on_contract_template_id"
+  end
+
   create_table "contract_templates", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "description"
     t.string "docusign_template_id"
+    t.text "email_message"
+    t.string "email_subject"
     t.jsonb "metadata", default: {}, null: false
     t.string "name", null: false
+    t.string "publish_state", default: "draft", null: false
+    t.datetime "published_at"
     t.string "status", default: "active", null: false
     t.bigint "tenant_id", null: false
     t.datetime "updated_at", null: false
     t.integer "version", default: 1, null: false
     t.index ["tenant_id", "name", "status"], name: "index_contract_templates_on_tenant_id_and_name_and_status"
     t.index ["tenant_id", "name", "version"], name: "index_contract_templates_on_tenant_id_and_name_and_version", unique: true
+    t.index ["tenant_id", "publish_state"], name: "index_contract_templates_on_tenant_id_and_publish_state"
     t.index ["tenant_id"], name: "index_contract_templates_on_tenant_id"
   end
 
@@ -1296,6 +1315,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_21_233000) do
   add_foreign_key "contract_envelopes", "contracts"
   add_foreign_key "contract_envelopes", "tenant_docusign_connections"
   add_foreign_key "contract_signers", "contracts"
+  add_foreign_key "contract_template_roles", "contract_templates"
   add_foreign_key "contract_templates", "tnt_tenants", column: "tenant_id"
   add_foreign_key "contracts", "tnt_tenants", column: "tenant_id"
   add_foreign_key "contracts", "tnt_users", column: "creator_tenant_user_id"

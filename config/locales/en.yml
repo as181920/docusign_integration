@@ -20,6 +20,7 @@ en:
       docusign_connection: "DocuSign Connection"
       contract_templates: "Contract Templates"
       contracts: "Contracts"
+      sent_documents: "Sent Documents"
       webhook_events: "Webhook Events"
       integrations_group: "Platform Integrations"
       feishu_guide: "Feishu Guide"
@@ -49,6 +50,8 @@ en:
       edit: "Edit"
       detail: "Details"
       cancel: "Cancel"
+      optional: "Optional"
+      required: "This field is required."
       empty: "-"
 
     dashboards:
@@ -120,9 +123,16 @@ en:
       statuses:
         active: "Active"
         deprecated: "Deprecated"
+      publish_states:
+        draft: "Draft"
+        published: "Published"
+      signing_types:
+        signer: "Signer"
+        carbon_copy: "Carbon Copy"
       notices:
         created: "Contract template created"
         updated: "Contract template updated"
+        published: "Template published to DocuSign (Template ID: %{template_id})"
         synced: "Templates synced: total %{total_count}, created %{created_count}, updated %{updated_count}, skipped %{skipped_count}"
       index:
         page_title: "Contract Templates"
@@ -136,6 +146,7 @@ en:
           name: "Name"
           version: "Version"
           status: "Status"
+          publish_state: "Publish State"
           docusign_template_id: "DocuSign Template ID"
           actions: "Actions"
       form:
@@ -143,6 +154,17 @@ en:
         version: "Version (auto-increment when blank)"
         docusign_template_id: "DocuSign Template ID"
         description: "Description"
+        email_subject: "Email Subject"
+        email_message: "Email Message"
+        documents: "Documents"
+        documents_hint: "Upload at least one document before publishing."
+        roles: "Recipient Roles"
+        role_type: "Type"
+        role_name: "Role"
+        default_name: "Default Name"
+        default_email: "Default Email"
+        routing_order: "Order"
+        roles_hint: "Role is required. Name and email can be prefilled optionally."
       new:
         page_title: "New Template"
         title: "New Contract Template"
@@ -156,14 +178,33 @@ en:
       show:
         page_title: "Template Details"
         title: "Template Details: %{name} (v%{version})"
+        create_contract_button: "Create Contract"
         edit_button: "Edit Template"
         back_button: "Back to Templates"
+        publish_button: "Publish to DocuSign"
         fields:
           name: "Template Name"
           version: "Version"
           status: "Status"
           docusign_template_id: "DocuSign Template ID"
           description: "Description"
+          publish_state: "Publish State"
+          documents: "Documents"
+          roles: "Recipient Roles"
+
+    sent_documents:
+      index:
+        page_title: "Sent Documents"
+        title: "Sent Documents"
+        keyword_placeholder: "Title / Contract No"
+        empty: "No sent documents yet."
+        columns:
+          contract_no: "Contract No"
+          title: "Title"
+          status: "Status"
+          envelope: "Envelope"
+          sent_at: "Sent At"
+          actions: "Actions"
 
     contracts:
       statuses:
@@ -207,6 +248,9 @@ en:
         contract_no: "Contract No"
         template: "Template (optional)"
         template_blank: "No template"
+        template_hint: "Published templates use DocuSign template sending. Draft templates will copy local documents and default recipients to the contract."
+        documents: "Contract Documents (optional)"
+        documents_hint: "If no published template is selected, upload at least one document for sending."
         source: "Source"
         language: "Language"
         currency: "Currency"
@@ -224,6 +268,7 @@ en:
           contract_no: "Contract No: "
           status: "Status: "
           source: "Source: "
+          documents: "Documents: "
           locale_currency: "Language/Currency: "
       signers:
         title: "Signers"

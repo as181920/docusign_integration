@@ -34,12 +34,31 @@ module Docusign
         def extract_templates(response)
           candidates = [
             response["envelopeTemplates"],
+            response["envelopeTemplateResults"],
+            response["templateResults"],
             response["templates"],
             response["items"],
+            response["results"],
             response.dig("templateList", "envelopeTemplates")
           ]
 
-          candidates.compact.find { |value| value.is_a?(Array) } || []
+          selected = candidates.compact.find { |value| value.is_a?(Array) && value.any? }
+          return selected if selected.present?
+
+          response.values.find { |value| template_collection?(value) } || []
+        end
+
+        def template_collection?(value)
+          return false unless value.is_a?(Array)
+
+          value.any? { |item| template_payload_present?(item) }
+        end
+
+        def template_payload_present?(item)
+          return false unless item.is_a?(Hash)
+
+          payload = template_payload_for(item)
+          payload["templateId"].present? || payload["template_id"].present?
         end
 
         def normalize_next_path(next_uri, account_id:)

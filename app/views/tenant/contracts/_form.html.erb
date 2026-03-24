@@ -2,13 +2,15 @@
   scope: :contract,
   url: url,
   method: method,
+  data: { controller: "form" },
   class: "form" do |f| %>
   <div class="form-field">
     <div class="d-inline-block min-w-12">
       <%= f.label :title, t("tenant.contracts.form.title"), class: "form-label" %>
     </div>
     <div class="flex-1 min-w-16">
-      <%= f.text_field :title, class: "form-control w-100", required: true %>
+      <%= f.text_field :title, class: "form-control w-100", required: true, data: { action: "form#validateField" } %>
+      <div class="invalid-feedback"><%= t("tenant.common.required") %></div>
     </div>
   </div>
 
@@ -17,7 +19,8 @@
       <%= f.label :contract_no, t("tenant.contracts.form.contract_no"), class: "form-label" %>
     </div>
     <div class="flex-1 min-w-16">
-      <%= f.text_field :contract_no, class: "form-control w-100", required: true %>
+      <%= f.text_field :contract_no, class: "form-control w-100", required: true, data: { action: "form#validateField" } %>
+      <div class="invalid-feedback"><%= t("tenant.common.required") %></div>
     </div>
   </div>
 
@@ -27,9 +30,20 @@
     </div>
     <div class="flex-1 min-w-16">
       <%= select_tag "contract[contract_template_id]",
-        options_for_select(contract_templates.map { |template| ["#{template.name} v#{template.version}", template.id] }, selected_template_id),
+        options_for_select(contract_templates.map { |template| ["#{template.name} v#{template.version} (#{t("tenant.contract_templates.publish_states.#{template.publish_state}", default: template.publish_state)})", template.id] }, selected_template_id),
         include_blank: t("tenant.contracts.form.template_blank"),
         class: "form-control w-100" %>
+      <p class="text-secondary small mt-1 mb-0"><%= t("tenant.contracts.form.template_hint") %></p>
+    </div>
+  </div>
+
+  <div class="form-field align-items-start">
+    <div class="d-inline-block min-w-12">
+      <%= f.label :documents, t("tenant.contracts.form.documents"), class: "form-label" %>
+    </div>
+    <div class="flex-1 min-w-16">
+      <%= f.file_field :documents, multiple: true, class: "form-control w-100" %>
+      <p class="text-secondary small mt-1 mb-0"><%= t("tenant.contracts.form.documents_hint") %></p>
     </div>
   </div>
 
@@ -71,6 +85,6 @@
 
   <div class="form-field align-items-center mb-0">
     <div class="d-inline-block min-w-12"></div>
-    <%= f.submit submit_text, class: "btn btn-primary" %>
+    <%= f.submit submit_text, class: "btn btn-primary", data: { action: "form#validateForm" } %>
   </div>
 <% end %>

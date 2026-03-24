@@ -2,22 +2,98 @@
   scope: :contract_template,
   url: url,
   method: method,
+  data: { controller: "form" },
   class: "form" do |f| %>
   <div class="form-field">
     <div class="d-inline-block min-w-12">
       <%= f.label :name, t("tenant.contract_templates.form.name"), class: "form-label" %>
     </div>
     <div class="flex-1 min-w-16">
-      <%= f.text_field :name, class: "form-control w-100", required: true %>
+      <%= f.text_field :name, class: "form-control w-100", required: true, data: { action: "form#validateField" } %>
+      <div class="invalid-feedback"><%= t("tenant.common.required") %></div>
+    </div>
+  </div>
+
+  <div class="form-field align-items-start">
+    <div class="d-inline-block min-w-12">
+      <%= f.label :description, t("tenant.contract_templates.form.description"), class: "form-label" %>
+    </div>
+    <div class="flex-1 min-w-16">
+      <%= f.text_area :description, class: "form-control w-100", rows: 3 %>
     </div>
   </div>
 
   <div class="form-field">
     <div class="d-inline-block min-w-12">
-      <%= f.label :version, t("tenant.contract_templates.form.version"), class: "form-label" %>
+      <%= f.label :email_subject, t("tenant.contract_templates.form.email_subject"), class: "form-label" %>
     </div>
     <div class="flex-1 min-w-16">
-      <%= f.number_field :version, class: "form-control w-100", min: 1 %>
+      <%= f.text_field :email_subject, class: "form-control w-100" %>
+    </div>
+  </div>
+
+  <div class="form-field align-items-start">
+    <div class="d-inline-block min-w-12">
+      <%= f.label :email_message, t("tenant.contract_templates.form.email_message"), class: "form-label" %>
+    </div>
+    <div class="flex-1 min-w-16">
+      <%= f.text_area :email_message, class: "form-control w-100", rows: 3 %>
+    </div>
+  </div>
+
+  <div class="form-field align-items-start">
+    <div class="d-inline-block min-w-12">
+      <%= f.label :documents, t("tenant.contract_templates.form.documents"), class: "form-label" %>
+    </div>
+    <div class="flex-1 min-w-16">
+      <%= f.file_field :documents, multiple: true, direct_upload: true, class: "form-control w-100" %>
+      <% if template.documents.attached? %>
+        <div class="mt-2">
+          <% template.documents.each do |doc| %>
+            <span class="badge bg-info me-1 mb-1"><%= doc.filename.to_s %></span>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-secondary small mb-0 mt-2"><%= t("tenant.contract_templates.form.documents_hint") %></p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="form-field align-items-start">
+    <div class="d-inline-block min-w-12">
+      <label class="form-label"><%= t("tenant.contract_templates.form.roles") %></label>
+    </div>
+    <div class="flex-1 min-w-16">
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead>
+            <tr>
+              <th><%= t("tenant.contract_templates.form.role_type") %></th>
+              <th><%= t("tenant.contract_templates.form.role_name") %></th>
+              <th><%= t("tenant.contract_templates.form.default_name") %></th>
+              <th><%= t("tenant.contract_templates.form.default_email") %></th>
+              <th><%= t("tenant.contract_templates.form.routing_order") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <%= f.fields_for :template_roles do |role_form| %>
+              <tr>
+                <td>
+                  <%= role_form.select :signing_type,
+                    options_for_select(ContractTemplateRole.signing_types.keys.map { |value| [t("tenant.contract_templates.signing_types.#{value}", default: value), value] }, role_form.object.signing_type || "signer"),
+                    {},
+                    class: "form-control" %>
+                </td>
+                <td><%= role_form.text_field :role_name, class: "form-control", placeholder: "e.g. Employee" %></td>
+                <td><%= role_form.text_field :signer_name, class: "form-control", placeholder: t("tenant.common.optional") %></td>
+                <td><%= role_form.email_field :signer_email, class: "form-control", placeholder: t("tenant.common.optional") %></td>
+                <td><%= role_form.number_field :routing_order, class: "form-control", min: 1 %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-secondary small mb-0"><%= t("tenant.contract_templates.form.roles_hint") %></p>
     </div>
   </div>
 
@@ -35,24 +111,18 @@
 
   <div class="form-field">
     <div class="d-inline-block min-w-12">
-      <%= f.label :docusign_template_id, t("tenant.contract_templates.form.docusign_template_id"), class: "form-label" %>
+      <%= f.label :version, t("tenant.contract_templates.form.version"), class: "form-label" %>
     </div>
     <div class="flex-1 min-w-16">
-      <%= f.text_field :docusign_template_id, class: "form-control w-100" %>
-    </div>
-  </div>
-
-  <div class="form-field align-items-start">
-    <div class="d-inline-block min-w-12">
-      <%= f.label :description, t("tenant.contract_templates.form.description"), class: "form-label" %>
-    </div>
-    <div class="flex-1 min-w-16">
-      <%= f.text_area :description, class: "form-control w-100", rows: 4 %>
+      <%= f.number_field :version, class: "form-control w-100", min: 1 %>
     </div>
   </div>
 
   <div class="form-field align-items-center mb-0">
     <div class="d-inline-block min-w-12"></div>
-    <%= f.submit submit_text, class: "btn btn-primary" %>
+    <div class="d-flex align-items-center gap-2">
+      <%= f.submit submit_text, class: "btn btn-primary", data: { action: "form#validateForm" } %>
+      <%= link_to t("tenant.common.cancel"), tenant_contract_templates_path(tenant_uid: current_tenant.uid), class: "btn btn-outline-secondary" %>
+    </div>
   </div>
 <% end %>

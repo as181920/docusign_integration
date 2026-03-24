@@ -2,6 +2,7 @@
   scope: :tenant_docusign_connection,
   url: url,
   method: method,
+  data: { controller: "form" },
   class: "form" do |f| %>
   <% if connection_form.persisted? %>
     <div class="form-field align-items-start">
@@ -30,7 +31,9 @@
         <%= f.text_field :docusign_account_id,
           class: "form-control w-100",
           required: true,
+          data: { action: "form#validateField" },
           placeholder: t("tenant.docusign_connections.show.account_id_placeholder") %>
+        <div class="invalid-feedback"><%= t("tenant.common.required") %></div>
       </div>
     </div>
 
@@ -80,7 +83,7 @@
   <div class="form-field align-items-center mb-0">
     <div class="d-inline-block min-w-12"></div>
     <div class="d-flex align-items-center gap-2">
-      <%= f.submit submit_text, class: "btn btn-primary" %>
+      <%= f.submit submit_text, class: "btn btn-primary", data: { action: "form#validateForm" } %>
       <%= link_to t("tenant.common.cancel"), tenant_docusign_connection_path(tenant_uid: current_tenant.uid), class: "btn btn-outline-secondary" %>
     </div>
   </div>

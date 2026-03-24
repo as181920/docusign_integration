@@ -86,6 +86,29 @@ module Docusign
       assert_equal "tpl-nested-001", template.metadata.dig("docusign_template", "template_id")
     end
 
+    test "sync extracts templates from envelope template results payload" do
+      tenant, connection = create_connection
+
+      Docusign::ApiClient.expects(:get).with(connection: connection, path: "/templates?count=100").returns(
+        {
+          "envelopeTemplateResults" => [
+            {
+              "templateId" => "tpl-alt-001",
+              "name" => "Alt Response Template",
+              "description" => "From envelopeTemplateResults"
+            }
+          ]
+        }
+      )
+
+      result = TemplateSyncService.call(tenant: tenant)
+      template = ContractTemplate.find_by!(tenant: tenant, docusign_template_id: "tpl-alt-001")
+
+      assert_equal 1, result[:total_count]
+      assert_equal 1, result[:created_count]
+      assert_equal "Alt Response Template", template.name
+    end
+
     test "raises when active docusign connection is missing" do
       tenant, _connection = create_connection(status: :expired)
 

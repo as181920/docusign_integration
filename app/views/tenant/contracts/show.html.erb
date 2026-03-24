@@ -27,6 +27,19 @@
         <div class="flex-1 min-w-16"><strong class="text-dark"><%= @contract.source.presence || t("tenant.common.empty") %></strong></div>
       </div>
 
+      <div class="form-field align-items-start">
+        <div class="d-inline-block min-w-12 text-secondary"><%= t("tenant.contracts.show.summary.documents") %></div>
+        <div class="flex-1 min-w-16">
+          <% if @contract.documents.attached? %>
+            <% @contract.documents.each do |document| %>
+              <span class="badge bg-info me-1 mb-1"><%= document.filename.to_s %></span>
+            <% end %>
+          <% else %>
+            <strong class="text-dark"><%= t("tenant.common.empty") %></strong>
+          <% end %>
+        </div>
+      </div>
+
       <div class="form-field mb-0">
         <div class="d-inline-block min-w-12 text-secondary"><%= t("tenant.contracts.show.summary.locale_currency") %></div>
         <div class="flex-1 min-w-16"><strong class="text-dark"><%= [@contract.language.presence || t("tenant.common.empty"), @contract.currency.presence || t("tenant.common.empty")].join(" / ") %></strong></div>
@@ -36,12 +49,12 @@
 
   <div class="row g-3">
     <div class="col-12 col-xl-7">
-      <div class="card mb-3">
+      <div class="card mb-3 w-100">
         <div class="card-body">
           <h2 class="h6 mb-3"><%= t("tenant.contracts.signers.title") %></h2>
           <% if @signers.any? %>
-            <div class="table-responsive">
-              <table class="table table-sm table-hover align-middle">
+            <div class="table-responsive w-100">
+              <table class="table table-sm table-hover align-middle w-100">
                 <thead>
                   <tr>
                     <th class="text-align-center"><%= t("tenant.contracts.signers.columns.routing_order") %></th>
@@ -78,19 +91,23 @@
           <%= form_with model: @new_signer,
             scope: :contract_signer,
             url: tenant_contract_signers_path(tenant_uid: current_tenant.uid, contract_id: @contract.id),
-            method: :post do |f| %>
+            method: :post,
+            data: { controller: "form" } do |f| %>
             <div class="row g-3">
-              <div class="col-md-4">
+              <div class="col-md-4 form-field">
                 <%= f.label :name, t("tenant.contracts.signers.form.name"), class: "form-label" %>
-                <%= f.text_field :name, class: "form-control", required: true %>
+                <%= f.text_field :name, class: "form-control", required: true, data: { action: "form#validateField" } %>
+                <div class="invalid-feedback"><%= t("tenant.common.required") %></div>
               </div>
-              <div class="col-md-4">
+              <div class="col-md-4 form-field">
                 <%= f.label :email, t("tenant.contracts.signers.form.email"), class: "form-label" %>
-                <%= f.email_field :email, class: "form-control", required: true %>
+                <%= f.email_field :email, class: "form-control", required: true, data: { action: "form#validateField" } %>
+                <div class="invalid-feedback"><%= t("tenant.common.required") %></div>
               </div>
-              <div class="col-md-4">
+              <div class="col-md-4 form-field">
                 <%= f.label :role_name, t("tenant.contracts.signers.form.role_name"), class: "form-label" %>
-                <%= f.text_field :role_name, class: "form-control", placeholder: "signer", required: true %>
+                <%= f.text_field :role_name, class: "form-control", placeholder: "signer", required: true, data: { action: "form#validateField" } %>
+                <div class="invalid-feedback"><%= t("tenant.common.required") %></div>
               </div>
               <div class="col-md-4">
                 <%= f.label :routing_order, t("tenant.contracts.signers.form.routing_order"), class: "form-label" %>
@@ -104,7 +121,7 @@
                   class: "form-control" %>
               </div>
               <div class="col-12">
-                <%= f.submit t("tenant.contracts.signers.form.submit"), class: "btn btn-primary" %>
+                <%= f.submit t("tenant.contracts.signers.form.submit"), class: "btn btn-primary", data: { action: "form#validateForm" } %>
               </div>
             </div>
           <% end %>
@@ -124,16 +141,17 @@
               class: "btn btn-primary" %>
           </div>
 
-          <%= form_with url: tenant_contract_embedded_signing_session_path(tenant_uid: current_tenant.uid, contract_id: @contract.id), method: :post do %>
-            <div class="mb-2">
+          <%= form_with url: tenant_contract_embedded_signing_session_path(tenant_uid: current_tenant.uid, contract_id: @contract.id), method: :post, data: { controller: "form" } do %>
+            <div class="mb-2 form-field">
               <%= label_tag :signer_email, t("tenant.contracts.docusign_actions.signer_email"), class: "form-label" %>
-              <%= email_field_tag :signer_email, @signers.first&.email, class: "form-control", required: true %>
+              <%= email_field_tag :signer_email, @signers.first&.email, class: "form-control", required: true, data: { action: "form#validateField" } %>
+              <div class="invalid-feedback"><%= t("tenant.common.required") %></div>
             </div>
             <div class="mb-3">
               <%= label_tag :return_url, t("tenant.contracts.docusign_actions.return_url"), class: "form-label" %>
               <%= text_field_tag :return_url, tenant_contract_url(tenant_uid: current_tenant.uid, id: @contract.id), class: "form-control" %>
             </div>
-            <%= submit_tag t("tenant.contracts.docusign_actions.generate_embedded_url"), class: "btn btn-outline-primary" %>
+            <%= submit_tag t("tenant.contracts.docusign_actions.generate_embedded_url"), class: "btn btn-outline-primary", data: { action: "form#validateForm" } %>
           <% end %>
 
           <% if @embedded_signing_url.present? %>

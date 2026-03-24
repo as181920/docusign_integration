@@ -33,6 +33,7 @@ Rails.application.routes.draw do
     resources :contract_templates, only: %i[index new show edit create update]
     resource :docusign_template_sync, only: :create
     resources :webhook_events, only: %i[index show]
+    resources :sent_documents, only: :index
 
     resources :contracts, only: %i[index new show create] do
       resources :signers, only: %i[index create], controller: "contract_signers"

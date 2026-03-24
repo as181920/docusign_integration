@@ -20,10 +20,12 @@ module Tenant
 
         respond_to do |format|
           format.html do
-            flash[:embedded_signing_url] = signing_url
-            flash[:embedded_signing_email] = signer_email
-            redirect_to tenant_contract_path(tenant_uid: current_tenant.uid, id: contract.id),
-              notice: t("tenant.contracts.notices.embedded_signing_link_generated")
+            ref = Docusign::EmbeddedSigningResultStore.write(
+              contract: contract,
+              signer_email: signer_email,
+              signing_url: signing_url
+            )
+            redirect_to tenant_contract_path(tenant_uid: current_tenant.uid, id: contract.id, embedded_signing_ref: ref)
           end
           format.json do
             render json: {

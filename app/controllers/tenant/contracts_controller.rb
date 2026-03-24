@@ -1,3 +1,5 @@
+require "stringio"
+
 module Tenant
   class ContractsController < BaseController
     before_action :set_contract, only: :show
@@ -20,8 +22,7 @@ module Tenant
     def show
       @signers = @contract.contract_signers.order(:routing_order, :id)
       @new_signer = @contract.contract_signers.new(signing_type: :signer)
-      @embedded_signing_url = flash[:embedded_signing_url]
-      @embedded_signing_email = flash[:embedded_signing_email]
+      load_embedded_signing_result
 
       respond_to do |format|
         format.html
@@ -80,7 +81,16 @@ module Tenant
       end
 
       def contract_params
-        params.require(:contract).permit(:title, :contract_no, :source, :language, :currency, :docusign_template_id, metadata: {})
+        params.require(:contract).permit(
+          :title,
+          :contract_no,
+          :source,
+          :language,
+          :currency,
+          :docusign_template_id,
+          { documents: [] },
+          metadata: {}
+        )
       end
 
       def apply_template(contract)
@@ -89,15 +99,57 @@ module Tenant
 
         template = ContractTemplate.find_by!(id: template_id, tenant: current_tenant)
         contract.docusign_template_id = template.docusign_template_id if contract.docusign_template_id.blank?
+        copy_template_documents_to_contract(contract: contract, template: template)
+        build_signers_from_template_roles(contract: contract, template: template)
         contract.metadata = contract.metadata.to_h.merge(
           "contract_template_id" => template.id,
           "contract_template_name" => template.name,
-          "contract_template_version" => template.version
+          "contract_template_version" => template.version,
+          "contract_template_publish_state" => template.publish_state
         )
       end
 
       def serialize_contract(contract)
         contract.as_json(include: %i[contract_signers contract_envelope])
+      end
+
+      def copy_template_documents_to_contract(contract:, template:)
+        return if contract.documents.attached?
+        return unless template.documents.attached?
+        return if template.docusign_template_id.present?
+
+        template.documents.each do |attachment|
+          contract.documents.attach(
+            io: StringIO.new(attachment.download),
+            filename: attachment.filename.to_s,
+            content_type: attachment.content_type
+          )
+        end
+      end
+
+      def build_signers_from_template_roles(contract:, template:)
+        return if contract.contract_signers.any?
+
+        template.template_roles.order(:routing_order, :id).each do |role|
+          next if role.role_name.blank?
+          next if role.signer_name.blank? || role.signer_email.blank?
+
+          contract.contract_signers.build(
+            name: role.signer_name,
+            email: role.signer_email,
+            role_name: role.role_name,
+            routing_order: role.routing_order,
+            signing_type: role.signing_type
+          )
+        end
+      end
+
+      def load_embedded_signing_result
+        ref = params[:embedded_signing_ref]
+        payload = Docusign::EmbeddedSigningResultStore.read_once(contract: @contract, ref: ref)
+
+        @embedded_signing_url = payload&.fetch(:signing_url, nil)
+        @embedded_signing_email = payload&.fetch(:signer_email, nil)
       end
   end
 end

@@ -7,7 +7,7 @@
     <div class="card-body">
       <div class="d-flex justify-content-space-between align-items-center mb-3">
         <h1 class="h5 my-0"><%= t("tenant.contract_templates.show.title", name: @template.name, version: @template.version) %></h1>
-        <%= link_to t("tenant.contract_templates.show.back_button"), tenant_contract_templates_path(tenant_uid: current_tenant.uid), class: "btn btn-sm btn-secondary mb-0" %>
+        <%= link_to t("tenant.contract_templates.show.back_button"), tenant_contract_templates_path(tenant_uid: current_tenant.uid), class: "btn btn-sm btn-secondary" %>
       </div>
 
       <div class="form-field">
@@ -26,6 +26,16 @@
       </div>
 
       <div class="form-field">
+        <div class="d-inline-block min-w-12 text-secondary"><%= t("tenant.contract_templates.show.fields.publish_state") %></div>
+        <div class="flex-1 min-w-16">
+          <span class="badge bg-info"><%= t("tenant.contract_templates.publish_states.#{@template.publish_state}", default: @template.publish_state) %></span>
+          <% if @template.published_at.present? %>
+            <span class="ms-2 text-secondary"><%= l(@template.published_at, format: :long) %></span>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="form-field">
         <div class="d-inline-block min-w-12 text-secondary"><%= t("tenant.contract_templates.show.fields.docusign_template_id") %></div>
         <div class="flex-1 min-w-16 text-break"><%= @template.docusign_template_id.presence || t("tenant.common.empty") %></div>
       </div>
@@ -35,9 +45,59 @@
         <div class="flex-1 min-w-16"><%= @template.description.presence || t("tenant.common.empty") %></div>
       </div>
 
+      <div class="form-field align-items-start">
+        <div class="d-inline-block min-w-12 text-secondary"><%= t("tenant.contract_templates.show.fields.documents") %></div>
+        <div class="flex-1 min-w-16">
+          <% if @template.documents.attached? %>
+            <% @template.documents.each do |doc| %>
+              <span class="badge bg-info me-1 mb-1"><%= doc.filename.to_s %></span>
+            <% end %>
+          <% else %>
+            <%= t("tenant.common.empty") %>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="form-field align-items-start">
+        <div class="d-inline-block min-w-12 text-secondary"><%= t("tenant.contract_templates.show.fields.roles") %></div>
+        <div class="flex-1 min-w-16">
+          <% if @template.template_roles.any? %>
+            <% @template.template_roles.order(:routing_order, :id).each do |role| %>
+              <div>
+                <span class="badge bg-info me-1"><%= t("tenant.contract_templates.signing_types.#{role.signing_type}", default: role.signing_type) %></span>
+                <strong><%= role.role_name %></strong>
+                <% if role.signer_name.present? %>
+                  <span class="ms-1 text-secondary"><%= role.signer_name %></span>
+                <% end %>
+                <% if role.signer_email.present? %>
+                  <span class="ms-1 text-secondary">&lt;<%= role.signer_email %>&gt;</span>
+                <% end %>
+                <span class="ms-1 text-secondary">#<%= role.routing_order %></span>
+              </div>
+            <% end %>
+          <% else %>
+            <%= t("tenant.common.empty") %>
+          <% end %>
+        </div>
+      </div>
+
       <div class="form-field align-items-center mb-0 mt-3">
         <div class="d-inline-block min-w-12"></div>
-        <%= link_to t("tenant.contract_templates.show.edit_button"), edit_tenant_contract_template_path(tenant_uid: current_tenant.uid, id: @template.id), class: "btn btn-primary" %>
+        <div class="d-flex align-items-center gap-2">
+          <%= link_to t("tenant.contract_templates.show.create_contract_button"),
+            new_tenant_contract_path(tenant_uid: current_tenant.uid, contract: { contract_template_id: @template.id }),
+            class: "btn btn-outline-primary" %>
+          <%= link_to t("tenant.contract_templates.show.edit_button"), edit_tenant_contract_template_path(tenant_uid: current_tenant.uid, id: @template.id), class: "btn btn-primary" %>
+          <% unless @template.published_to_docusign? %>
+            <%= form_with url: tenant_contract_template_path(tenant_uid: current_tenant.uid, id: @template.id), method: :patch, class: "mb-0" do %>
+              <%= hidden_field_tag :publish_to_docusign, "1" %>
+              <%= button_tag type: :submit, class: "btn btn-secondary" do %>
+                <%= tag.span class: "loading-spinner" %>
+                <%= tag.span t("tenant.contract_templates.show.publish_button") %>
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>
       </div>
     </div>
   </div>

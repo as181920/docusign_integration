@@ -33,6 +33,11 @@ default: &default
   docusign_oauth_redirect_uri: "http://localhost:3026/integrations/docusign/oauth/callback"
   docusign_oauth_scope_options: "" # comma or space separated extra scopes, e.g. click.manage rooms.read
   docusign_connect_hmac_secret: ""
+  docusign_api_timeout_seconds: 25
+  docusign_api_open_timeout_seconds: 8
+  docusign_api_retry_count: 2
+  docusign_api_retry_interval_seconds: 0.4
+  docusign_embedded_signing_result_ttl_seconds: 600
 
   # Optional JWT mode (reserved)
   docusign_user_id: ""

@@ -105,6 +105,62 @@ class TenantContractsControllerTest < ActionDispatch::IntegrationTest
     assert_equal @template_v2.id, json_body["metadata"]["contract_template_id"]
   end
 
+  test "create from local template copies default signer and metadata" do
+    local_template = create_local_template_for_contract_copy
+
+    post "/t/acme/contracts", params: {
+      contract: {
+        title: "Offer Contract",
+        contract_no: "C-ACME-NEW-LOCAL-001",
+        contract_template_id: local_template.id
+      }
+    }, as: :json
+
+    assert_response :created
+    contract = Contract.find(json_body["id"])
+
+    assert_nil contract.docusign_template_id
+    assert_equal local_template.id, contract.metadata["contract_template_id"]
+    assert_equal 1, contract.contract_signers.count
+    assert_equal "demo.employee@example.com", contract.contract_signers.first.email
+  end
+
+  test "create from local template copies template documents to contract" do
+    local_template = create_local_template_for_contract_copy
+
+    post "/t/acme/contracts", params: {
+      contract: {
+        title: "Offer Contract",
+        contract_no: "C-ACME-NEW-LOCAL-002",
+        contract_template_id: local_template.id
+      }
+    }, as: :json
+
+    assert_response :created
+    contract = Contract.find(json_body["id"])
+
+    assert_predicate contract.documents, :attached?
+    assert_equal "contract.pdf", contract.documents.first.filename.to_s
+  end
+
+  test "create accepts manual contract document upload" do
+    upload = Rack::Test::UploadedFile.new(file_fixture("contract.pdf"), "application/pdf")
+
+    post "/t/acme/contracts", params: {
+      contract: {
+        title: "Manual Upload Contract",
+        contract_no: "C-ACME-MANUAL-001",
+        documents: [upload]
+      }
+    }
+
+    assert_response :redirect
+    contract = Contract.order(:id).last
+
+    assert_equal "Manual Upload Contract", contract.title
+    assert_predicate contract.documents, :attached?
+  end
+
   test "docusign_envelope_submission returns envelope payload" do
     stubbed_envelope = ContractEnvelope.new(
       contract: @acme_contract,
@@ -132,10 +188,55 @@ class TenantContractsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "http://www.example.com/done", json_body["return_url"]
   end
 
+  test "embedded_signing_session html redirects with short reference" do
+    Docusign::RecipientViewService.stubs(:call).returns("https://docusign.example.com/sign")
+
+    post "/t/acme/contracts/#{@acme_contract.id}/embedded_signing_session", params: {
+      signer_email: @acme_primary_signer.email
+    }
+
+    assert_response :redirect
+
+    redirect_uri = URI.parse(response.location)
+    ref = Rack::Utils.parse_query(redirect_uri.query)["embedded_signing_ref"]
+
+    assert_predicate ref, :present?
+    assert_operator ref.length, :<=, 40
+    refute_includes response.location, "docusign.example.com/sign"
+  end
+
   test "embedded_signing_session returns bad request when signer_email missing" do
     post "/t/acme/contracts/#{@acme_contract.id}/embedded_signing_session", as: :json
 
     assert_response :bad_request
     assert_match "param is missing", json_body["error"]
   end
+
+  private
+
+    def create_local_template_for_contract_copy
+      local_template = create(
+        :contract_template,
+        tenant: @acme_tenant,
+        name: "Offer Template",
+        version: 1,
+        docusign_template_id: nil,
+        publish_state: :draft
+      )
+      create(
+        :contract_template_role,
+        contract_template: local_template,
+        role_name: "Employee",
+        signer_name: "Demo Employee",
+        signer_email: "demo.employee@example.com",
+        routing_order: 1,
+        signing_type: :signer
+      )
+      local_template.documents.attach(
+        io: file_fixture("contract.pdf").open,
+        filename: "contract.pdf",
+        content_type: "application/pdf"
+      )
+      local_template
+    end
 end

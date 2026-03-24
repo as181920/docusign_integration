@@ -30,23 +30,23 @@
               class: "form-control" %>
           </div>
 
-          <%= form.button class: "btn btn-primary" do %>
+          <%= form.button class: "btn btn-primary mb-0" do %>
             <%= tag.span class: "loading-spinner" %>
             <%= tag.span t("tenant.common.filter") %>
           <% end %>
 
-          <%= link_to t("tenant.common.reset"), tenant_contract_templates_path(tenant_uid: current_tenant.uid), class: "btn btn-secondary" %>
+          <%= link_to t("tenant.common.reset"), tenant_contract_templates_path(tenant_uid: current_tenant.uid), class: "btn btn-secondary mb-0" %>
         <% end %>
 
-        <div class="ms-auto d-inline-flex gap-2">
-          <%= form_with url: tenant_docusign_template_sync_path(tenant_uid: current_tenant.uid), method: :post, class: "mb-0" do %>
-            <%= button_tag type: :submit, class: "btn btn-secondary" do %>
+        <div class="ms-auto d-inline-flex align-items-start gap-2">
+          <%= form_with url: tenant_docusign_template_sync_path(tenant_uid: current_tenant.uid), method: :post, class: "mb-0 d-inline-flex align-items-start" do %>
+            <%= button_tag type: :submit, class: "btn btn-secondary mb-0" do %>
               <%= tag.span class: "loading-spinner" %>
               <%= tag.span t("tenant.contract_templates.index.sync_button") %>
             <% end %>
           <% end %>
 
-          <%= link_to t("tenant.contract_templates.index.new_button"), new_tenant_contract_template_path(tenant_uid: current_tenant.uid), class: "btn btn-primary" %>
+          <%= link_to t("tenant.contract_templates.index.new_button"), new_tenant_contract_template_path(tenant_uid: current_tenant.uid), class: "btn btn-primary mb-0" %>
         </div>
       </div>
 
@@ -59,6 +59,7 @@
                 <th class="text-align-center align-middle"><%= t("tenant.contract_templates.index.columns.name") %></th>
                 <th class="text-align-center align-middle"><%= t("tenant.contract_templates.index.columns.version") %></th>
                 <th class="text-align-center align-middle"><%= t("tenant.contract_templates.index.columns.status") %></th>
+                <th class="text-align-center align-middle"><%= t("tenant.contract_templates.index.columns.publish_state") %></th>
                 <th class="text-align-center align-middle"><%= t("tenant.contract_templates.index.columns.docusign_template_id") %></th>
                 <th class="text-align-center align-middle"><%= t("tenant.contract_templates.index.columns.actions") %></th>
               </tr>
@@ -70,6 +71,7 @@
                   <td class="align-middle"><%= template.name %></td>
                   <td class="align-middle">v<%= template.version %></td>
                   <td class="align-middle"><%= t("tenant.contract_templates.statuses.#{template.status}", default: template.status) %></td>
+                  <td class="align-middle"><span class="badge bg-info"><%= t("tenant.contract_templates.publish_states.#{template.publish_state}", default: template.publish_state) %></span></td>
                   <td class="align-middle"><%= template.docusign_template_id.presence || t("tenant.common.empty") %></td>
                   <td class="align-middle">
                     <div class="d-inline-flex gap-2">

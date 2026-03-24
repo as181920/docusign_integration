@@ -93,11 +93,8 @@ en:
         description: "Maintain the current enterprise DocuSign configuration and generate OAuth authorization URLs."
         summary_title: "Connection Summary"
         edit_button: "Edit Configuration"
+        reauthorize_button: "Re-authorize"
         new_button: "Create Configuration"
-        edit_form_title: "Edit Connection Configuration"
-        new_form_title: "Create Connection Configuration"
-        save_button: "Save Configuration"
-        create_button: "Create Configuration"
         oauth_title: "OAuth Authorization"
         oauth_description: "Select scopes and generate a one-time authorization URL for enterprise account authorization."
         generate_authorize_url: "Generate Authorization URL"
@@ -108,6 +105,16 @@ en:
           account_id: "DocuSign Account ID"
           status: "Connection Status"
           updated_at: "Last Updated"
+      new:
+        page_title: "Create DocuSign Connection"
+        title: "Create DocuSign Connection"
+        back: "Back to Connection"
+        submit: "Create Configuration"
+      edit:
+        page_title: "Edit DocuSign Connection"
+        title: "Edit DocuSign Connection"
+        back: "Back to Connection"
+        submit: "Save Configuration"
 
     contract_templates:
       statuses:
@@ -125,6 +132,7 @@ en:
         keyword_placeholder: "Template name / DocuSign Template ID"
         empty: "No templates yet."
         columns:
+          id: "ID"
           name: "Name"
           version: "Version"
           status: "Status"

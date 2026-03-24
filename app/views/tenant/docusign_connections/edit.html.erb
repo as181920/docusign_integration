@@ -1,0 +1,19 @@
+<% content_for :title, t("tenant.docusign_connections.edit.page_title") %>
+<%= render "tenant/shared/layout_slots" %>
+
+<div class="container-fluid px-4 py-3">
+  <div class="card">
+    <div class="card-body">
+      <div class="d-flex justify-content-space-between align-items-center mb-3">
+        <h1 class="h5 my-0"><%= t("tenant.docusign_connections.edit.title") %></h1>
+        <%= link_to t("tenant.docusign_connections.edit.back"), tenant_docusign_connection_path(tenant_uid: current_tenant.uid), class: "btn btn-sm btn-secondary" %>
+      </div>
+
+      <%= render "form",
+        connection_form: @connection_form,
+        url: tenant_docusign_connection_path(tenant_uid: current_tenant.uid),
+        method: :patch,
+        submit_text: t("tenant.docusign_connections.edit.submit") %>
+    </div>
+  </div>
+</div>

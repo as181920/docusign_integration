@@ -40,8 +40,6 @@ module Tenant
 
         def assign_view_state(connection:, scope:, authorize_url:)
           @connection = connection
-          @connection_form = connection || TenantDocusignConnection.new(status: :active, oauth_scope: scope)
-          @connection_readonly = true
           @authorize_url = authorize_url
           @selected_oauth_scopes = normalize_scope_values(scope)
           @selected_oauth_scopes = %w[signature] if @selected_oauth_scopes.blank?

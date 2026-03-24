@@ -19,6 +19,15 @@ class TenantContractTemplatesControllerTest < ActionDispatch::IntegrationTest
     assert names.all? { |name| name == "Master Service Agreement" }
   end
 
+  test "index defaults to newest first" do
+    get "/t/acme/contract_templates", as: :json
+
+    assert_response :success
+    ids = json_body.map { |row| row["id"] }
+
+    assert_equal ids.sort.reverse, ids
+  end
+
   test "index supports pagination" do
     create_list(:contract_template, 12, tenant: @tenant, name: "Paged Template")
 
@@ -44,9 +53,9 @@ class TenantContractTemplatesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h1", text: "模板列表"
-    assert_select "a", text: "新建模板"
     assert_select "table", 1
-    assert_select "form", 1
+    assert_select "form", 2
+    assert_select "form input[name='contract_template[name]']", 0
   end
 
   test "index html renders english when locale is en" do

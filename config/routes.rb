@@ -43,7 +43,7 @@ Rails.application.routes.draw do
       end
     end
 
-    resource :docusign_connection, only: %i[show create update], controller: "docusign_connections" do
+    resource :docusign_connection, only: %i[show new edit create update], controller: "docusign_connections" do
       scope module: :docusign_connections do
         resource :oauth_authorization, only: :create
       end

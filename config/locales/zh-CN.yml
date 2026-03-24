@@ -93,11 +93,8 @@ zh-CN:
         description: "维护当前企业的 DocuSign 账户配置，并生成 OAuth 授权入口。"
         summary_title: "连接摘要"
         edit_button: "编辑配置"
+        reauthorize_button: "重新授权"
         new_button: "新建配置"
-        edit_form_title: "编辑连接配置"
-        new_form_title: "创建连接配置"
-        save_button: "保存连接配置"
-        create_button: "创建连接配置"
         oauth_title: "OAuth 授权"
         oauth_description: "选择授权范围后生成一次性授权地址，用于完成企业账号授权。"
         generate_authorize_url: "生成授权地址"
@@ -108,6 +105,16 @@ zh-CN:
           account_id: "DocuSign Account ID"
           status: "连接状态"
           updated_at: "最近更新"
+      new:
+        page_title: "创建 DocuSign 连接"
+        title: "创建 DocuSign 连接"
+        back: "返回连接详情"
+        submit: "创建连接配置"
+      edit:
+        page_title: "编辑 DocuSign 连接"
+        title: "编辑 DocuSign 连接"
+        back: "返回连接详情"
+        submit: "保存连接配置"
 
     contract_templates:
       statuses:
@@ -125,6 +132,7 @@ zh-CN:
         keyword_placeholder: "模板名称 / DocuSign Template ID"
         empty: "暂无模板，请先创建模板。"
         columns:
+          id: "ID"
           name: "名称"
           version: "版本"
           status: "状态"

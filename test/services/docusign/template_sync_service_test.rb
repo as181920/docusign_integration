@@ -57,6 +57,35 @@ module Docusign
       assert_equal 2, new_nda_template.version
     end
 
+    test "sync accepts nested envelope template definition payload" do
+      tenant, connection = create_connection
+
+      Docusign::ApiClient.expects(:get).with(connection: connection, path: "/templates?count=100").returns(
+        {
+          "envelopeTemplates" => [
+            {
+              "name" => "Wrapper Name",
+              "envelopeTemplateDefinition" => {
+                "templateId" => "tpl-nested-001",
+                "name" => "Nested Name",
+                "description" => "Nested description",
+                "shared" => "true"
+              }
+            }
+          ]
+        }
+      )
+
+      result = TemplateSyncService.call(tenant: tenant)
+      template = ContractTemplate.find_by!(tenant: tenant, docusign_template_id: "tpl-nested-001")
+
+      assert_equal 1, result[:total_count]
+      assert_equal 1, result[:created_count]
+      assert_equal "Nested Name", template.name
+      assert_equal "Nested description", template.description
+      assert_equal "tpl-nested-001", template.metadata.dig("docusign_template", "template_id")
+    end
+
     test "raises when active docusign connection is missing" do
       tenant, _connection = create_connection(status: :expired)
 

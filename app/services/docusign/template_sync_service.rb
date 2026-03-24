@@ -101,7 +101,7 @@ module Docusign
 
         def assign_template_attributes(record:, tenant:, remote_template:)
           remote_name = template_name_for(remote_template)
-          remote_description = remote_template["description"].to_s
+          remote_description = template_payload_for(remote_template)["description"].to_s
 
           managed_by_sync = record.new_record? || record.metadata.to_h["template_source"] == "docusign_sync"
 
@@ -128,12 +128,19 @@ module Docusign
           )
         end
 
+        def template_payload_for(remote_template)
+          payload = remote_template["envelopeTemplateDefinition"] || remote_template["envelope_template_definition"]
+          payload.is_a?(Hash) ? payload : remote_template
+        end
+
         def template_id_for(remote_template)
-          remote_template["templateId"] || remote_template["template_id"]
+          payload = template_payload_for(remote_template)
+          payload["templateId"] || payload["template_id"]
         end
 
         def template_name_for(remote_template)
-          value = remote_template["name"].to_s.strip
+          payload = template_payload_for(remote_template)
+          value = payload["name"].to_s.strip
           return value if value.present?
 
           template_id = template_id_for(remote_template)
@@ -141,13 +148,15 @@ module Docusign
         end
 
         def normalized_remote_template(remote_template)
+          payload = template_payload_for(remote_template)
+
           {
-            "template_id" => template_id_for(remote_template),
-            "name" => remote_template["name"],
-            "description" => remote_template["description"],
+            "template_id" => payload["templateId"] || payload["template_id"],
+            "name" => payload["name"],
+            "description" => payload["description"],
             "folder_name" => remote_template["folderName"] || remote_template["folder_name"],
-            "shared" => remote_template["shared"],
-            "last_modified" => remote_template["lastModified"] || remote_template["last_modified"]
+            "shared" => payload["shared"] || remote_template["shared"],
+            "last_modified" => payload["lastModified"] || payload["last_modified"] || remote_template["lastModified"] || remote_template["last_modified"]
           }.compact
         end
 

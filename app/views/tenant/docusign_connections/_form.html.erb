@@ -1,0 +1,87 @@
+<%= form_with model: connection_form,
+  scope: :tenant_docusign_connection,
+  url: url,
+  method: method,
+  class: "form" do |f| %>
+  <% if connection_form.persisted? %>
+    <div class="form-field align-items-start">
+      <div class="d-inline-block min-w-12">
+        <label class="form-label"><%= t("tenant.docusign_connections.show.fields.account_id") %></label>
+      </div>
+      <div class="flex-1 min-w-16">
+        <p class="form-control-plaintext text-break mb-0"><%= connection_form.docusign_account_id.presence || t("tenant.common.empty") %></p>
+      </div>
+    </div>
+
+    <div class="form-field align-items-start">
+      <div class="d-inline-block min-w-12">
+        <label class="form-label"><%= t("tenant.docusign_connections.base_uri") %></label>
+      </div>
+      <div class="flex-1 min-w-16">
+        <p class="form-control-plaintext text-break mb-0"><%= connection_form.docusign_base_uri.presence || t("tenant.common.empty") %></p>
+      </div>
+    </div>
+  <% else %>
+    <div class="form-field">
+      <div class="d-inline-block min-w-12">
+        <%= f.label :docusign_account_id, t("tenant.docusign_connections.show.fields.account_id"), class: "form-label" %>
+      </div>
+      <div class="flex-1 min-w-16">
+        <%= f.text_field :docusign_account_id,
+          class: "form-control w-100",
+          required: true,
+          placeholder: t("tenant.docusign_connections.show.account_id_placeholder") %>
+      </div>
+    </div>
+
+    <div class="form-field">
+      <div class="d-inline-block min-w-12">
+        <%= f.label :docusign_base_uri, t("tenant.docusign_connections.base_uri"), class: "form-label" %>
+      </div>
+      <div class="flex-1 min-w-16">
+        <%= f.text_field :docusign_base_uri,
+          class: "form-control w-100",
+          placeholder: "https://demo.docusign.net/restapi" %>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="form-field align-items-start">
+    <div class="d-inline-block min-w-12">
+      <%= label_tag nil, t("tenant.docusign_connections.oauth_scope_label"), class: "form-label" %>
+    </div>
+    <div class="flex-1 min-w-16">
+      <%= hidden_field_tag "tenant_docusign_connection[oauth_scopes][]", "" %>
+      <% @oauth_scope_options.each do |scope_option| %>
+        <label class="d-flex align-items-center mb-2">
+          <%= check_box_tag "tenant_docusign_connection[oauth_scopes][]",
+            scope_option,
+            @selected_oauth_scopes.include?(scope_option),
+            class: "me-2" %>
+          <span><%= t("tenant.docusign_connections.oauth_scope_options.#{scope_option}", default: scope_option) %></span>
+        </label>
+      <% end %>
+      <p class="text-secondary small mb-0"><%= t("tenant.docusign_connections.oauth_scope_hint") %></p>
+    </div>
+  </div>
+
+  <div class="form-field">
+    <div class="d-inline-block min-w-12">
+      <%= f.label :status, t("tenant.docusign_connections.show.fields.status"), class: "form-label" %>
+    </div>
+    <div class="flex-1 min-w-16">
+      <%= f.select :status,
+        options_for_select(TenantDocusignConnection.statuses.keys.map { |value| [t("tenant.docusign_connections.statuses.#{value}", default: value), value] }, connection_form.status || "active"),
+        {},
+        class: "form-control w-100" %>
+    </div>
+  </div>
+
+  <div class="form-field align-items-center mb-0">
+    <div class="d-inline-block min-w-12"></div>
+    <div class="d-flex align-items-center gap-2">
+      <%= f.submit submit_text, class: "btn btn-primary" %>
+      <%= link_to t("tenant.common.cancel"), tenant_docusign_connection_path(tenant_uid: current_tenant.uid), class: "btn btn-outline-secondary" %>
+    </div>
+  </div>
+<% end %>

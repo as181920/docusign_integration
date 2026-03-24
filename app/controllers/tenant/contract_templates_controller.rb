@@ -4,6 +4,7 @@ module Tenant
 
     def index
       @q = policy_scope_records(template_scope).ransack(params[:q])
+      @q.sorts = "id desc" if @q.sorts.empty?
       @templates = @q.result.page(params[:page]).per(pagination_per(default: 10))
 
       respond_to do |format|
@@ -78,7 +79,7 @@ module Tenant
       end
 
       def template_scope
-        ContractTemplate.where(tenant: current_tenant).order(name: :asc, version: :desc)
+        ContractTemplate.where(tenant: current_tenant)
       end
 
       def contract_template_params

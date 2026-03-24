@@ -22,13 +22,19 @@ module Integrations
         @current_tenant = tenant
 
         oauth_user_info = fetch_oauth_user_info
-        merged_payload = params.to_unsafe_h.merge("oauth_user_info" => oauth_user_info)
+        incoming_tenant_key = extract_tenant_key(oauth_user_info: oauth_user_info)
+        tenant_name = extract_tenant_name(oauth_user_info: oauth_user_info)
+        enterprise_payload = build_enterprise_payload(
+          incoming_tenant_key: incoming_tenant_key,
+          tenant_name: tenant_name,
+          state_payload: state_payload
+        )
 
         enterprise = upsert_enterprise(
           tenant: tenant,
-          incoming_tenant_key: extract_tenant_key(oauth_user_info: oauth_user_info),
-          tenant_name: extract_tenant_name(oauth_user_info: oauth_user_info),
-          raw_payload: merged_payload
+          incoming_tenant_key: incoming_tenant_key,
+          tenant_name: tenant_name,
+          raw_payload: enterprise_payload
         )
 
         identity = provision_identity_if_possible(tenant: tenant, oauth_user_info: oauth_user_info)
@@ -139,6 +145,16 @@ module Integrations
 
         def extract_tenant_name(oauth_user_info:)
           params[:tenant_name].presence || oauth_user_info["tenant_name"].presence
+        end
+
+        def build_enterprise_payload(incoming_tenant_key:, tenant_name:, state_payload:)
+          {
+            "source" => "feishu_oauth_callback",
+            "tenant_key" => incoming_tenant_key,
+            "tenant_name" => tenant_name,
+            "state_tenant_uid" => state_payload&.dig("tenant_uid"),
+            "state_return_to" => state_payload&.dig("return_to")
+          }.compact
         end
 
         def provision_identity_if_possible(tenant:, oauth_user_info:)

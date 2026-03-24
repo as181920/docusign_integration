@@ -1,0 +1,52 @@
+<% content_for :title, t("integrations.feishu.callbacks.result.page_title") %>
+
+<div class="container-fluid px-4 py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-9 col-xl-7">
+      <div class="card">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center mb-3">
+            <h1 class="h5 my-0 me-2"><%= @callback_title.presence || t("integrations.feishu.callbacks.result.page_title") %></h1>
+            <% if @callback_status == :success %>
+              <span class="badge bg-info me-2"><%= t("integrations.feishu.callbacks.result.success_badge") %></span>
+            <% else %>
+              <span class="badge bg-danger me-2"><%= t("integrations.feishu.callbacks.result.failure_badge") %></span>
+            <% end %>
+          </div>
+
+          <p class="text-secondary mb-3"><%= @callback_message %></p>
+
+          <% if @tenant.present? %>
+            <dl class="row mb-3">
+              <dt class="col-4 text-secondary"><%= t("integrations.feishu.callbacks.result.tenant_uid") %></dt>
+              <dd class="col-8"><%= @tenant.uid %></dd>
+
+              <% if @enterprise.present? %>
+                <dt class="col-4 text-secondary"><%= t("integrations.feishu.callbacks.result.tenant_key") %></dt>
+                <dd class="col-8 text-break"><%= @enterprise.tenant_key.presence || t("tenant.common.empty") %></dd>
+
+                <dt class="col-4 text-secondary"><%= t("integrations.feishu.callbacks.result.enterprise_name") %></dt>
+                <dd class="col-8 text-break"><%= @enterprise.name.presence || t("tenant.common.empty") %></dd>
+              <% end %>
+
+              <% if @identity.present? %>
+                <dt class="col-4 text-secondary"><%= t("integrations.feishu.callbacks.result.user") %></dt>
+                <dd class="col-8 text-break"><%= @identity.name.presence || @identity.provider_uid %></dd>
+              <% end %>
+            </dl>
+          <% end %>
+
+          <div class="d-flex flex-wrap gap-2">
+            <% if @return_to.present? %>
+              <%= link_to t("integrations.feishu.callbacks.result.return_to_app"), @return_to, class: "btn btn-primary" %>
+            <% elsif @tenant.present? %>
+              <%= link_to t("integrations.feishu.callbacks.result.return_to_dashboard"), tenant_dashboard_path(tenant_uid: @tenant.uid), class: "btn btn-primary" %>
+            <% end %>
+
+            <%= link_to t("integrations.feishu.callbacks.result.back_home"), root_path, class: "btn btn-outline-secondary" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

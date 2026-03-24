@@ -24,10 +24,14 @@
       <h2 class="h6"><%= t("tenant.integration_guides.feishu.sections.platform.title") %></h2>
       <ol class="mb-0">
         <li><%= t("tenant.integration_guides.feishu.sections.platform.item_1") %></li>
-        <li><%= t("tenant.integration_guides.feishu.sections.platform.item_2", callback_url: @feishu_callback_url, tenant_uid: current_tenant.uid) %></li>
+        <li><%= t("tenant.integration_guides.feishu.sections.platform.item_2", callback_url: @feishu_callback_url) %></li>
         <li><%= t("tenant.integration_guides.feishu.sections.platform.item_3", events_url: @feishu_events_url) %></li>
         <li><%= t("tenant.integration_guides.feishu.sections.platform.item_4") %></li>
       </ol>
+
+      <div class="mt-3">
+        <%= button_to t("tenant.integration_guides.feishu.start_oauth"), @feishu_oauth_authorize_path, method: :post, class: "btn btn-primary", form: { class: "d-inline", data: { turbo: false } } %>
+      </div>
     </div>
   </div>
 

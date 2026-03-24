@@ -27,7 +27,7 @@ class IntegrationsFeishuCallbacksControllerTest < ActionDispatch::IntegrationTes
         union_id: identity.union_id,
         open_id: identity.open_id,
         tenant_name: "ACME Tenant New Name"
-      }
+      }, as: :json
     end
 
     assert_response :success
@@ -39,15 +39,32 @@ class IntegrationsFeishuCallbacksControllerTest < ActionDispatch::IntegrationTes
     get "/integrations/feishu/callback", params: {
       tenant_uid: "acme",
       tenant_key: "wrong-key"
-    }
+    }, as: :json
 
     assert_response :unprocessable_entity
     assert_equal I18n.t("integrations.feishu.callbacks.errors.tenant_key_mismatch"), json_body["error"]
   end
 
   test "callback returns not found for unknown tenant" do
-    get "/integrations/feishu/callback", params: { tenant_uid: "missing" }
+    get "/integrations/feishu/callback", params: { tenant_uid: "missing" }, as: :json
 
     assert_response :not_found
+  end
+
+  test "callback resolves tenant by signed state and renders html" do
+    state = Feishu::OauthState.generate(tenant_uid: @tenant.uid, return_to: "/t/acme/dashboard")
+
+    get "/integrations/feishu/callback", params: { state: state, tenant_key: "fs_acme_key" }
+
+    assert_response :success
+    assert_includes response.body, I18n.t("integrations.feishu.callbacks.result.success_title")
+    assert_includes response.body, "/t/acme/dashboard"
+  end
+
+  test "callback returns unauthorized when state invalid" do
+    get "/integrations/feishu/callback", params: { state: "invalid" }, as: :json
+
+    assert_response :unauthorized
+    assert_match "invalid feishu oauth state", json_body["error"]
   end
 end

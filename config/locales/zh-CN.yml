@@ -370,17 +370,18 @@ zh-CN:
           platform:
             title: "二、飞书开放平台（ISV）配置"
             item_1: "创建/选择 ISV 应用，接入形态选择 Web。"
-            item_2: "配置 OAuth 回调地址：%{callback_url}?tenant_uid=%{tenant_uid}"
+            item_2: "配置 OAuth 回调地址：%{callback_url}"
             item_3: "配置事件订阅请求地址：%{events_url}"
-            item_4: "在飞书侧完成企业安装与授权。"
+            item_4: "在飞书侧完成企业安装与授权，企业信息通过 state 回传绑定。"
           callback_params:
             title: "三、回调参数约定"
-            item_1: "tenant_uid：必填，用于绑定到对应企业。"
+            item_1: "state：必填，系统会签名并携带 tenant_uid，防止跨企业串联。"
             item_2: "tenant_key / tenantKey：可选，用于企业一致性校验。"
             item_3: "union_id / open_id：可选，用于自动建立本地用户关联身份。"
           access_entry:
             title: "四、访问入口"
             label: "系统访问入口："
+        start_oauth: "发起飞书授权"
       sap:
         page_title: "SAP 集成配置说明"
         title: "SAP 集成配置说明"
@@ -397,6 +398,23 @@ zh-CN:
           received: "飞书回调已接收"
         errors:
           tenant_key_mismatch: "tenant_key 与已绑定企业不匹配"
+        result:
+          page_title: "飞书授权结果"
+          success_badge: "成功"
+          failure_badge: "失败"
+          success_title: "飞书授权已完成"
+          success_message: "企业绑定信息已保存，可继续进入业务页面。"
+          failure_title: "飞书授权失败"
+          invalid_state_title: "授权状态无效"
+          bad_request_title: "请求参数错误"
+          not_found_title: "资源不存在"
+          tenant_uid: "企业标识"
+          tenant_key: "飞书 Tenant Key"
+          enterprise_name: "飞书企业名称"
+          user: "飞书用户"
+          return_to_app: "返回业务页面"
+          return_to_dashboard: "返回工作台"
+          back_home: "返回首页"
     docusign:
       oauth_callbacks:
         messages:

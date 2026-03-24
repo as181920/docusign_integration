@@ -370,17 +370,18 @@ en:
           platform:
             title: "2. Feishu Open Platform (ISV)"
             item_1: "Create/select ISV app and choose Web integration."
-            item_2: "Set OAuth callback URL: %{callback_url}?tenant_uid=%{tenant_uid}"
+            item_2: "Set OAuth callback URL: %{callback_url}"
             item_3: "Set events subscription URL: %{events_url}"
-            item_4: "Complete installation and authorization on Feishu side."
+            item_4: "Complete installation and authorization. Enterprise binding is returned through signed state."
           callback_params:
             title: "3. Callback Parameters"
-            item_1: "tenant_uid: required, used to bind enterprise."
+            item_1: "state: required. The app signs tenant_uid into state to prevent cross-enterprise mixups."
             item_2: "tenant_key / tenantKey: optional, used for enterprise consistency check."
             item_3: "union_id / open_id: optional, used to auto-create local identity mapping."
           access_entry:
             title: "4. Access Entry"
             label: "System access entry:"
+        start_oauth: "Start Feishu Authorization"
       sap:
         page_title: "SAP Integration Guide"
         title: "SAP Integration Guide"
@@ -397,6 +398,23 @@ en:
           received: "feishu callback received"
         errors:
           tenant_key_mismatch: "tenant_key does not match bound enterprise"
+        result:
+          page_title: "Feishu Authorization Result"
+          success_badge: "Success"
+          failure_badge: "Failed"
+          success_title: "Feishu authorization completed"
+          success_message: "Enterprise binding has been saved. You can continue in the app."
+          failure_title: "Feishu authorization failed"
+          invalid_state_title: "Invalid authorization state"
+          bad_request_title: "Invalid request"
+          not_found_title: "Resource not found"
+          tenant_uid: "Enterprise UID"
+          tenant_key: "Feishu Tenant Key"
+          enterprise_name: "Feishu Enterprise Name"
+          user: "Feishu User"
+          return_to_app: "Return to app"
+          return_to_dashboard: "Return to dashboard"
+          back_home: "Back to home"
     docusign:
       oauth_callbacks:
         messages:

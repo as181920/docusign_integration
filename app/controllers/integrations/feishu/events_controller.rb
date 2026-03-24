@@ -4,11 +4,12 @@ module Integrations
       include AuditLoggable
 
       def create
-        payload = params.to_unsafe_h
         raw_body = request.raw_post.to_s
+        payload = build_payload(raw_body: raw_body)
+        challenge = extract_challenge(payload)
 
-        if payload["challenge"].present?
-          return render_challenge(payload)
+        if challenge.present?
+          return render_challenge(payload: payload, challenge: challenge)
         end
 
         unless request_verified?(payload: payload, raw_body: raw_body)
@@ -18,17 +19,45 @@ module Integrations
 
         Rails.logger.info("[Feishu::Events] event received request_id=#{request.request_id} type=#{event_type(payload)}")
         audit(action: "feishu_event_received", data: payload)
-        head :ok
+        render json: { code: 0 }
       end
 
       private
 
-        def render_challenge(payload)
+        def build_payload(raw_body:)
+          payload = params.to_unsafe_h.stringify_keys.except("controller", "action")
+          payload = parse_json_body(raw_body) if payload.blank? && raw_body.present?
+          payload = payload.stringify_keys
+
+          decrypt_payload(payload).merge(payload)
+        end
+
+        def parse_json_body(raw_body)
+          JSON.parse(raw_body)
+        rescue JSON::ParserError
+          {}
+        end
+
+        def decrypt_payload(payload)
+          encrypted = payload["encrypt"].to_s
+          return {} if encrypted.blank?
+
+          ::Feishu::EventPayloadDecryptor.new.decrypt(encrypted).stringify_keys
+        rescue ::Feishu::Error => e
+          Rails.logger.warn("[Feishu::Events] decrypt failed request_id=#{request.request_id} error=#{e.message}")
+          {}
+        end
+
+        def extract_challenge(payload)
+          payload["challenge"].presence || payload.dig("header", "challenge").presence
+        end
+
+        def render_challenge(payload:, challenge:)
           unless challenge_token_valid?(payload)
             return render json: { error: "invalid feishu challenge token" }, status: :unauthorized
           end
 
-          render json: { challenge: payload["challenge"] }
+          render json: { challenge: challenge }
         end
 
         def request_verified?(payload:, raw_body:)
@@ -64,8 +93,8 @@ module Integrations
           expected_token = ENV.fetch("feishu_app_verification_token", nil).to_s
           return true if expected_token.blank?
 
-          token = payload["token"].to_s
-          token.present? && ActiveSupport::SecurityUtils.secure_compare(token, expected_token)
+          token = payload["token"].presence || payload.dig("header", "token").presence
+          token.present? && ActiveSupport::SecurityUtils.secure_compare(token.to_s, expected_token)
         end
 
         def event_type(payload)

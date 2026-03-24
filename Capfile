@@ -23,7 +23,7 @@ require "capistrano/solid_queue"
 install_plugin Capistrano::SolidQueue::Systemd
 
 # Cron (optional, via schedule.rb)
-require "whenever/capistrano"
+require "whenever/capistrano" if File.exist?("config/schedule.rb")
 
 # Custom tasks
 Dir.glob("lib/capistrano/tasks/*.rake").each { |r| import r }

@@ -41,6 +41,7 @@ class IntegrationsFeishuEventsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :success
+    assert_equal 0, json_body["code"]
   end
 
   test "event payload is rejected when signature invalid" do
@@ -60,5 +61,24 @@ class IntegrationsFeishuEventsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_response :unauthorized
+  end
+
+  test "challenge from encrypted payload returns json challenge" do
+    with_env("feishu_app_verification_token" => "verify-token", "feishu_app_encrypt_key" => "encrypt-key") do
+      plain_payload = { challenge: "abc123", token: "verify-token" }.to_json
+      iv = "0123456789abcdef"
+      cipher = OpenSSL::Cipher.new("AES-256-CBC")
+      cipher.encrypt
+      cipher.key = OpenSSL::Digest::SHA256.digest("encrypt-key")
+      cipher.iv = iv
+      encrypted = Base64.strict_encode64(iv + cipher.update(plain_payload) + cipher.final)
+
+      post "/integrations/feishu/events",
+           params: { encrypt: encrypted }.to_json,
+           headers: { "CONTENT_TYPE" => "application/json" }
+    end
+
+    assert_response :success
+    assert_equal "abc123", json_body["challenge"]
   end
 end

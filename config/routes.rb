@@ -18,6 +18,7 @@ Rails.application.routes.draw do
 
   namespace :integrations do
     namespace :feishu do
+      resource :entry, only: :show, controller: "entries"
       resource :callback, only: :show, controller: "callbacks"
       resources :events, only: :create
     end

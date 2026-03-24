@@ -380,7 +380,8 @@ en:
             item_3: "union_id / open_id: optional, used to auto-create local identity mapping."
           access_entry:
             title: "4. Access Entry"
-            label: "System access entry:"
+            entry_label: "Feishu app entry (auto sign-in):"
+            dashboard_label: "System dashboard entry:"
         start_oauth: "Start Feishu Authorization"
       sap:
         page_title: "SAP Integration Guide"

@@ -380,7 +380,8 @@ zh-CN:
             item_3: "union_id / open_id：可选，用于自动建立本地用户关联身份。"
           access_entry:
             title: "四、访问入口"
-            label: "系统访问入口："
+            entry_label: "飞书应用入口（自动登录）:"
+            dashboard_label: "系统工作台入口："
         start_oauth: "发起飞书授权"
       sap:
         page_title: "SAP 集成配置说明"

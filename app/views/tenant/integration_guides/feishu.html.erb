@@ -49,7 +49,9 @@
   <div class="card">
     <div class="card-body">
       <h2 class="h6"><%= t("tenant.integration_guides.feishu.sections.access_entry.title") %></h2>
-      <p class="text-secondary mb-2"><%= t("tenant.integration_guides.feishu.sections.access_entry.label") %></p>
+      <p class="text-secondary mb-2"><%= t("tenant.integration_guides.feishu.sections.access_entry.entry_label") %></p>
+      <p class="mb-3"><code><%= @feishu_entry_url %></code></p>
+      <p class="text-secondary mb-2"><%= t("tenant.integration_guides.feishu.sections.access_entry.dashboard_label") %></p>
       <p class="mb-0"><code><%= @access_entry_url %></code></p>
     </div>
   </div>

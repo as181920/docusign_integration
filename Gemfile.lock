@@ -9,7 +9,7 @@ GIT
 
 GIT
   remote: git@gitlab.dd-life.com:corp.front_end/easy_style_engine.git
-  revision: 051a63c1051ec39f1db37626268d64aa5565aede
+  revision: d0d959139d842ca80b6ba9fe1d3e9531cf7d1990
   branch: main
   specs:
     easy_style (0.3.0)
@@ -121,7 +121,7 @@ GIT
 
 GIT
   remote: git@gitlab.dd-life.com:shared/user_auth.git
-  revision: 4846b2e669c1b953e4f911d21b296fbf2ee154dc
+  revision: 4b89b4fec594a8c0087eed99854e0b3e41242dc1
   branch: main
   specs:
     user_auth (0.2.0)

@@ -27,13 +27,14 @@ module Feishu
     end
 
     def exchange_code(code:)
-      response = Faraday.post("#{@oauth_base_uri}/open-apis/authen/v1/oauth/token") do |req|
+      response = Faraday.post("#{@oauth_base_uri}/open-apis/authen/v2/oauth/token") do |req|
         req.headers["Content-Type"] = "application/json"
         req.body = {
           grant_type: "authorization_code",
           code: code,
-          app_id: @app_id,
-          app_secret: @app_secret
+          client_id: @app_id,
+          client_secret: @app_secret,
+          redirect_uri: @redirect_uri
         }.to_json
       end
 

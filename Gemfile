@@ -30,6 +30,7 @@ gem "mission_control-jobs"
 
 gem "bootsnap", require: false
 gem "tzinfo-data", platforms: %i[windows jruby]
+gem "ip_info", git: "git@gitlab.dd-life.com:shared/ip_info.git", branch: "master"
 
 gem "omni_account", git: "git@gitlab.dd-life.com:shared/omni_account.git", branch: "master"
 gem "omni_pay", git: "git@gitlab.dd-life.com:shared/omni_pay.git", branch: "master"

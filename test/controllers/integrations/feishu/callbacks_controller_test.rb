@@ -61,6 +61,37 @@ class IntegrationsFeishuCallbacksControllerTest < ActionDispatch::IntegrationTes
     assert_includes response.body, "/t/acme/dashboard"
   end
 
+  test "callback resolves tenant by oauth tenant_key without state and tenant_uid" do
+    oauth_client = mock("feishu-oauth-client")
+    Feishu::OauthClient.expects(:new).returns(oauth_client)
+    oauth_client.expects(:exchange_code).with(code: "oauth-code").returns({ "access_token" => "token-value" })
+    oauth_client.expects(:user_info).with(access_token: "token-value").returns({
+      "tenant_key" => "fs_acme_key",
+      "name" => "Feishu User"
+    })
+
+    Feishu::UserProvisioningService.expects(:call).never
+
+    get "/integrations/feishu/callback", params: { code: "oauth-code" }, as: :json
+
+    assert_response :success
+    assert_equal @tenant.uid, json_body["tenant_uid"]
+  end
+
+  test "callback rejects tenant key already bound to another tenant" do
+    another_tenant = create(:tenant, uid: "beta", name: "Beta")
+    create(:feishu_enterprise, tenant: another_tenant, tenant_key: "fs_beta_key")
+    state = Feishu::OauthState.generate(tenant_uid: @tenant.uid, return_to: "/t/acme/dashboard")
+
+    get "/integrations/feishu/callback", params: {
+      state: state,
+      tenant_key: "fs_beta_key"
+    }, as: :json
+
+    assert_response :unprocessable_entity
+    assert_equal I18n.t("integrations.feishu.callbacks.errors.tenant_key_mismatch"), json_body["error"]
+  end
+
   test "callback returns unauthorized when state invalid" do
     get "/integrations/feishu/callback", params: { state: "invalid" }, as: :json
 

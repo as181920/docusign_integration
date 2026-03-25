@@ -3,12 +3,12 @@ module Feishu
     PURPOSE = "feishu_oauth_state".freeze
 
     class << self
-      def generate(tenant_uid:, tenant_user_id: nil, return_to: nil)
+      def generate(tenant_uid: nil, tenant_user_id: nil, return_to: nil)
         payload = {
-          tenant_uid: tenant_uid,
           tenant_user_id: tenant_user_id,
           issued_at: Time.current.to_i
         }
+        payload[:tenant_uid] = tenant_uid if tenant_uid.present?
         payload[:return_to] = return_to if return_to.present?
 
         verifier.generate(payload, expires_in: 15.minutes, purpose: PURPOSE)

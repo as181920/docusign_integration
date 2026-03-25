@@ -16,13 +16,13 @@ module Integrations
           )
         end
 
-        context = resolve_oauth_context
+        oauth_user_info = fetch_oauth_user_info
+        incoming_tenant_key = extract_tenant_key(oauth_user_info: oauth_user_info)
+        context = resolve_oauth_context(incoming_tenant_key: incoming_tenant_key)
         tenant = context.fetch(:tenant)
         state_payload = context[:state_payload]
         @current_tenant = tenant
 
-        oauth_user_info = fetch_oauth_user_info
-        incoming_tenant_key = extract_tenant_key(oauth_user_info: oauth_user_info)
         tenant_name = extract_tenant_name(oauth_user_info: oauth_user_info)
         enterprise_payload = build_enterprise_payload(
           incoming_tenant_key: incoming_tenant_key,
@@ -99,16 +99,37 @@ module Integrations
 
       private
 
-        def resolve_oauth_context
+        def resolve_oauth_context(incoming_tenant_key:)
           if params[:state].present?
             state_payload = ::Feishu::OauthState.verify(params[:state])
-            tenant_uid = state_payload.fetch("tenant_uid")
-            tenant = TenantAuth::Tenant.find_by!(uid: tenant_uid)
+            tenant = resolve_tenant_from_state_payload(
+              state_payload: state_payload,
+              incoming_tenant_key: incoming_tenant_key
+            )
             return { tenant: tenant, state_payload: state_payload }
           end
 
-          tenant = TenantAuth::Tenant.find_by!(uid: params.require(:tenant_uid))
-          { tenant: tenant, state_payload: nil }
+          if params[:tenant_uid].present?
+            tenant = TenantAuth::Tenant.find_by!(uid: params[:tenant_uid])
+            return { tenant: tenant, state_payload: nil }
+          end
+
+          return { tenant: tenant_by_feishu_key!(incoming_tenant_key), state_payload: nil } if incoming_tenant_key.present?
+
+          raise ActionController::ParameterMissing, :tenant_uid
+        end
+
+        def resolve_tenant_from_state_payload(state_payload:, incoming_tenant_key:)
+          tenant_uid = state_payload["tenant_uid"].presence
+          return TenantAuth::Tenant.find_by!(uid: tenant_uid) if tenant_uid.present?
+
+          return tenant_by_feishu_key!(incoming_tenant_key) if incoming_tenant_key.present?
+
+          raise ActionController::ParameterMissing, :tenant_uid
+        end
+
+        def tenant_by_feishu_key!(tenant_key)
+          FeishuEnterprise.find_by!(tenant_key: tenant_key).tenant
         end
 
         def fetch_oauth_user_info
@@ -125,6 +146,9 @@ module Integrations
           if tenant_key_conflict?(enterprise: enterprise, incoming_tenant_key: incoming_tenant_key)
             raise ::Feishu::Error, t("integrations.feishu.callbacks.errors.tenant_key_mismatch")
           end
+          if tenant_key_bound_to_other_tenant?(tenant: tenant, incoming_tenant_key: incoming_tenant_key)
+            raise ::Feishu::Error, t("integrations.feishu.callbacks.errors.tenant_key_mismatch")
+          end
 
           enterprise.tenant_key = incoming_tenant_key if incoming_tenant_key.present?
           enterprise.app_id = ENV.fetch("feishu_app_id", nil)
@@ -137,6 +161,13 @@ module Integrations
 
         def tenant_key_conflict?(enterprise:, incoming_tenant_key:)
           enterprise.persisted? && enterprise.tenant_key.present? && incoming_tenant_key.present? && enterprise.tenant_key != incoming_tenant_key
+        end
+
+        def tenant_key_bound_to_other_tenant?(tenant:, incoming_tenant_key:)
+          return false if incoming_tenant_key.blank?
+
+          bound_enterprise = FeishuEnterprise.find_by(tenant_key: incoming_tenant_key)
+          bound_enterprise.present? && bound_enterprise.tenant_id != tenant.id
         end
 
         def extract_tenant_key(oauth_user_info:)

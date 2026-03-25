@@ -46,20 +46,17 @@ class IntegrationsFeishuEntriesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to "/t/acme/dashboard"
   end
 
-  test "entry returns bad request when tenant parameters missing" do
-    get "/integrations/feishu/entry", as: :json
+  test "entry redirects to feishu oauth when tenant parameters missing" do
+    Feishu::OauthState.expects(:generate).with(tenant_uid: nil, return_to: nil).returns("signed-state")
 
-    assert_response :bad_request
-    assert_equal "param is missing or the value is empty or invalid: tenant_uid", json_body["error"]
-  end
+    oauth_client = mock("feishu-oauth-client")
+    Feishu::OauthClient.expects(:new).returns(oauth_client)
+    oauth_client.expects(:authorization_url).with(state: "signed-state").returns("https://open.feishu.cn/auth")
 
-  test "entry renders tenant resolution guide when tenant parameters missing in html" do
     get "/integrations/feishu/entry"
 
-    assert_response :bad_request
-    assert_includes response.body, I18n.t("integrations.feishu.entries.resolve_tenant.bad_request_title")
-    assert_match %r{action="/integrations/feishu/entry"}, response.body
-    assert_match %r{name="tenant_uid"}, response.body
+    assert_response :redirect
+    assert_redirected_to "https://open.feishu.cn/auth"
   end
 
   test "entry renders tenant resolution guide when tenant_key is not bound" do

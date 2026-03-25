@@ -13,13 +13,13 @@ module Integrations
         tenant = resolve_tenant
         @current_tenant = tenant
 
-        if current_user.present? && current_user.tenant_id == tenant.id
+        if tenant.present? && current_user.present? && current_user.tenant_id == tenant.id
           return redirect_to tenant_dashboard_path(tenant_uid: tenant.uid)
         end
 
         state = ::Feishu::OauthState.generate(
-          tenant_uid: tenant.uid,
-          return_to: tenant_dashboard_path(tenant_uid: tenant.uid)
+          tenant_uid: tenant&.uid,
+          return_to: tenant.present? ? tenant_dashboard_path(tenant_uid: tenant.uid) : nil
         )
         authorize_url = ::Feishu::OauthClient.new.authorization_url(state: state)
 
@@ -29,7 +29,7 @@ module Integrations
           action: "feishu_entry_redirected_to_oauth",
           target: tenant,
           data: {
-            tenant_uid: tenant.uid,
+            tenant_uid: tenant&.uid,
             tenant_key: normalized_tenant_key
           }
         )
@@ -51,7 +51,7 @@ module Integrations
 
           return FeishuEnterprise.find_by!(tenant_key: tenant_key).tenant if tenant_key.present?
 
-          raise ActionController::ParameterMissing, :tenant_uid
+          nil
         end
 
         def verify_enterprise_tenant_key!(tenant:, tenant_key:)

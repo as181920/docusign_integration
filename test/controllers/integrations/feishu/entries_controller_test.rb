@@ -52,4 +52,22 @@ class IntegrationsFeishuEntriesControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
     assert_equal "param is missing or the value is empty or invalid: tenant_uid", json_body["error"]
   end
+
+  test "entry renders tenant resolution guide when tenant parameters missing in html" do
+    get "/integrations/feishu/entry"
+
+    assert_response :bad_request
+    assert_includes response.body, I18n.t("integrations.feishu.entries.resolve_tenant.bad_request_title")
+    assert_match %r{action="/integrations/feishu/entry"}, response.body
+    assert_match %r{name="tenant_uid"}, response.body
+  end
+
+  test "entry renders tenant resolution guide when tenant_key is not bound" do
+    get "/integrations/feishu/entry", params: { tenant_key: "tk_not_bound" }
+
+    assert_response :not_found
+    assert_includes response.body, I18n.t("integrations.feishu.entries.resolve_tenant.not_found_title")
+    assert_match %r{name="tenant_key"}, response.body
+    assert_match %r{value="tk_not_bound"}, response.body
+  end
 end

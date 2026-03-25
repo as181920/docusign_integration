@@ -394,6 +394,21 @@ zh-CN:
 
   integrations:
     feishu:
+      entries:
+        resolve_tenant:
+          page_title: "补全企业绑定"
+          bad_request_title: "无法识别企业"
+          bad_request_message: "当前飞书入口请求未携带可识别的企业参数，请输入企业 UID 后继续授权。"
+          not_found_title: "未找到企业绑定"
+          not_found_message: "当前飞书上下文尚未在本系统完成企业绑定，请输入企业 UID 后继续并完成绑定。"
+          received_context: "收到的上下文"
+          context_tenant_uid: "企业 UID"
+          context_tenant_key: "飞书 Tenant Key"
+          form_hint: "若你已知企业 UID，可在下方输入后继续。"
+          tenant_uid_label: "企业 UID"
+          tenant_uid_placeholder: "例如：demo"
+          continue_button: "继续"
+          back_home: "返回首页"
       callbacks:
         messages:
           received: "飞书回调已接收"

@@ -1,6 +1,8 @@
 module Integrations
   module Feishu
     class EntriesController < ApplicationController
+      layout "easy_style/common"
+
       rescue_from ActionController::ParameterMissing, with: :render_bad_request
       rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
       rescue_from ::Feishu::ConfigurationError, with: :render_configuration_error
@@ -76,15 +78,40 @@ module Integrations
         end
 
         def render_bad_request(exception)
-          render_error(status: :bad_request, message: exception.message)
+          render_tenant_resolution_error(
+            exception: exception,
+            status: :bad_request,
+            title: I18n.t("integrations.feishu.entries.resolve_tenant.bad_request_title"),
+            message: I18n.t("integrations.feishu.entries.resolve_tenant.bad_request_message")
+          )
         end
 
         def render_not_found(exception)
-          render_error(status: :not_found, message: exception.message)
+          render_tenant_resolution_error(
+            exception: exception,
+            status: :not_found,
+            title: I18n.t("integrations.feishu.entries.resolve_tenant.not_found_title"),
+            message: I18n.t("integrations.feishu.entries.resolve_tenant.not_found_message")
+          )
         end
 
         def render_configuration_error(exception)
           render_error(status: :unprocessable_entity, message: exception.message)
+        end
+
+        def render_tenant_resolution_error(exception:, status:, title:, message:)
+          respond_to do |format|
+            format.html do
+              @entry_error_title = title
+              @entry_error_message = message
+              @entry_error_details = exception.message
+              @entry_error_status = status
+              @submitted_tenant_uid = params[:tenant_uid].to_s
+              @submitted_tenant_key = normalized_tenant_key
+              render "integrations/feishu/entries/resolve_tenant", status: status
+            end
+            format.json { render json: { error: exception.message }, status: status }
+          end
         end
 
         def render_error(status:, message:)

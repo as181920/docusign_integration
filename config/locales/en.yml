@@ -394,6 +394,21 @@ en:
 
   integrations:
     feishu:
+      entries:
+        resolve_tenant:
+          page_title: "Resolve Enterprise Binding"
+          bad_request_title: "Unable to Identify Enterprise"
+          bad_request_message: "This Feishu entry request does not include an enterprise identifier. Enter your enterprise UID to continue authorization."
+          not_found_title: "Enterprise Binding Not Found"
+          not_found_message: "The current Feishu context is not bound to an enterprise in this system yet. Enter your enterprise UID to continue and complete binding."
+          received_context: "Received Context"
+          context_tenant_uid: "Enterprise UID"
+          context_tenant_key: "Feishu Tenant Key"
+          form_hint: "If you know your enterprise UID, enter it below and continue."
+          tenant_uid_label: "Enterprise UID"
+          tenant_uid_placeholder: "For example: demo"
+          continue_button: "Continue"
+          back_home: "Back to home"
       callbacks:
         messages:
           received: "feishu callback received"

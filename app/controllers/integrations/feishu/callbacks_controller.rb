@@ -167,7 +167,7 @@ module Integrations
         def bind_session(identity)
           return if identity.blank?
 
-          session[:tenant_user_id] = identity.tenant_user_id if identity.tenant_user_id.present?
+          session[:tnt_user_id] = identity.tenant_user_id if identity.tenant_user_id.present?
           session[:user_id] = identity.user_id if identity.user_id.present?
         end
 
@@ -194,7 +194,7 @@ module Integrations
         def current_user
           return nil if current_tenant.blank?
 
-          tenant_user_id = session[:tnt_user_id] || session[:tenant_user_id]
+          tenant_user_id = session[:tnt_user_id]
           return nil if tenant_user_id.blank?
 
           if defined?(@current_user) && @current_user.present? &&

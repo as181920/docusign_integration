@@ -34,7 +34,7 @@ module Tenant
       end
 
       def current_user
-        tenant_user_id = session[:tnt_user_id] || session[:tenant_user_id]
+        tenant_user_id = session[:tnt_user_id]
         return @current_user = nil if tenant_user_id.blank?
 
         if current_tenant.blank?

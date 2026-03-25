@@ -152,7 +152,7 @@ module Integrations
         def current_user
   return nil if current_tenant.blank?
 
-  tenant_user_id = session[:tnt_user_id] || session[:tenant_user_id]
+  tenant_user_id = session[:tnt_user_id]
   return nil if tenant_user_id.blank?
 
   if defined?(@current_user) && @current_user.present? &&

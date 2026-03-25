@@ -1,9 +1,8 @@
 module Tenant
   class DocusignConnectionsController < BaseController
-    before_action :set_connection, only: %i[show new edit update]
+    before_action :set_connection, only: %i[show edit update]
 
     def show
-      @authorize_url = nil
       prepare_scope_options(scope_source: @connection&.oauth_scope)
 
       respond_to do |format|
@@ -12,49 +11,14 @@ module Tenant
       end
     end
 
-    def new
-      if @connection.present?
-        redirect_to edit_tenant_docusign_connection_path(tenant_uid: current_tenant.uid)
-        return
-      end
-
-      @connection_form = TenantDocusignConnection.new(status: :active, oauth_scope: "signature")
-      prepare_scope_options(scope_source: @connection_form.oauth_scope)
-    end
-
     def edit
       if @connection.blank?
-        redirect_to new_tenant_docusign_connection_path(tenant_uid: current_tenant.uid)
+        redirect_to tenant_docusign_connection_path(tenant_uid: current_tenant.uid)
         return
       end
 
       @connection_form = @connection
       prepare_scope_options(scope_source: @connection_form.oauth_scope)
-    end
-
-    def create
-      @connection_form = TenantDocusignConnection.new(connection_params)
-      @connection_form.tenant = current_tenant
-      @connection_form.connected_by_tenant_user = current_user
-      @connection_form.connected_at ||= Time.current
-
-      if @connection_form.save
-        audit(action: "docusign_connection_created", target: @connection_form)
-        respond_to do |format|
-          format.html { redirect_to tenant_docusign_connection_path(tenant_uid: current_tenant.uid), notice: t("tenant.docusign_connections.notices.created") }
-          format.json { render json: serialize_connection(@connection_form), status: :created }
-        end
-      else
-        prepare_scope_options(scope_source: @connection_form.oauth_scope)
-
-        respond_to do |format|
-          format.html do
-            flash.now[:alert] = @connection_form.errors.full_messages.to_sentence
-            render :new, status: :unprocessable_entity
-          end
-          format.json { render json: { errors: @connection_form.errors.full_messages }, status: :unprocessable_entity }
-        end
-      end
     end
 
     def update
@@ -91,18 +55,11 @@ module Tenant
 
       def connection_params
         permitted = params.require(:tenant_docusign_connection).permit(
-          :docusign_account_id,
-          :docusign_base_uri,
           :oauth_scope,
           :status,
           { oauth_scopes: [] },
           metadata: {}
         )
-
-        if @connection.present?
-          permitted.delete(:docusign_account_id)
-          permitted.delete(:docusign_base_uri)
-        end
 
         if params[:tenant_docusign_connection].key?(:oauth_scopes)
           selected_scopes = normalize_scope_values(permitted.delete(:oauth_scopes))

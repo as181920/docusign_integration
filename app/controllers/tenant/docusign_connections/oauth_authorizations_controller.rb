@@ -21,10 +21,7 @@ module Tenant
         )
 
         respond_to do |format|
-          format.html do
-            assign_view_state(connection:, scope:, authorize_url:)
-            render "tenant/docusign_connections/show"
-          end
+          format.html { redirect_to authorize_url, allow_other_host: true }
           format.json do
             render json: {
               authorize_url: authorize_url,
@@ -38,9 +35,8 @@ module Tenant
 
       private
 
-        def assign_view_state(connection:, scope:, authorize_url:)
+        def assign_view_state(connection:, scope:)
           @connection = connection
-          @authorize_url = authorize_url
           @selected_oauth_scopes = normalize_scope_values(scope)
           @selected_oauth_scopes = %w[signature] if @selected_oauth_scopes.blank?
           @oauth_scope_options = (oauth_scope_options + @selected_oauth_scopes).uniq
@@ -64,7 +60,7 @@ module Tenant
           respond_to do |format|
             format.html do
               connection = TenantDocusignConnection.find_by(tenant: current_tenant)
-              assign_view_state(connection:, scope: connection&.oauth_scope || "signature", authorize_url: nil)
+              assign_view_state(connection:, scope: connection&.oauth_scope || "signature")
               flash.now[:alert] = exception.message
               render "tenant/docusign_connections/show", status: :unprocessable_entity
             end

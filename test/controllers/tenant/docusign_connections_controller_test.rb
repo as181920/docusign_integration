@@ -54,12 +54,16 @@ class TenantDocusignConnectionsControllerTest < ActionDispatch::IntegrationTest
     assert_predicate fake_client.state, :present?
   end
 
-  test "authorize_url html renders inline result on show page" do
+  test "authorize_url html redirects to docusign authorize page" do
     sign_in_tenant_user(tenant_uid: @acme_tenant.uid, name: @acme_user.name)
 
     fake_client = Class.new do
+      attr_reader :state, :scope
+
       def authorization_url(state:, scope:)
-        "https://account.example.com/oauth/auth?state=#{state}&scope=#{scope}"
+        @state = state
+        @scope = scope
+        "https://account.example.com/oauth/auth"
       end
     end.new
 
@@ -69,39 +73,21 @@ class TenantDocusignConnectionsControllerTest < ActionDispatch::IntegrationTest
       scopes: ["signature", "impersonation"]
     }
 
-    assert_response :success
-    assert_match("https://account.example.com/oauth/auth", response.body)
-    assert_match(/name="scopes\[\]"[^>]*value="signature"[^>]*checked="checked"/, response.body)
-    assert_match(/name="scopes\[\]"[^>]*value="impersonation"[^>]*checked="checked"/, response.body)
+    assert_response :redirect
+    assert_redirected_to "https://account.example.com/oauth/auth"
+    assert_equal "signature impersonation", fake_client.scope
+    assert_predicate fake_client.state, :present?
   end
 
-  test "show html stays summary only" do
+  test "show html stays summary and oauth-first without create configuration link" do
     sign_in_tenant_user(tenant_uid: @beta_tenant.uid, name: @beta_user.name)
 
     get "/t/beta/docusign_connection"
 
     assert_response :success
     assert_no_match('name="tenant_docusign_connection[docusign_account_id]"', response.body)
-    assert_match(%r{/t/beta/docusign_connection/new}, response.body)
-  end
-
-  test "new renders connection form when unconnected" do
-    sign_in_tenant_user(tenant_uid: @beta_tenant.uid, name: @beta_user.name)
-
-    get "/t/beta/docusign_connection/new"
-
-    assert_response :success
-    assert_match('name="tenant_docusign_connection[docusign_account_id]"', response.body)
-    assert_match('name="tenant_docusign_connection[docusign_base_uri]"', response.body)
-  end
-
-  test "new redirects to edit when connection already exists" do
-    sign_in_tenant_user(tenant_uid: @acme_tenant.uid, name: @acme_user.name)
-
-    get "/t/acme/docusign_connection/new"
-
-    assert_response :redirect
-    assert_redirected_to "/t/acme/docusign_connection/edit"
+    assert_no_match(%r{/t/beta/docusign_connection/new}, response.body)
+    assert_match(%r{/t/beta/docusign_connection/oauth_authorization}, response.body)
   end
 
   test "edit shows readonly account fields for connected tenant" do
@@ -114,29 +100,13 @@ class TenantDocusignConnectionsControllerTest < ActionDispatch::IntegrationTest
     assert_no_match('name="tenant_docusign_connection[docusign_account_id]"', response.body)
   end
 
-  test "edit redirects to new when connection missing" do
+  test "edit redirects to show when connection missing" do
     sign_in_tenant_user(tenant_uid: @beta_tenant.uid, name: @beta_user.name)
 
     get "/t/beta/docusign_connection/edit"
 
     assert_response :redirect
-    assert_redirected_to "/t/beta/docusign_connection/new"
-  end
-
-  test "create builds connection" do
-    sign_in_tenant_user(tenant_uid: @beta_tenant.uid, name: @beta_user.name)
-
-    assert_difference ["TenantDocusignConnection.count", "AuditLog.count"], +1 do
-      post "/t/beta/docusign_connection.json", params: {
-        tenant_docusign_connection: {
-          docusign_account_id: "acct_beta_new",
-          docusign_base_uri: "https://demo.docusign.net/restapi"
-        }
-      }
-    end
-
-    assert_response :created
-    assert_equal "acct_beta_new", json_body["docusign_account_id"]
+    assert_redirected_to "/t/beta/docusign_connection"
   end
 
   test "update ignores account id and base uri updates" do

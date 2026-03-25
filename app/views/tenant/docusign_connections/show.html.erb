@@ -21,8 +21,6 @@
             <h2 class="h6 my-0"><%= t("tenant.docusign_connections.show.summary_title") %></h2>
             <% if @connection.present? %>
               <%= link_to t("tenant.docusign_connections.show.edit_button"), edit_tenant_docusign_connection_path(tenant_uid: current_tenant.uid), class: "btn btn-primary btn-sm my-0" %>
-            <% else %>
-              <%= link_to t("tenant.docusign_connections.show.new_button"), new_tenant_docusign_connection_path(tenant_uid: current_tenant.uid), class: "btn btn-primary btn-sm my-0" %>
             <% end %>
           </div>
 
@@ -56,7 +54,7 @@
           <h2 class="h6 mb-2"><%= t("tenant.docusign_connections.show.oauth_title") %></h2>
           <p class="text-secondary small mb-3"><%= t("tenant.docusign_connections.show.oauth_description") %></p>
 
-          <%= form_with url: tenant_docusign_connection_oauth_authorization_path(tenant_uid: current_tenant.uid), method: :post do %>
+          <%= form_with url: tenant_docusign_connection_oauth_authorization_path(tenant_uid: current_tenant.uid), method: :post, data: { turbo: false } do %>
             <%= hidden_field_tag "scopes[]", "" %>
 
             <div class="mb-3">
@@ -74,26 +72,8 @@
 
             <%= button_tag type: :submit, class: "btn btn-primary w-100" do %>
               <%= tag.span class: "loading-spinner" %>
-              <%= tag.span(@connection.present? ? t("tenant.docusign_connections.show.reauthorize_button") : t("tenant.docusign_connections.show.generate_authorize_url")) %>
+              <%= tag.span(@connection.present? ? t("tenant.docusign_connections.show.reauthorize_button") : t("tenant.docusign_connections.show.open_authorize_page")) %>
             <% end %>
-          <% end %>
-
-          <% if @authorize_url.present? %>
-            <hr>
-            <div data-controller="clipboard">
-              <label class="form-label"><%= t("tenant.docusign_connections.show.authorize_url") %></label>
-              <div class="d-inline-flex align-items-start flex-wrap">
-                <span class="text-muted text-wrap text-break" data-clipboard-target="source"><%= @authorize_url %></span>
-                <%= inline_svg_tag "easy_style/icon_copy.svg",
-                  data: { clipboard_target: "copy", action: "click->clipboard#copy" },
-                  class: "ms-2 text-secondary" %>
-                <%= inline_svg_tag "easy_style/icon_check.svg",
-                  data: { clipboard_target: "copied" },
-                  class: "ms-2 text-secondary d-none" %>
-              </div>
-            </div>
-
-            <%= link_to t("tenant.docusign_connections.show.open_authorize_page"), @authorize_url, target: "_blank", rel: "noopener", class: "btn btn-primary btn-sm mt-2" %>
           <% end %>
         </div>
       </div>

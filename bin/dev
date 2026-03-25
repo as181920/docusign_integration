@@ -19,6 +19,10 @@ while getopts "p:" opt; do
 done
 shift $((OPTIND - 1))
 
-[ -n "$port" ] && export PORT="$port"
+if [ -n "$port" ]; then
+  export PORT="$port"
+elif [ -z "${PORT:-}" ]; then
+  export PORT="3026"
+fi
 
 exec foreman start -f Procfile.dev "$@"

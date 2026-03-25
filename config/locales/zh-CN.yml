@@ -373,15 +373,6 @@ zh-CN:
             item_2: "配置 OAuth 回调地址：%{callback_url}"
             item_3: "配置事件订阅请求地址：%{events_url}"
             item_4: "在飞书侧完成企业安装与授权，企业信息通过 state 回传绑定。"
-          callback_params:
-            title: "三、回调参数约定"
-            item_1: "state：必填，系统会签名并携带 tenant_uid，防止跨企业串联。"
-            item_2: "tenant_key / tenantKey：可选，用于企业一致性校验。"
-            item_3: "union_id / open_id：可选，用于自动建立本地用户关联身份。"
-          access_entry:
-            title: "四、访问入口"
-            entry_label: "飞书应用入口（自动登录）:"
-            dashboard_label: "系统工作台入口："
         start_oauth: "发起飞书授权"
       sap:
         page_title: "SAP 集成配置说明"
@@ -391,6 +382,7 @@ zh-CN:
         page_title: "泛微集成配置说明"
         title: "泛微集成配置说明"
         coming_soon: "敬请期待，后续版本提供完整接入步骤与字段映射说明。"
+
 
   integrations:
     feishu:

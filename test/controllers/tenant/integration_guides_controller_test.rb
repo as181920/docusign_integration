@@ -24,15 +24,6 @@ class TenantIntegrationGuidesControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "state"
     assert_includes response.body, "/t/acme/integration_guides/feishu_oauth_authorization"
   end
-
-  test "feishu guide shows app entry and dashboard links" do
-    get "/t/acme/integration_guides/feishu"
-
-    assert_response :success
-    assert_includes response.body, "/integrations/feishu/entry?tenant_uid=acme"
-    assert_includes response.body, "/t/acme/dashboard"
-  end
-
   test "sap guide is placeholder" do
     get "/t/acme/integration_guides/sap"
 

@@ -373,15 +373,6 @@ en:
             item_2: "Set OAuth callback URL: %{callback_url}"
             item_3: "Set events subscription URL: %{events_url}"
             item_4: "Complete installation and authorization. Enterprise binding is returned through signed state."
-          callback_params:
-            title: "3. Callback Parameters"
-            item_1: "state: required. The app signs tenant_uid into state to prevent cross-enterprise mixups."
-            item_2: "tenant_key / tenantKey: optional, used for enterprise consistency check."
-            item_3: "union_id / open_id: optional, used to auto-create local identity mapping."
-          access_entry:
-            title: "4. Access Entry"
-            entry_label: "Feishu app entry (auto sign-in):"
-            dashboard_label: "System dashboard entry:"
         start_oauth: "Start Feishu Authorization"
       sap:
         page_title: "SAP Integration Guide"
@@ -391,6 +382,7 @@ en:
         page_title: "Fanwei Integration Guide"
         title: "Fanwei Integration Guide"
         coming_soon: "Coming soon. Full integration steps and field mappings will be provided in later versions."
+
 
   integrations:
     feishu:

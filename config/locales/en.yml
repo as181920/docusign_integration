@@ -384,7 +384,7 @@ en:
             item_2: "Set OAuth callback URL: %{callback_url}"
             item_3: "Set events subscription URL: %{events_url}"
             item_4: "Save settings, then click 'Start Feishu Authorization' to bind this tenant."
-        start_oauth: "Start Feishu Authorization"
+        start_oauth: "Complete Authorization Binding"
       sap:
         page_title: "SAP Integration Guide"
         title: "SAP Integration Guide"

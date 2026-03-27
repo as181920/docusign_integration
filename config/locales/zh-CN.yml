@@ -384,7 +384,7 @@ zh-CN:
             item_2: "配置 OAuth 回调地址：%{callback_url}"
             item_3: "配置事件订阅请求地址：%{events_url}"
             item_4: "保存后点击“发起飞书授权”，完成当前企业的绑定。"
-        start_oauth: "发起飞书授权"
+        start_oauth: "完成授权绑定"
       sap:
         page_title: "SAP 集成配置说明"
         title: "SAP 集成配置说明"

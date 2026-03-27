@@ -4,6 +4,7 @@ class TenantFeishuOauthAuthorizationsControllerTest < ActionDispatch::Integratio
   setup do
     @tenant = create(:tenant, :acme)
     @user = create(:tenant_user, :alice, tenant: @tenant)
+    @enterprise = create(:feishu_enterprise, :acme_enterprise, tenant: @tenant, app_secret: "secret_acme")
     sign_in_tenant_user(tenant_uid: @tenant.uid, name: @user.name)
   end
 
@@ -12,7 +13,7 @@ class TenantFeishuOauthAuthorizationsControllerTest < ActionDispatch::Integratio
     Feishu::OauthState.expects(:generate).returns(state)
 
     oauth_client = mock("feishu-oauth-client")
-    Feishu::OauthClient.expects(:new).returns(oauth_client)
+    Feishu::OauthClient.expects(:for_enterprise!).returns(oauth_client)
     oauth_client.expects(:authorization_url).with(state: state).returns("https://open.feishu.cn/auth")
 
     assert_difference "AuditLog.count", +1 do
@@ -24,7 +25,7 @@ class TenantFeishuOauthAuthorizationsControllerTest < ActionDispatch::Integratio
   end
 
   test "create redirects back to guide when oauth config invalid" do
-    Feishu::OauthClient.expects(:new).raises(Feishu::ConfigurationError.new("missing feishu oauth config"))
+    Feishu::OauthClient.expects(:for_enterprise!).raises(Feishu::ConfigurationError.new("missing feishu oauth config"))
 
     post "/t/acme/integration_guides/feishu_oauth_authorization"
 

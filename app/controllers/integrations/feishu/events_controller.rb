@@ -42,7 +42,15 @@ module Integrations
           encrypted = payload["encrypt"].to_s
           return {} if encrypted.blank?
 
-          ::Feishu::EventPayloadDecryptor.new.decrypt(encrypted).stringify_keys
+          decrypt_keys.each do |encrypt_key|
+            begin
+              return ::Feishu::EventPayloadDecryptor.new(encrypt_key: encrypt_key).decrypt(encrypted).stringify_keys
+            rescue ::Feishu::Error
+              next
+            end
+          end
+
+          raise ::Feishu::Error, "failed to decrypt feishu payload with configured encrypt keys"
         rescue ::Feishu::Error => e
           Rails.logger.warn("[Feishu::Events] decrypt failed request_id=#{request.request_id} error=#{e.message}")
           {}
@@ -73,32 +81,56 @@ module Integrations
           signature = request.headers["X-Lark-Signature"].to_s
           return nil if [timestamp, nonce, signature].any?(&:blank?)
 
-          ::Feishu::EventSignatureVerifier.new.valid?(
-            timestamp: timestamp,
-            nonce: nonce,
-            signature: signature,
-            body: raw_body
-          )
+          return false if decrypt_keys.empty?
+
+          decrypt_keys.any? do |encrypt_key|
+            ::Feishu::EventSignatureVerifier.new(encrypt_key: encrypt_key).valid?(
+              timestamp: timestamp,
+              nonce: nonce,
+              signature: signature,
+              body: raw_body
+            )
+          end
         end
 
         def token_verified?(payload)
-          expected_token = ENV.fetch("feishu_app_verification_token", nil).to_s
-          return true if expected_token.blank?
+          return true if verification_tokens.empty?
 
           received_token = payload["token"].presence || payload.dig("header", "token").presence
-          received_token.present? && ActiveSupport::SecurityUtils.secure_compare(received_token, expected_token)
+          token_matched?(received_token)
         end
 
         def challenge_token_valid?(payload)
-          expected_token = ENV.fetch("feishu_app_verification_token", nil).to_s
-          return true if expected_token.blank?
+          return true if verification_tokens.empty?
 
           token = payload["token"].presence || payload.dig("header", "token").presence
-          token.present? && ActiveSupport::SecurityUtils.secure_compare(token.to_s, expected_token)
+          token_matched?(token)
         end
 
         def event_type(payload)
           payload.dig("event", "type") || payload.dig("header", "event_type") || payload["type"] || "unknown"
+        end
+
+        def token_matched?(token)
+          return false if token.blank?
+
+          verification_tokens.any? do |expected_token|
+            next false if expected_token.bytesize != token.bytesize
+
+            ActiveSupport::SecurityUtils.secure_compare(token.to_s, expected_token)
+          end
+        end
+
+        def verification_tokens
+          @verification_tokens ||= begin
+            FeishuEnterprise.where.not(app_verification_token: [nil, ""]).pluck(:app_verification_token).uniq
+          end
+        end
+
+        def decrypt_keys
+          @decrypt_keys ||= begin
+            FeishuEnterprise.where.not(app_encrypt_key: [nil, ""]).pluck(:app_encrypt_key).uniq
+          end
         end
     end
   end

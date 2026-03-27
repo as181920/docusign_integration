@@ -361,18 +361,29 @@ zh-CN:
       feishu:
         page_title: "飞书 Web 集成配置"
         title: "飞书 Web 集成配置说明"
-        description: "适用于飞书 ISV 应用（Web 形态），当前系统采用“手动创建企业，再绑定飞书企业”的接入方式。"
+        description: "当前采用企业自建应用接入方式。请先在本页保存企业自己的飞书应用配置，再发起授权。"
+        configuration:
+          title: "企业飞书应用配置"
+          app_id: "App ID"
+          app_secret: "App Secret"
+          app_secret_hint: "已配置时可留空，不会覆盖原值。"
+          app_verification_token: "事件订阅 Verification Token"
+          app_encrypt_key: "事件订阅 Encrypt Key"
+          save: "保存配置"
+          edit: "编辑配置"
+          cancel_edit: "取消"
+          configured: "已配置"
+          not_configured: "未配置"
+          test_connection: "测试连接"
+          updated: "飞书应用配置已保存。"
+          connection_test_success: "飞书连接测试成功。"
         sections:
-          preparation:
-            title: "一、企业接入前准备"
-            item_1: "先创建企业，确认企业唯一标识 tenant_uid。"
-            item_2: "后续飞书回调会按 tenant_uid 识别并绑定到对应企业。"
           platform:
-            title: "二、飞书开放平台（ISV）配置"
-            item_1: "创建/选择 ISV 应用，接入形态选择 Web。"
+            title: "飞书开放平台配置"
+            item_1: "应用访问入口（主页地址）配置为：%{entry_url}"
             item_2: "配置 OAuth 回调地址：%{callback_url}"
             item_3: "配置事件订阅请求地址：%{events_url}"
-            item_4: "在飞书侧完成企业安装与授权，企业信息通过 state 回传绑定。"
+            item_4: "保存后点击“发起飞书授权”，完成当前企业的绑定。"
         start_oauth: "发起飞书授权"
       sap:
         page_title: "SAP 集成配置说明"

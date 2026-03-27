@@ -129,7 +129,7 @@ GIT
 
 GIT
   remote: git@gitlab.dd-life.com:shared/user_auth.git
-  revision: 4b89b4fec594a8c0087eed99854e0b3e41242dc1
+  revision: 7ee36459d3e9e9259b035c395ec43ab68016fe38
   branch: main
   specs:
     user_auth (0.2.0)
@@ -152,7 +152,7 @@ GIT
 
 GIT
   remote: git@gitlab.dd-life.com:weixin.open/wechat_open_platform_proxy.git
-  revision: 09c17c2501cf5168d8e9e046c2f07aeee8060c24
+  revision: 34768cf6c6b51c572ed9d23e6d6744b3fcabd13e
   branch: master
   specs:
     wechat_open_platform_proxy (0.1.1)

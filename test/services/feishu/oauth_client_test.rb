@@ -1,4 +1,5 @@
 require "test_helper"
+require "cgi"
 
 module Feishu
   class OauthClientTest < ActiveSupport::TestCase
@@ -53,6 +54,40 @@ module Feishu
       Faraday.expects(:get).yields(request).returns(response)
 
       assert_raises(Feishu::ApiError) { build_client.user_info(access_token: "bad") }
+    end
+
+    test "test_connection posts tenant access token request" do
+      response = Struct.new(:status, :body).new(200, '{"code":0,"tenant_access_token":"t1"}')
+      request = Struct.new(:headers, :body).new({}, nil)
+
+      Faraday.expects(:post).with("https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal").yields(request).returns(response)
+
+      result = build_client.test_connection
+      body = JSON.parse(request.body)
+
+      assert_equal "cli_test", body["app_id"]
+      assert_equal "secret", body["app_secret"]
+      assert_equal "t1", result["tenant_access_token"]
+    end
+
+    test "for_enterprise builds client from tenant settings" do
+      tenant = create(:tenant, :acme)
+      enterprise = create(
+        :feishu_enterprise,
+        tenant: tenant,
+        app_id: "cli_acme",
+        app_secret: "secret_acme"
+      )
+
+      client = OauthClient.for_enterprise!(
+        enterprise: enterprise,
+        redirect_uri_fallback: "https://example.com/integrations/feishu/callback"
+      )
+      url = client.authorization_url(state: "s1")
+      expected_redirect_uri = ENV.fetch("feishu_oauth_redirect_uri", nil).presence || "https://example.com/integrations/feishu/callback"
+
+      assert_match "app_id=cli_acme", url
+      assert_match "redirect_uri=#{CGI.escape(expected_redirect_uri)}", url
     end
   end
 end

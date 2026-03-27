@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_24_163000) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_27_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -227,13 +227,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_24_163000) do
   end
 
   create_table "feishu_enterprises", force: :cascade do |t|
+    t.string "app_encrypt_key"
     t.string "app_id"
+    t.string "app_secret"
+    t.string "app_verification_token"
     t.datetime "created_at", null: false
     t.string "name"
     t.jsonb "raw_payload", default: {}, null: false
     t.string "status", default: "active", null: false
     t.bigint "tenant_id", null: false
-    t.string "tenant_key", null: false
+    t.string "tenant_key"
     t.datetime "updated_at", null: false
     t.index ["tenant_id"], name: "index_feishu_enterprises_on_tenant_id", unique: true
     t.index ["tenant_key"], name: "index_feishu_enterprises_on_tenant_key", unique: true

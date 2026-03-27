@@ -53,6 +53,8 @@ Rails.application.routes.draw do
 
     namespace :integration_guides do
       resource :feishu, only: :show, controller: "feishus"
+      resource :feishu_app_configuration, only: %i[edit update], controller: "feishu_app_configurations"
+      resource :feishu_connection_test, only: :create, controller: "feishu_connection_tests"
       resource :feishu_oauth_authorization, only: :create, controller: "feishu_oauth_authorizations"
       resource :sap, only: :show, controller: "saps"
       resource :fanwei, only: :show, controller: "fanweis"

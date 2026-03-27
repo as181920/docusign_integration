@@ -4,6 +4,8 @@ class IntegrationsFeishuCallbacksControllerTest < ActionDispatch::IntegrationTes
   setup do
     @tenant = create(:tenant, :acme)
     create(:feishu_enterprise, :acme_enterprise, tenant: @tenant)
+    @oauth_client = stub("feishu-oauth-client", app_id: "cli_test")
+    Feishu::OauthClient.stubs(:for_enterprise!).returns(@oauth_client)
   end
 
   test "callback binds tenant enterprise and identity" do
@@ -61,21 +63,10 @@ class IntegrationsFeishuCallbacksControllerTest < ActionDispatch::IntegrationTes
     assert_includes response.body, "/t/acme/dashboard"
   end
 
-  test "callback resolves tenant by oauth tenant_key without state and tenant_uid" do
-    oauth_client = mock("feishu-oauth-client")
-    Feishu::OauthClient.expects(:new).returns(oauth_client)
-    oauth_client.expects(:exchange_code).with(code: "oauth-code").returns({ "access_token" => "token-value" })
-    oauth_client.expects(:user_info).with(access_token: "token-value").returns({
-      "tenant_key" => "fs_acme_key",
-      "name" => "Feishu User"
-    })
-
-    Feishu::UserProvisioningService.expects(:call).never
-
+  test "callback returns bad request when tenant context is missing" do
     get "/integrations/feishu/callback", params: { code: "oauth-code" }, as: :json
 
-    assert_response :success
-    assert_equal @tenant.uid, json_body["tenant_uid"]
+    assert_response :bad_request
   end
 
   test "callback rejects tenant key already bound to another tenant" do

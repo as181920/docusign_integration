@@ -8,6 +8,6 @@ class FeishuEnterprise < ApplicationRecord
     inactive: "inactive"
   }, default: :active
 
-  validates :tenant_key, presence: true, uniqueness: true
+  validates :tenant_key, uniqueness: true, allow_blank: true
   validates :tenant_id, uniqueness: true
 end

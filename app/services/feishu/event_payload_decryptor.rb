@@ -3,7 +3,7 @@ require "openssl"
 
 module Feishu
   class EventPayloadDecryptor
-    def initialize(encrypt_key: ENV.fetch("feishu_app_encrypt_key", nil))
+    def initialize(encrypt_key: nil)
       @encrypt_key = encrypt_key.to_s
     end
 

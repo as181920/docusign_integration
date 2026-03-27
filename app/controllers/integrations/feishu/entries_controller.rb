@@ -18,10 +18,11 @@ module Integrations
         end
 
         state = ::Feishu::OauthState.generate(
-          tenant_uid: tenant&.uid,
-          return_to: tenant.present? ? tenant_dashboard_path(tenant_uid: tenant.uid) : nil
+          tenant_uid: tenant.uid,
+          return_to: tenant_dashboard_path(tenant_uid: tenant.uid)
         )
-        authorize_url = ::Feishu::OauthClient.new.authorization_url(state: state)
+        oauth_client = oauth_client_for(tenant: tenant)
+        authorize_url = oauth_client.authorization_url(state: state)
 
         audit(
           tenant: tenant,
@@ -29,7 +30,7 @@ module Integrations
           action: "feishu_entry_redirected_to_oauth",
           target: tenant,
           data: {
-            tenant_uid: tenant&.uid,
+            tenant_uid: tenant.uid,
             tenant_key: normalized_tenant_key
           }
         )
@@ -51,7 +52,7 @@ module Integrations
 
           return FeishuEnterprise.find_by!(tenant_key: tenant_key).tenant if tenant_key.present?
 
-          nil
+          raise ActionController::ParameterMissing, :tenant_uid
         end
 
         def verify_enterprise_tenant_key!(tenant:, tenant_key:)
@@ -64,6 +65,14 @@ module Integrations
 
         def normalized_tenant_key
           params[:tenant_key].presence || params[:tenantKey].presence
+        end
+
+        def oauth_client_for(tenant:)
+          enterprise = FeishuEnterprise.find_by(tenant: tenant)
+          ::Feishu::OauthClient.for_enterprise!(
+            enterprise: enterprise,
+            redirect_uri_fallback: integrations_feishu_callback_url
+          )
         end
 
         def current_user

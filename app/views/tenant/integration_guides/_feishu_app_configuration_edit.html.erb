@@ -1,0 +1,75 @@
+<div class="card mb-3">
+  <div class="card-body">
+    <h2 class="h6 mb-3"><%= t("tenant.integration_guides.feishu.configuration.title") %></h2>
+
+    <% app_secret_required = feishu_enterprise.app_secret.blank? %>
+    <%= form_with model: feishu_enterprise,
+                  url: @feishu_app_configuration_path,
+                  method: :patch,
+                  id: "feishu-app-config-form",
+                  class: "form",
+                  data: { controller: "form" } do |form| %>
+      <div class="form-field">
+        <div class="d-inline-block min-w-12">
+          <%= form.label :app_id, t("tenant.integration_guides.feishu.configuration.app_id"), class: "form-label" %>
+          <span class="text-danger me-3">*</span>
+        </div>
+        <%= form.text_field :app_id,
+                            class: "form-control w-100",
+                            required: true,
+                            placeholder: "cli_xxxxx",
+                            data: { action: "form#validateField" } %>
+        <%= tag.div t("tenant_auth.required"), class: "invalid-feedback" %>
+      </div>
+
+      <div class="form-field">
+        <div class="d-inline-block min-w-12">
+          <%= form.label :app_secret, t("tenant.integration_guides.feishu.configuration.app_secret"), class: "form-label" %>
+          <span class="text-danger me-3">*</span>
+        </div>
+        <%= form.password_field :app_secret,
+                                class: "form-control w-100",
+                                required: app_secret_required,
+                                autocomplete: "off",
+                                data: (app_secret_required ? { action: "form#validateField" } : {}) %>
+        <% if app_secret_required %>
+          <%= tag.div t("tenant_auth.required"), class: "invalid-feedback" %>
+        <% end %>
+      </div>
+
+      <div class="form-field">
+        <div class="d-inline-block min-w-12">
+          <%= form.label :app_verification_token, t("tenant.integration_guides.feishu.configuration.app_verification_token"), class: "form-label" %>
+        </div>
+        <%= form.text_field :app_verification_token, class: "form-control w-100", autocomplete: "off" %>
+      </div>
+
+      <div class="form-field">
+        <div class="d-inline-block min-w-12">
+          <%= form.label :app_encrypt_key, t("tenant.integration_guides.feishu.configuration.app_encrypt_key"), class: "form-label" %>
+        </div>
+        <%= form.text_field :app_encrypt_key, class: "form-control w-100", autocomplete: "off" %>
+      </div>
+
+      <div class="form-field">
+        <small class="text-secondary"><%= t("tenant.integration_guides.feishu.configuration.app_secret_hint") %></small>
+      </div>
+
+      <div class="form-field align-items-center">
+        <%= button_tag type: :submit, form: "feishu-app-config-form", data: { action: "form#validateForm" }, class: "btn btn-primary mb-0" do %>
+          <span class="loading-spinner"></span>
+          <span><%= t("tenant.integration_guides.feishu.configuration.save") %></span>
+        <% end %>
+        <%= button_to t("tenant.integration_guides.feishu.configuration.test_connection"),
+                      @feishu_connection_test_path,
+                      method: :post,
+                      class: "btn btn-outline-primary ms-2 mb-0",
+                      form: { class: "d-inline", data: { turbo: false } } %>
+        <%= link_to t("tenant.integration_guides.feishu.configuration.cancel_edit"),
+                    tenant_integration_guides_feishu_path(tenant_uid: current_tenant.uid),
+                    class: "btn btn-secondary ms-2 mb-0",
+                    data: { turbo_frame: "feishu_app_configuration" } %>
+      </div>
+    <% end %>
+  </div>
+</div>

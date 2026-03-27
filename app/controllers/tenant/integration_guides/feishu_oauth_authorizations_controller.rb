@@ -10,14 +10,20 @@ module Tenant
           return_to: tenant_dashboard_path(tenant_uid: current_tenant.uid)
         )
 
-        authorize_url = ::Feishu::OauthClient.new.authorization_url(state: state)
+        enterprise = FeishuEnterprise.find_by(tenant: current_tenant)
+        oauth_client = ::Feishu::OauthClient.for_enterprise!(
+          enterprise: enterprise,
+          redirect_uri_fallback: integrations_feishu_callback_url
+        )
+        authorize_url = oauth_client.authorization_url(state: state)
 
         audit(
           action: "feishu_oauth_authorization_requested",
-          target: current_tenant,
+          target: enterprise || current_tenant,
           data: {
             tenant_uid: current_tenant.uid,
-            tenant_user_id: current_user&.id
+            tenant_user_id: current_user&.id,
+            app_id: enterprise&.app_id
           }
         )
 

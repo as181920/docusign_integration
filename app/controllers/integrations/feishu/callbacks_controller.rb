@@ -16,13 +16,17 @@ module Integrations
           )
         end
 
-        oauth_user_info = fetch_oauth_user_info
-        incoming_tenant_key = extract_tenant_key(oauth_user_info: oauth_user_info)
-        context = resolve_oauth_context(incoming_tenant_key: incoming_tenant_key)
+        context = resolve_oauth_context
         tenant = context.fetch(:tenant)
         state_payload = context[:state_payload]
         @current_tenant = tenant
 
+        oauth_client = ::Feishu::OauthClient.for_enterprise!(
+          enterprise: FeishuEnterprise.find_by(tenant: tenant),
+          redirect_uri_fallback: integrations_feishu_callback_url
+        )
+        oauth_user_info = fetch_oauth_user_info(oauth_client: oauth_client)
+        incoming_tenant_key = extract_tenant_key(oauth_user_info: oauth_user_info)
         tenant_name = extract_tenant_name(oauth_user_info: oauth_user_info)
         enterprise_payload = build_enterprise_payload(
           incoming_tenant_key: incoming_tenant_key,
@@ -32,6 +36,7 @@ module Integrations
 
         enterprise = upsert_enterprise(
           tenant: tenant,
+          app_id: oauth_client.app_id,
           incoming_tenant_key: incoming_tenant_key,
           tenant_name: tenant_name,
           raw_payload: enterprise_payload
@@ -99,48 +104,30 @@ module Integrations
 
       private
 
-        def resolve_oauth_context(incoming_tenant_key:)
+        def resolve_oauth_context
           if params[:state].present?
             state_payload = ::Feishu::OauthState.verify(params[:state])
-            tenant = resolve_tenant_from_state_payload(
-              state_payload: state_payload,
-              incoming_tenant_key: incoming_tenant_key
-            )
+            tenant = resolve_tenant_from_state_payload(state_payload: state_payload)
             return { tenant: tenant, state_payload: state_payload }
           end
 
-          if params[:tenant_uid].present?
-            tenant = TenantAuth::Tenant.find_by!(uid: params[:tenant_uid])
-            return { tenant: tenant, state_payload: nil }
-          end
-
-          return { tenant: tenant_by_feishu_key!(incoming_tenant_key), state_payload: nil } if incoming_tenant_key.present?
-
-          raise ActionController::ParameterMissing, :tenant_uid
+          tenant = TenantAuth::Tenant.find_by!(uid: params.require(:tenant_uid))
+          { tenant: tenant, state_payload: nil }
         end
 
-        def resolve_tenant_from_state_payload(state_payload:, incoming_tenant_key:)
-          tenant_uid = state_payload["tenant_uid"].presence
-          return TenantAuth::Tenant.find_by!(uid: tenant_uid) if tenant_uid.present?
-
-          return tenant_by_feishu_key!(incoming_tenant_key) if incoming_tenant_key.present?
-
-          raise ActionController::ParameterMissing, :tenant_uid
+        def resolve_tenant_from_state_payload(state_payload:)
+          tenant_uid = state_payload.fetch("tenant_uid")
+          TenantAuth::Tenant.find_by!(uid: tenant_uid)
         end
 
-        def tenant_by_feishu_key!(tenant_key)
-          FeishuEnterprise.find_by!(tenant_key: tenant_key).tenant
-        end
-
-        def fetch_oauth_user_info
+        def fetch_oauth_user_info(oauth_client:)
           return params.to_unsafe_h if params[:code].blank?
 
-          oauth_client = ::Feishu::OauthClient.new
           token_info = oauth_client.exchange_code(code: params.require(:code))
           oauth_client.user_info(access_token: token_info.fetch("access_token")).stringify_keys
         end
 
-        def upsert_enterprise(tenant:, incoming_tenant_key:, tenant_name:, raw_payload:)
+        def upsert_enterprise(tenant:, app_id:, incoming_tenant_key:, tenant_name:, raw_payload:)
           enterprise = FeishuEnterprise.find_or_initialize_by(tenant: tenant)
 
           if tenant_key_conflict?(enterprise: enterprise, incoming_tenant_key: incoming_tenant_key)
@@ -151,7 +138,7 @@ module Integrations
           end
 
           enterprise.tenant_key = incoming_tenant_key if incoming_tenant_key.present?
-          enterprise.app_id = ENV.fetch("feishu_app_id", nil)
+          enterprise.app_id = app_id if app_id.present?
           enterprise.name = tenant_name if tenant_name.present?
           enterprise.raw_payload = raw_payload
           enterprise.save!

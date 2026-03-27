@@ -361,18 +361,29 @@ en:
       feishu:
         page_title: "Feishu Web Integration"
         title: "Feishu Web Integration Guide"
-        description: "For Feishu ISV web apps. The current flow is: create enterprise manually, then bind Feishu enterprise."
+        description: "This flow uses tenant-owned Feishu apps. Save each tenant's app settings here before authorization."
+        configuration:
+          title: "Tenant Feishu App Settings"
+          app_id: "App ID"
+          app_secret: "App Secret"
+          app_secret_hint: "Leave blank to keep the existing value."
+          app_verification_token: "Events Verification Token"
+          app_encrypt_key: "Events Encrypt Key"
+          save: "Save Settings"
+          edit: "Edit Settings"
+          cancel_edit: "Cancel"
+          configured: "Configured"
+          not_configured: "Not configured"
+          test_connection: "Test Connection"
+          updated: "Feishu app settings saved."
+          connection_test_success: "Feishu connection test succeeded."
         sections:
-          preparation:
-            title: "1. Enterprise Preparation"
-            item_1: "Create enterprise first and confirm tenant_uid."
-            item_2: "Feishu callback will bind enterprise by tenant_uid."
           platform:
-            title: "2. Feishu Open Platform (ISV)"
-            item_1: "Create/select ISV app and choose Web integration."
+            title: "Feishu Open Platform Setup"
+            item_1: "Set app entry/home URL to: %{entry_url}"
             item_2: "Set OAuth callback URL: %{callback_url}"
             item_3: "Set events subscription URL: %{events_url}"
-            item_4: "Complete installation and authorization. Enterprise binding is returned through signed state."
+            item_4: "Save settings, then click 'Start Feishu Authorization' to bind this tenant."
         start_oauth: "Start Feishu Authorization"
       sap:
         page_title: "SAP Integration Guide"

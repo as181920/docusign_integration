@@ -29,4 +29,10 @@ class FeishuEnterpriseTest < ActiveSupport::TestCase
     assert_not duplicate.valid?
     assert duplicate.errors.of_kind?(:tenant_id, :taken)
   end
+
+  test "allows blank tenant_key before oauth binding" do
+    enterprise = build(:feishu_enterprise, tenant_key: nil)
+
+    assert_predicate enterprise, :valid?
+  end
 end

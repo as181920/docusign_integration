@@ -2,10 +2,25 @@ require "uri"
 
 module Feishu
   class OauthClient
+    attr_reader :app_id
+
+    class << self
+      def for_enterprise!(enterprise:, redirect_uri_fallback:)
+        raise Feishu::ConfigurationError, "missing tenant feishu app config" if enterprise.blank?
+
+        new(
+          oauth_base_uri: ENV.fetch("feishu_oauth_base_uri", "https://open.feishu.cn"),
+          app_id: enterprise.app_id,
+          app_secret: enterprise.app_secret,
+          redirect_uri: ENV.fetch("feishu_oauth_redirect_uri", nil).presence || redirect_uri_fallback
+        )
+      end
+    end
+
     def initialize(
       oauth_base_uri: ENV.fetch("feishu_oauth_base_uri", "https://open.feishu.cn"),
-      app_id: ENV.fetch("feishu_app_id", nil),
-      app_secret: ENV.fetch("feishu_app_secret", nil),
+      app_id: nil,
+      app_secret: nil,
       redirect_uri: ENV.fetch("feishu_oauth_redirect_uri", nil)
     )
       @oauth_base_uri = oauth_base_uri.to_s.sub(%r{/$}, "")
@@ -46,6 +61,20 @@ module Feishu
     def user_info(access_token:)
       response = Faraday.get("#{@oauth_base_uri}/open-apis/authen/v1/user_info") do |req|
         req.headers["Authorization"] = "Bearer #{access_token}"
+      end
+
+      body = parse_json(response)
+      ensure_success(response, body)
+      unwrap_data(body)
+    end
+
+    def test_connection
+      response = Faraday.post("#{@oauth_base_uri}/open-apis/auth/v3/tenant_access_token/internal") do |req|
+        req.headers["Content-Type"] = "application/json"
+        req.body = {
+          app_id: @app_id,
+          app_secret: @app_secret
+        }.to_json
       end
 
       body = parse_json(response)

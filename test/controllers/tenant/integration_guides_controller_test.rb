@@ -7,23 +7,33 @@ class TenantIntegrationGuidesControllerTest < ActionDispatch::IntegrationTest
     sign_in_tenant_user(tenant_uid: @tenant.uid, name: @user.name)
   end
 
-  test "feishu guide renders setup steps and callback endpoints" do
+  test "feishu guide renders tenant app settings summary" do
     get "/t/acme/integration_guides/feishu"
 
     assert_response :success
     assert_select "h1", text: "飞书 Web 集成配置说明"
+    assert_includes response.body, "企业飞书应用配置"
+    assert_includes response.body, "未配置"
+  end
+
+  test "feishu guide renders feishu endpoints" do
+    get "/t/acme/integration_guides/feishu"
+
+    assert_response :success
+    assert_includes response.body, "/integrations/feishu/entry?tenant_uid=acme"
     assert_includes response.body, "/integrations/feishu/callback"
     assert_includes response.body, "/integrations/feishu/events"
   end
 
-  test "feishu guide hides internal config keys and shows oauth action" do
+  test "feishu guide includes oauth action and tenant config actions" do
     get "/t/acme/integration_guides/feishu"
 
     assert_response :success
-    refute_includes response.body, "feishu_app_id"
-    assert_includes response.body, "state"
+    assert_includes response.body, "/t/acme/integration_guides/feishu_app_configuration/edit"
+    assert_includes response.body, "/t/acme/integration_guides/feishu_connection_test"
     assert_includes response.body, "/t/acme/integration_guides/feishu_oauth_authorization"
   end
+
   test "sap guide is placeholder" do
     get "/t/acme/integration_guides/sap"
 

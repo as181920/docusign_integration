@@ -21,10 +21,6 @@ default: &default
   # Feishu (ISV)
   feishu_oauth_base_uri: "https://open.feishu.cn"
   feishu_oauth_redirect_uri: "http://localhost:3026/integrations/feishu/callback"
-  feishu_app_id: ""
-  feishu_app_secret: ""
-  feishu_app_verification_token: ""
-  feishu_app_encrypt_key: ""
 
   # DocuSign OAuth (tenant self-connected)
   docusign_integration_key: ""

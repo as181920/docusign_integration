@@ -3,6 +3,7 @@ FactoryBot.define do
     association :tenant
     sequence(:tenant_key) { |n| "fs_tenant_key_#{n}" }
     app_id { "cli_test_app" }
+    app_secret { "secret_test_app" }
     sequence(:name) { |n| "Feishu Enterprise #{n}" }
     status { "active" }
     raw_payload { {} }

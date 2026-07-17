@@ -1,6 +1,6 @@
 GIT
   remote: git@gitlab.dd-life.com:common_utility/short_url.git
-  revision: b33ba2de0c1a467c7ceb407698dacd5f346bf1e6
+  revision: b3684db3754b124e8ee6f42069be307ddeda179a
   branch: master
   specs:
     short_url (0.2.0)
@@ -9,24 +9,26 @@ GIT
 
 GIT
   remote: git@gitlab.dd-life.com:corp.front_end/easy_style_engine.git
-  revision: d7c82524c7ab107ea657271e33e44a21acba18be
+  revision: fb0c2ab131153606355038c2eb4b39c5480cb7e2
   branch: main
   specs:
     easy_style (0.3.0)
       breadcrumbs_on_rails
       browser
       chartkick
-      image_processing
+      image_processing (~> 2.0)
       importmap-rails
+      inline_svg
       kaminari
       rails (>= 7.1)
       requestjs-rails
+      ruby-vips (~> 2.2)
       stimulus-rails
       turbo-rails
 
 GIT
   remote: git@gitlab.dd-life.com:shared/anonymous_authorization.git
-  revision: 653d490396327361d7b10b5c91643d09d7c75ff6
+  revision: 5e9ba362293050b4f5f2a3c831e63e8e9d4e58aa
   branch: main
   specs:
     anonymous_authorization (0.2.0)
@@ -43,7 +45,7 @@ GIT
 
 GIT
   remote: git@gitlab.dd-life.com:shared/omni_account.git
-  revision: 7bffb3e941aca6a606036c0bcf7bff7f125e6957
+  revision: 6038c83254eca8d31a5aa6ef218dad5895526d9b
   branch: master
   specs:
     omni_account (0.2.1)
@@ -53,16 +55,27 @@ GIT
 
 GIT
   remote: git@gitlab.dd-life.com:shared/omni_pay.git
-  revision: 081463ba2772449d6a489d1af586dcdc48b90bd0
+  revision: 12a7fed4eb70a256c0d0719f8122c364399e1028
   branch: master
   specs:
     omni_pay (0.1.1)
       acts_as_list
+      easy_style
+      kaminari
+      omni_account
+      pundit
       rails (>= 6.1)
+      ransack
+      rqrcode
+      short_url
+      user_auth
+      wechat_open_platform_proxy
+      wechat_vendor_platform_proxy
+      with_advisory_lock
 
 GIT
   remote: git@gitlab.dd-life.com:shared/omni_region.git
-  revision: 53259b2a837b704d52fab8b237ea744c99bad7c9
+  revision: b558d2f472e8740261c0b3aae5b55981af074192
   branch: master
   specs:
     omni_region (0.2.0)
@@ -83,7 +96,7 @@ GIT
 
 GIT
   remote: git@gitlab.dd-life.com:shared/organization_auth.git
-  revision: 9238df25a60739e238d60184a400a1a32edad1da
+  revision: d4efdb53f6f6c72b9cf192a1d3aae89607b30d2a
   branch: main
   specs:
     organization_auth (0.2.0)
@@ -106,7 +119,7 @@ GIT
 
 GIT
   remote: git@gitlab.dd-life.com:shared/tenant_auth.git
-  revision: 94323175fb7743e187687b2395923fc293d5a952
+  revision: 494635da511408aab40b66d9f48eedf3144bbe48
   branch: main
   specs:
     tenant_auth (0.3.0)
@@ -129,7 +142,7 @@ GIT
 
 GIT
   remote: git@gitlab.dd-life.com:shared/user_auth.git
-  revision: 7ee36459d3e9e9259b035c395ec43ab68016fe38
+  revision: 0e663ca1028f6ee23941d01c740da033a2e2ccdc
   branch: main
   specs:
     user_auth (0.2.0)
@@ -147,12 +160,13 @@ GIT
       retriable
       rqrcode
       rucaptcha
+      short_url
       tzinfo
       with_advisory_lock
 
 GIT
   remote: git@gitlab.dd-life.com:weixin.open/wechat_open_platform_proxy.git
-  revision: 34768cf6c6b51c572ed9d23e6d6744b3fcabd13e
+  revision: 0bf710a410b7391112f2c28dd275a5f41b3662f0
   branch: master
   specs:
     wechat_open_platform_proxy (0.1.1)
@@ -165,7 +179,7 @@ GIT
 
 GIT
   remote: git@gitlab.dd-life.com:weixin.pay/wechat_vendor_platform_proxy.git
-  revision: b8cc6bd85bc0951a2cb230a3434f8585b154ec9e
+  revision: 8d51d1bbc3f5f370caeab9ac1fc2b22f897cef1b
   branch: master
   specs:
     wechat_vendor_platform_proxy (0.1.1)
@@ -412,9 +426,7 @@ GEM
     http-form_data (2.3.0)
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
-    image_processing (1.14.0)
-      mini_magick (>= 4.9.5, < 6)
-      ruby-vips (>= 2.0.17, < 3)
+    image_processing (2.0.2)
     importmap-rails (2.2.3)
       actionpack (>= 6.0.0)
       activesupport (>= 6.0.0)
@@ -476,8 +488,6 @@ GEM
     mcp (0.9.0)
       json-schema (>= 4.1)
     method_source (1.1.0)
-    mini_magick (5.3.1)
-      logger
     mini_mime (1.1.5)
     minitest (6.0.2)
       drb (~> 2.0)
@@ -754,7 +764,7 @@ DEPENDENCIES
   guard-minitest
   guard-rake
   guard-rubocop
-  image_processing (~> 1.14)
+  image_processing
   importmap-rails
   ip_info!
   jbuilder
@@ -778,6 +788,7 @@ DEPENDENCIES
   rubocop-minitest
   rubocop-rails-omakase
   rubocop-rake
+  ruby-vips
   rucaptcha
   short_url!
   solid_cable
@@ -873,7 +884,7 @@ CHECKSUMS
   http-cookie (1.1.0) sha256=38a5e60d1527eebc396831b8c4b9455440509881219273a6c99943d29eadbb19
   http-form_data (2.3.0) sha256=cc4eeb1361d9876821e31d7b1cf0b68f1cf874b201d27903480479d86448a5f3
   i18n (1.14.8) sha256=285778639134865c5e0f6269e0b818256017e8cde89993fdfcbfb64d088824a5
-  image_processing (1.14.0) sha256=754cc169c9c262980889bec6bfd325ed1dafad34f85242b5a07b60af004742fb
+  image_processing (2.0.2)
   importmap-rails (2.2.3) sha256=7101be2a4dc97cf1558fb8f573a718404c5f6bcfe94f304bf1f39e444feeb16a
   inline_svg (1.10.0) sha256=5b652934236fd9f8adc61f3fd6e208b7ca3282698b19f28659971da84bf9a10f
   io-console (0.8.2) sha256=d6e3ae7a7cc7574f4b8893b4fca2162e57a825b223a177b7afa236c5ef9814cc
@@ -899,7 +910,6 @@ CHECKSUMS
   maxmind-geoip2 (1.5.1) sha256=d1397e379367921409bf1618a4d07b667492ea0e86fcee5e062dedfbff1fe7c7
   mcp (0.9.0) sha256=a0a3737b0ac9df0772f4ef7e2b013c260ddbcf217a5d50a66bff0baeddf03e47
   method_source (1.1.0) sha256=181301c9c45b731b4769bc81e8860e72f9161ad7d66dd99103c9ab84f560f5c5
-  mini_magick (5.3.1) sha256=29395dfd76badcabb6403ee5aff6f681e867074f8f28ce08d78661e9e4a351c4
   mini_mime (1.1.5) sha256=8681b7e2e4215f2a159f9400b5816d85e9d8c6c6b491e96a12797e798f8bccef
   minitest (6.0.2) sha256=db6e57956f6ecc6134683b4c87467d6dd792323c7f0eea7b93f66bd284adbc3d
   mission_control-jobs (1.1.0) sha256=b13da9cde3344fec7c744b79d2a34c3ecd454f45d4d593d4c968ba762315e84c
@@ -1013,4 +1023,4 @@ RUBY VERSION
   ruby 3.4.5
 
 BUNDLED WITH
-  4.0.6
+  4.0.15

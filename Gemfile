@@ -12,7 +12,7 @@ gem "jbuilder"
 gem "propshaft"
 gem "image_processing"
 gem "ruby-vips"
-gem "puma", "~> 6.6"
+gem "puma", "~> 8.0"
 gem "whenever", require: false
 gem "faraday"
 gem "pundit"

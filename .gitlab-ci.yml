@@ -1,6 +1,12 @@
 before_script:
   - pwd
-  - rvm use || rvm install $(<.ruby-version)
+  - |
+    runtoo_ruby_version="$(tr -d '[:space:]' < .ruby-version)"
+    runtoo_ruby_version="${runtoo_ruby_version#ruby-}"
+    mise install
+    mise install "ruby@${runtoo_ruby_version}"
+    runtoo_mise_env="$(mise env --shell bash "ruby@${runtoo_ruby_version}")"
+    eval "${runtoo_mise_env}"
   - ruby -v
   - bundle install -j $(nproc)
   # - echo -e "machine gitlab.dd-life.com\nlogin ${CI_USER}\npassword ${CI_PAT}" > ~/.netrc

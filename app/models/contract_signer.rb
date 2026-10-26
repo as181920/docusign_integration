@@ -17,4 +17,12 @@ class ContractSigner < ApplicationRecord
 
   validates :name, :email, :role_name, presence: true
   validates :email, uniqueness: { scope: %i[contract_id role_name] }
+
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[id name email role_name routing_order signing_type status created_at updated_at]
+  end
+
+  def self.ransackable_associations(_auth_object = nil)
+    []
+  end
 end

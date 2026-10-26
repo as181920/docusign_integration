@@ -45,17 +45,17 @@ GIT
 
 GIT
   remote: git@gitlab.dd-life.com:shared/omni_account.git
-  revision: 6f318a4c703bb6b4bfd612377baccc6f9c259abc
+  revision: 3b3539617dc4100f578a6276856776681bb045ac
   branch: master
   specs:
     omni_account (0.2.1)
       kaminari
-      rails (>= 8.1)
-      ransack
+      rails (>= 8.1.4)
+      ransack (~> 6.0, >= 6.0.1)
 
 GIT
   remote: git@gitlab.dd-life.com:shared/omni_pay.git
-  revision: 0e52a6401d48cfb75258f5d89bfbd2e39bdd241e
+  revision: 41998429d9f73e6d98fb14a07c72dbdd562a22cb
   branch: master
   specs:
     omni_pay (0.1.1)
@@ -64,8 +64,8 @@ GIT
       kaminari
       omni_account
       pundit
-      rails (>= 8.1)
-      ransack (~> 6.0)
+      rails (>= 8.1.4)
+      ransack (~> 6.0, >= 6.0.1)
       rqrcode
       short_url
       user_auth
@@ -75,28 +75,28 @@ GIT
 
 GIT
   remote: git@gitlab.dd-life.com:shared/omni_region.git
-  revision: 8170a1cd5c4dda4a0f7eac28f4dd5108b6df9915
+  revision: 63453cf1f7b83c542c11a873e2eb73a66d145c5d
   branch: master
   specs:
     omni_region (0.2.0)
       jbuilder
       kaminari
-      rails (>= 8.1)
-      ransack
-      rgeo
+      rails (>= 8.1.4)
+      ransack (~> 6.0, >= 6.0.1)
+      rgeo (>= 3.1)
       rgeo-geojson
 
 GIT
   remote: git@gitlab.dd-life.com:shared/omni_role.git
-  revision: 9a2b165f42050628d566c8d1eedf9f594c20b382
+  revision: 638793188156c20df0fb0324241f4587f8c45991
   branch: master
   specs:
     omni_role (0.1.0)
-      rails (>= 6.1)
+      rails (>= 8.1.4)
 
 GIT
   remote: git@gitlab.dd-life.com:shared/organization_auth.git
-  revision: 67f1607304e03ca22b5d7f660d9ea81c724dcc9b
+  revision: a55fe3454ef6f67ea7bc7223a6d294187748a32f
   branch: main
   specs:
     organization_auth (0.2.0)
@@ -112,7 +112,7 @@ GIT
       easy_style
       geocoder
       pundit
-      rails (>= 8.1)
+      rails (>= 8.1.4)
       retriable
       rotp
       rucaptcha
@@ -120,7 +120,7 @@ GIT
 
 GIT
   remote: git@gitlab.dd-life.com:shared/tenant_auth.git
-  revision: 1e0b4bb9b5065f344409af114bad28d63249e11b
+  revision: 09b5eeef0d6dc3081aee8243cdd002b127bfa4de
   branch: main
   specs:
     tenant_auth (0.3.0)
@@ -140,8 +140,8 @@ GIT
       kaminari
       omni_role
       pundit
-      rails (>= 8.1)
-      ransack
+      rails (>= 8.1.4)
+      ransack (~> 6.0, >= 6.0.1)
       retriable
       rucaptcha
       tzinfo
@@ -149,7 +149,7 @@ GIT
 
 GIT
   remote: git@gitlab.dd-life.com:shared/user_auth.git
-  revision: 24427c5d88a23a5700f4533efba5659fb0a6d33f
+  revision: 9fdb38b3a9dd2c4c608d0cbae1ce46bf98b368cc
   branch: main
   specs:
     user_auth (0.2.0)
@@ -163,10 +163,10 @@ GIT
       geocoder
       inline_svg
       pundit
-      rails (>= 8.1)
+      rails (>= 8.1.4)
       retriable
       rqrcode
-      rucaptcha
+      rucaptcha (>= 3.4)
       short_url
       tzinfo
       with_advisory_lock
@@ -186,7 +186,7 @@ GIT
 
 GIT
   remote: git@gitlab.dd-life.com:weixin.pay/wechat_vendor_platform_proxy.git
-  revision: 7aa4f55d82d0446474575190ce44c48af7f3ed2b
+  revision: b99e6e7dae2227926d0a61d068ef3305c4711b7d
   branch: master
   specs:
     wechat_vendor_platform_proxy (0.1.1)
@@ -194,12 +194,12 @@ GIT
       faraday-multipart
       jbuilder
       kaminari
-      rails (>= 8.1)
-      ransack
+      rails (>= 8.1.4)
+      ransack (~> 6.0, >= 6.0.1)
 
 GIT
   remote: git@gitlab.dd-life.com:weixin.work/wechat_work_platform_proxy.git
-  revision: 49fca75b37883ebead12c7780143149265763427
+  revision: 3d052a6bd0a8852e649a4a81056eef37bdfae53d
   branch: master
   specs:
     wechat_work_platform_proxy (0.3.0)
@@ -213,7 +213,7 @@ GIT
       kaminari
       pundit
       rails (>= 8.1.4)
-      ransack (~> 6.0)
+      ransack (~> 6.0, >= 6.0.1)
       with_advisory_lock
 
 GIT
@@ -776,7 +776,7 @@ DEPENDENCIES
   rack-cors
   rails (~> 8.1.4)
   rails-i18n (~> 8.0)
-  ransack
+  ransack (~> 6.0, >= 6.0.1)
   rubocop
   rubocop-erb
   rubocop-minitest

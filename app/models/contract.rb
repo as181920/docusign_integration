@@ -22,4 +22,12 @@ class Contract < ApplicationRecord
 
   validates :title, presence: true
   validates :contract_no, presence: true, uniqueness: { scope: :tenant_id }
+
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[id title contract_no status source created_at updated_at]
+  end
+
+  def self.ransackable_associations(_auth_object = nil)
+    []
+  end
 end

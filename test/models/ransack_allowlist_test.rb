@@ -1,28 +1,21 @@
 require "test_helper"
 
 class RansackAllowlistTest < ActiveSupport::TestCase
-  MODELS = [
-    AuditLog,
-    Contract,
-    ContractEnvelope,
-    ContractSigner,
-    ContractTemplate,
-    ContractTemplateRole,
-    ExternalIdentity,
-    FeishuEnterprise,
-    OutboundEvent,
-    TenantDocusignConnection,
-    WebhookEvent
-  ].freeze
+  test "contract searches cannot traverse tenant associations" do
+    assert_raises Ransack::InvalidSearchError do
+      Contract.ransack!(tenant_name_cont: SecureRandom.hex)
+    end
+  end
 
-  test "all models expose ransack allowlists" do
-    MODELS.each do |model_class|
-      attributes = model_class.ransackable_attributes(nil)
-      associations = model_class.ransackable_associations(nil)
+  test "webhook searches cannot access raw payloads" do
+    assert_raises Ransack::InvalidSearchError do
+      WebhookEvent.ransack!(payload_cont: SecureRandom.hex)
+    end
+  end
 
-      assert_kind_of Array, attributes, "#{model_class} attributes should be array"
-      assert_kind_of Array, associations, "#{model_class} associations should be array"
-      assert_includes attributes, "id", "#{model_class} should allow ransack on id"
+  test "unqueried connection models do not expose credentials for searching" do
+    assert_raises RuntimeError do
+      TenantDocusignConnection.ransack!(access_token_eq: SecureRandom.hex)
     end
   end
 end

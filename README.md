@@ -64,3 +64,7 @@ Engine migrations follow engine loading behavior and should not be copied into h
   - `config/deploy/staging.rb`
   - `config/deploy/production.rb`
 - Replace placeholder `repo_url`, domain, and server entries before first deploy.
+
+## 后台搜索边界
+
+Ransack 采用 `~> 6.0`、`>= 6.0.1`。合同／已发送文件、合同模板、签署人、Webhook 事件在各自模型显式维护可筛选字段，保留现有关键字、状态、来源、邮箱等查询。`ApplicationRecord` 不提供全字段或全关联搜索；OAuth 连接凭据、Webhook 原始 payload 和未声明的关联不开放查询。新增筛选时同步调整所属模型白名单与请求测试。

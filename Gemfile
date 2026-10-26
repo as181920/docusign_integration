@@ -17,7 +17,7 @@ gem "whenever", require: false
 gem "faraday"
 gem "pundit"
 gem "audited"
-gem "ransack"
+gem "ransack", "~> 6.0", ">= 6.0.1"
 gem "rucaptcha"
 gem "acts-as-taggable-on"
 gem "importmap-rails"

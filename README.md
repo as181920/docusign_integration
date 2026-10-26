@@ -3,7 +3,7 @@
 Rails 8 multi-tenant DocuSign integration service.
 
 ## Stack
-- Rails 8.1
+- Ruby 4.0.9 / Rails 8.1.4
 - PostgreSQL
 - Solid Queue + Mission Control Jobs
 - Solid Cache / Solid Cable

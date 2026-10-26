@@ -3,7 +3,7 @@ set :branch, :main
 
 # rvm config
 set :rvm_type, :user
-set :rvm_ruby_version, "3.4.5"
+set :rvm_ruby_version, "4.0.9"
 set :rvm_ruby_string, :local
 
 # puma config

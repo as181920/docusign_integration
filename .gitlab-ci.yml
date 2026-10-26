@@ -8,10 +8,13 @@ before_script:
     runtoo_mise_env="$(mise env --shell bash "ruby@${runtoo_ruby_version}")"
     eval "${runtoo_mise_env}"
   - ruby -v
-  - bundle install -j $(nproc)
-  # - echo -e "machine gitlab.dd-life.com\nlogin ${CI_USER}\npassword ${CI_PAT}" > ~/.netrc
   - git lfs install
   - git lfs version
+  - bundle install -j $(nproc)
+  # Bundler Git caches may have an empty index; LFS needs the tracked paths.
+  - git -C "$(bundle show ip_info)" read-tree HEAD
+  - git -C "$(bundle show ip_info)" lfs pull --include=data/GeoLite2-City.mmdb
+  - bundle exec ruby -rip_info -e 'puts "GeoIP database ready"'
 
 stages:
   - rubocop

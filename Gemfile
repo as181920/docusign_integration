@@ -1,9 +1,9 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "3.4.5"
+ruby "4.0.9"
 
-gem "rails", "~> 8.1.2"
+gem "rails", "~> 8.1.4"
 gem "rails-i18n", "~> 8.0"
 gem "rack-cors", require: "rack/cors"
 gem "pg", "~> 1.6"

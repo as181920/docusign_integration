@@ -37,7 +37,7 @@ GIT
 
 GIT
   remote: git@gitlab.dd-life.com:shared/ip_info.git
-  revision: 1a1f7db31661c561cc8e45e3ed2cde41055521c6
+  revision: 647554941a8c3588a16f76d59bb2a0596c205fd7
   branch: master
   specs:
     ip_info (0.1.2)
